@@ -93,8 +93,8 @@ def p5_drafts(ctx: Context, answer) -> Ask:
         ids.append(ctx.outbox.propose(kind="post", action="publish", title=f"Post on {p.channel} (MOCKED)",
                                       content=p.model_dump(), phase=5)["id"])
     d.launch_items = ids
-    ctx.say(f"{len(ids)} item(s) are waiting for your approval. Each one needs its own approve or reject; "
-            "publishing is MOCKED.", kind="approval")
+    ctx.say(f"Your store page and launch posts are ready: {len(ids)} item(s) to review. Please approve each one or "
+            "ask for changes. Practice mode: nothing is actually posted (MOCKED).", kind="approval")
     return Ask("approval", items_payload(ctx, ids), resume_to="p5_publish")
 
 

@@ -113,9 +113,12 @@ def test_why_answers_cite_only_the_record(make_runtime):
     rt = make_runtime()
     drive(rt, stop_at_gate=1)
     record = rt.record_index()
-    ans = rt.ask("why did gate 1 recommend this outcome?")
-    cited = ans[ans.rfind("[") + 1:-1].split(", ")
-    assert all(c in record for c in cited)
+    from venture_builder.agents.founder_liaison import answer_from_record
+    with rt.ctx.bound():
+        raw = answer_from_record(rt.ctx, "why did gate 1 recommend this outcome?", record)
+    assert raw.cited_ids and all(c in record for c in raw.cited_ids)
+    shown = rt.ask("why did gate 1 recommend this outcome?")
+    assert not any(c in shown for c in raw.cited_ids)          # ids never reach the founder
     assert rt.ask("qqqq zzzz xxxx") == NOT_IN_RECORD
 
 
@@ -141,3 +144,16 @@ def test_conversation_log_is_written(make_runtime):
     turns = rt.ctx.store.conversation()
     assert turns[0]["speaker"] == "founder" and any(t["speaker"] == "liaison" for t in turns)
     assert all({"id", "timestamp", "speaker", "phase", "text"} <= t.keys() for t in turns)
+
+
+def test_skipping_a_question_keeps_a_labelled_guess_and_never_skips_decisions(make_runtime):
+    import pytest
+    rt = make_runtime()
+    p = rt.advance()
+    assert p["kind"] in {"question", "readback"}
+    rt.skip()
+    assert rt.ctx.store.conversation()[-1]["text"] != ""            # the skip is visible in the conversation
+    p = drive(rt, stop_at_gate=1)
+    assert p["kind"] == "gate"
+    with pytest.raises(ValueError):
+        rt.skip()                                                    # a stage decision can never be skipped

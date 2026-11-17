@@ -13,10 +13,11 @@ A founder brings a short brief: an idea plus skills, budget, time, target market
 docker compose up
 ```
 
-Open **http://localhost:8000**, write a brief and press Start. The first start downloads GPT-OSS-20B (about 13 GB). Gemma 4 31B needs a free Gemini API key: copy `.env.example` to `.env` and set `GEMINI_API_KEY`. Without a key, every role runs on GPT-OSS-20B (single-model mode, shown in the UI).
+Open **http://localhost:8000**, describe your idea and press **Start my project**. The first start downloads GPT-OSS-20B (about 13 GB). Gemma 4 31B needs a free Gemini API key: copy `.env.example` to `.env` and set `GEMINI_API_KEY`. Without a key, every role runs on GPT-OSS-20B (single-model mode, shown in the UI).
 
 - **Ollama on another machine:** set `OLLAMA_HOST=http://<machine>:11434` in `.env`, then `docker compose -f docker-compose.yml -f compose.remote-ollama.yaml up`.
-- **Terminal instead of the browser:** `docker compose exec app venture run briefs/plausible_client_kit.md` (interactive; `venture --help` lists every command).
+- **GPT-OSS-20B on llama.cpp instead of Ollama:** start `llama-server -m gpt-oss-20b.gguf --jinja -c 16384 --host 0.0.0.0 --port 8090`, then `docker compose -f docker-compose.yml -f compose.llamacpp.yaml up` (no bundled Ollama, no model download). Without Docker, set `OSS_BACKEND=llamacpp` and `LLAMACPP_URL=http://localhost:8090` in `.env`.
+- **Terminal instead of the browser:** `docker compose exec app venture run briefs/plausible_client_kit.md` (interactive; `venture --help` lists every command). The brief can also be inline, `venture run --idea "..."`, or typed when asked: `venture run`.
 - **Without Docker (development):** install [uv](https://docs.astral.sh/uv/), start SearXNG (`docker compose up searxng` with port 8080 published, or any SearXNG with JSON enabled), set `OLLAMA_HOST` and `SEARXNG_URL` in `.env`, then `uv run venture doctor` and `uv run venture serve`.
 - **Tests (no model needed):** `uv run pytest`. Live checks against the real models: `uv run pytest -m live`.
 - **Demo mode:** `RUN_MODE=demo` sets a time budget per step, at most 5 sources per variant, and caps the conversation (3 intake questions, 1 blocking question per phase, 30-second timeouts).
@@ -49,7 +50,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Models and free resources
 
-- **GPT-OSS-20B** (`gpt-oss:20b`, open-weight, Apache-2.0), served by **Ollama** (bundled in Docker, or on another machine): research, building and judging, with reasoning effort per role.
+- **GPT-OSS-20B** (`gpt-oss:20b`, open-weight, Apache-2.0), served by **Ollama** (bundled in Docker, or on another machine) or by **llama.cpp**'s `llama-server` (`OSS_BACKEND=llamacpp`): research, building and judging, with reasoning effort per role.
 - **Gemma 4 31B** (`gemma-4-31b-it`, open-weight), called through **Google's Gemini API free tier**: parsing, drafting, copy and the Founder Liaison. The router keeps to the free-tier limits (requests and tokens per minute, requests per day; configurable in `.env`) and honours the API's retry delays. Gemma's prompts are sent to Google; the founder is told at intake.
 - **No paid service is required.** Without `GEMINI_API_KEY`, or with `GEMMA_ROLES_ON_OSS=1`, every role runs locally on GPT-OSS-20B and same-model checks are flagged in the log. Whenever both models are available, the model that checks a piece of work is never the one that wrote it.
 - **Search:** self-hosted SearXNG in Docker, free and keyless.

@@ -5,153 +5,558 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Venture Builder</title>
 <style>
-  :root { --bg:#f7f7f5; --panel:#fff; --ink:#1d1d1b; --muted:#6b6b66; --line:#e2e2dc; --accent:#2f5d50;
-          --warn:#8a5a00; --warnbg:#fff4dc; --bad:#9b2c2c; --good:#2f6b3a; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#161615; --panel:#1f1f1d; --ink:#ececea; --muted:#a3a39c;
-          --line:#33332f; --accent:#7fb8a5; --warn:#f0c674; --warnbg:#3a2f12; --bad:#f08080; --good:#8fd19e; } }
-  * { box-sizing: border-box; }
-  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--ink); }
-  header { padding:12px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  header h1 { font-size:17px; margin:0; }
-  .tag { font-size:12px; padding:2px 8px; border-radius:99px; background:var(--warnbg); color:var(--warn); font-weight:600; }
-  main { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; padding:16px; max-width:1400px; margin:auto; }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; min-width:0; }
-  h2 { font-size:15px; margin:0 0 8px; }
-  textarea, input, select { width:100%; font:inherit; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); }
-  button { font:inherit; padding:7px 14px; border-radius:6px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; }
+  :root {
+    --bg:#f6f5f1; --panel:#ffffff; --ink:#1f1f1c; --muted:#686862; --line:#e4e2db; --soft:#f0eee8;
+    --accent:#2f5d50; --accent-ink:#ffffff; --accent-soft:#e3eeea;
+    --warn:#865800; --warnbg:#fff3d6; --bad:#a12c2c; --badbg:#fbe6e4; --good:#2c6b3a; --goodbg:#e2f2e5;
+    --shadow:0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#151514; --panel:#1e1e1c; --ink:#ecebe7; --muted:#a3a29b; --line:#34332f; --soft:#262623;
+    --accent:#86c2ae; --accent-ink:#10201b; --accent-soft:#1f302a;
+    --warn:#f0c674; --warnbg:#382d12; --bad:#f19a92; --badbg:#3a1e1c; --good:#93d6a3; --goodbg:#1b3121;
+    --shadow:none; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  a { color:var(--accent); }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--accent); background:var(--accent);
+           color:var(--accent-ink); cursor:pointer; font-weight:600; }
   button.secondary { background:transparent; color:var(--accent); }
+  button.ghost { background:transparent; border-color:var(--line); color:var(--ink); font-weight:500; }
   button.danger { background:transparent; color:var(--bad); border-color:var(--bad); }
   button:disabled { opacity:.5; cursor:default; }
-  #progress { height:260px; overflow:auto; font:13px/1.45 ui-monospace, monospace; color:var(--muted); white-space:pre-wrap; }
-  #chat { height:420px; overflow:auto; display:flex; flex-direction:column; gap:8px; }
-  .msg { padding:8px 10px; border-radius:8px; max-width:92%; white-space:pre-wrap; }
-  .liaison { background:var(--bg); border:1px solid var(--line); align-self:flex-start; }
-  .founder { background:var(--accent); color:#fff; align-self:flex-end; }
-  .pending { border:2px solid var(--accent); border-radius:10px; padding:12px; margin-top:12px; }
-  .item { border:1px solid var(--line); border-radius:8px; padding:10px; margin:8px 0; }
-  .item pre { max-height:180px; overflow:auto; font-size:12px; background:var(--bg); padding:8px; white-space:pre-wrap; }
-  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
-  .gates span { display:inline-block; margin:2px 6px 2px 0; padding:2px 8px; border-radius:6px; border:1px solid var(--line); font-size:13px; }
-  .go { color:var(--good); } .stop { color:var(--bad); } .repeat, .pivot { color:var(--warn); }
-  a { color:var(--accent); }
-  .muted { color:var(--muted); font-size:13px; }
+  textarea, input, select { width:100%; font:inherit; padding:10px 12px; border:1px solid var(--line); border-radius:8px;
+           background:var(--panel); color:var(--ink); }
+  textarea:focus, input:focus, select:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  label { display:block; font-weight:600; margin:14px 0 4px; }
+  label small { font-weight:400; color:var(--muted); }
+  .muted { color:var(--muted); font-size:14px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+  .hidden { display:none !important; }
+
+  header { background:var(--panel); border-bottom:1px solid var(--line); }
+  .bar { max-width:1240px; margin:auto; padding:12px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .brand { display:flex; align-items:center; gap:10px; margin-right:auto; text-decoration:none; color:inherit; }
+  .logo { width:34px; height:34px; border-radius:9px; background:var(--accent); color:var(--accent-ink); display:grid;
+          place-items:center; font-weight:800; }
+  .brand b { display:block; font-size:17px; }
+  .brand .tagline { display:block; font-size:13px; color:var(--muted); }
+  .notice { background:var(--warnbg); color:var(--warn); font-size:14px; }
+  .notice .bar { padding:8px 16px; }
+  .notice details summary { cursor:pointer; font-weight:600; }
+  .notice ul { margin:6px 0 2px; padding-left:20px; }
+
+  main { max-width:1240px; margin:auto; padding:20px 16px 40px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; box-shadow:var(--shadow); min-width:0; }
+  h1 { font-size:26px; margin:0 0 6px; line-height:1.25; }
+  h2 { font-size:18px; margin:0 0 10px; }
+  h3 { font-size:16px; margin:0 0 6px; }
+
+  /* home */
+  .home { display:grid; grid-template-columns:1.4fr 1fr; gap:20px; }
+  @media (max-width:900px) { .home { grid-template-columns:1fr; } }
+  .twocol { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+  @media (max-width:600px) { .twocol { grid-template-columns:1fr; } }
+  .how { counter-reset:s; list-style:none; padding:0; margin:0; }
+  .how li { counter-increment:s; display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--line); }
+  .how li:last-child { border:0; }
+  .how li::before { content:counter(s); flex:none; width:26px; height:26px; border-radius:50%; background:var(--accent-soft);
+          color:var(--accent); display:grid; place-items:center; font-weight:700; font-size:14px; }
+  .project { display:block; padding:10px 12px; border:1px solid var(--line); border-radius:10px; margin-top:8px;
+          text-decoration:none; color:inherit; }
+  .project:hover { border-color:var(--accent); }
+
+  /* stepper */
+  .stepper { display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; margin:14px 0 20px; list-style:none; padding:0; }
+  @media (max-width:800px) { .stepper { grid-template-columns:repeat(3, 1fr); } }
+  .stepper li { border-top:4px solid var(--line); padding:8px 4px 0; font-size:14px; }
+  .stepper li b { display:block; font-size:14px; }
+  .stepper li span { color:var(--muted); font-size:13px; }
+  .stepper li.done { border-color:var(--good); }
+  .stepper li.current { border-color:var(--accent); }
+  .stepper li.current b { color:var(--accent); }
+  .stepper li.stopped { border-color:var(--bad); }
+
+  .run { display:grid; grid-template-columns:1.35fr 1fr; gap:20px; align-items:start; }
+  @media (max-width:950px) { .run { grid-template-columns:1fr; } }
+  .stack { display:grid; gap:20px; min-width:0; }
+
+  .turn { border:2px solid var(--accent); }
+  .turn .eyebrow, .eyebrow { text-transform:uppercase; letter-spacing:.06em; font-size:12px; font-weight:700; color:var(--accent); }
+  .question { font-size:18px; margin:6px 0 4px; white-space:pre-wrap; }
+  .working { display:flex; gap:14px; align-items:center; }
+  .spinner { width:28px; height:28px; border-radius:50%; border:3px solid var(--accent-soft); border-top-color:var(--accent);
+          animation:spin 1s linear infinite; flex:none; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spinner { animation:none; } }
+
+  .options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+  @media (max-width:600px) { .options { grid-template-columns:1fr; } }
+  .option { text-align:left; background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:10px;
+          padding:12px 14px; font-weight:400; }
+  .option:hover { border-color:var(--accent); }
+  .option b { display:block; font-size:16px; }
+  .option span { font-size:14px; color:var(--muted); }
+  .option.rec { border:2px solid var(--accent); background:var(--accent-soft); }
+  .pill { display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:99px; }
+  .pill.go, .pill.persevere { background:var(--goodbg); color:var(--good); }
+  .pill.stop { background:var(--badbg); color:var(--bad); }
+  .pill.repeat, .pill.pivot { background:var(--warnbg); color:var(--warn); }
+  .pill.rec { background:var(--accent); color:var(--accent-ink); }
+  .reasons { margin:8px 0; padding-left:20px; }
+  .warnbox { background:var(--warnbg); color:var(--warn); border-radius:10px; padding:10px 12px; margin-top:12px; }
+  .versions details { border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin-top:8px; }
+  .versions summary { cursor:pointer; display:flex; gap:10px; align-items:center; flex-wrap:wrap; list-style:none; }
+  .versions summary::-webkit-details-marker { display:none; }
+  .versions summary::before { content:"▸"; color:var(--muted); }
+  .versions details[open] summary::before { content:"▾"; }
+  .versions summary b { flex:1; min-width:160px; }
+  .meter { position:relative; height:8px; width:120px; background:var(--soft); border-radius:99px; overflow:hidden; flex:none; }
+  .meter i { position:absolute; inset:0 auto 0 0; background:var(--accent); border-radius:99px; }
+  .meter.pass i { background:var(--good); }
+  .meter .line { position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--ink); opacity:.45; }
+  .factor { display:grid; grid-template-columns: 1fr auto; gap:2px 12px; padding:8px 0; border-top:1px solid var(--line); font-size:14px; }
+  .factor:first-of-type { border-top:0; }
+  .factor .fbar { grid-column:1 / -1; height:5px; background:var(--soft); border-radius:99px; overflow:hidden; }
+  .factor .fbar i { display:block; height:100%; background:var(--accent); }
+  .factor .why { grid-column:1 / -1; color:var(--muted); }
+  .dirs { display:grid; gap:8px; margin-top:8px; }
+  .dir { border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:14px; }
+  .dir .kind { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); }
+  .dir .why { color:var(--muted); }
+
+  .item { border:1px solid var(--line); border-radius:10px; padding:14px; margin-top:12px; }
+  .item .content { max-height:260px; overflow:auto; background:var(--soft); border-radius:8px; padding:10px 12px; margin-top:8px; font-size:14px; }
+  .item .content dt { font-weight:700; margin-top:6px; }
+  .item .content dd { margin:0 0 4px; white-space:pre-wrap; }
+  .status { font-size:13px; font-weight:600; }
+  .status.approved { color:var(--good); } .status.rejected { color:var(--bad); }
+
+  .feed { max-height:320px; overflow:auto; margin:0; padding:0; list-style:none; }
+  .feed li { padding:6px 0; border-bottom:1px solid var(--line); font-size:14px; display:flex; gap:10px; }
+  .feed li time { color:var(--muted); font-variant-numeric:tabular-nums; flex:none; }
+  .feed li.error { color:var(--bad); }
+  .feed li.doc { color:var(--good); }
+  .docs h3 { margin-top:12px; font-size:14px; color:var(--muted); }
+  .docs a { display:block; padding:4px 0; }
+
+  .chat { display:flex; flex-direction:column; height:min(70vh, 640px); }
+  .chat .log { flex:1; overflow:auto; display:flex; flex-direction:column; gap:10px; padding:4px 2px 10px; }
+  .msg { padding:10px 12px; border-radius:12px; max-width:90%; white-space:pre-wrap; font-size:15px; }
+  .msg small { display:block; font-size:12px; font-weight:700; opacity:.75; margin-bottom:2px; }
+  .msg.liaison { background:var(--soft); align-self:flex-start; border-top-left-radius:4px; }
+  .msg.founder { background:var(--accent); color:var(--accent-ink); align-self:flex-end; border-top-right-radius:4px; }
+  .suggest { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+  .suggest button { font-size:13px; padding:5px 10px; font-weight:500; }
+
+  .toast { position:fixed; left:50%; bottom:20px; transform:translateX(-50%); max-width:min(560px, calc(100% - 32px));
+          background:var(--ink); color:var(--bg); padding:12px 16px; border-radius:10px; box-shadow:0 6px 24px rgba(0,0,0,.2); z-index:20; }
+  dialog { border:1px solid var(--line); border-radius:14px; padding:22px; max-width:min(520px, calc(100% - 32px));
+          background:var(--panel); color:var(--ink); }
+  dialog::backdrop { background:rgba(0,0,0,.35); }
 </style>
 </head>
 <body>
 <header>
-  <h1>Venture Builder</h1>
-  <span id="models" class="muted"></span>
-  <span class="tag">Payments MOCKED</span><span class="tag">Publishing MOCKED</span><span class="tag">Emails MOCKED</span>
-  <span class="tag">Phase 6 events MOCKED</span><span class="tag">Legal review STUBBED</span>
-  <span id="single" class="tag" hidden>Single-model mode</span>
-  <select id="runs" aria-label="Runs" style="width:auto;margin-left:auto"></select>
-</header>
-<main>
-  <div>
-    <section id="start">
-      <h2>New run</h2>
-      <textarea id="brief" rows="5" placeholder="Your idea, your skills, budget, hours per week, target market and values."></textarea>
-      <div class="row"><button id="go">Start</button><span class="muted">What you write goes to the models listed above.</span></div>
-    </section>
-    <section style="margin-top:16px">
-      <h2>Progress <span id="phase" class="muted"></span> <span id="busy" class="muted"></span></h2>
-      <div class="gates" id="gates"></div>
-      <div id="progress" aria-live="polite"></div>
-      <div id="pending"></div>
-      <div id="error" style="color:var(--bad)"></div>
-    </section>
-    <section style="margin-top:16px">
-      <h2>Outputs</h2><div id="outputs" class="muted">None yet.</div>
-    </section>
+  <div class="bar">
+    <a class="brand" href="/"><span class="logo" aria-hidden="true">V</span>
+      <span><b>Venture Builder</b><span class="tagline">Your AI team, from idea to a product you can sell</span></span></a>
+    <span id="models" class="muted"></span>
+    <button class="ghost" id="homeBtn">My projects</button>
+    <button id="newBtn">New project</button>
   </div>
-  <section>
-    <h2>Founder Liaison</h2>
-    <div id="chat"></div>
-    <div class="row">
-      <input id="say" placeholder="Reply, or ask “why …?” about the run" aria-label="Message">
-      <button id="send">Send</button>
+</header>
+<div class="notice" role="note">
+  <div class="bar">
+    <details>
+      <summary>Practice mode: no real money changes hands, and nothing is posted or emailed.</summary>
+      <ul>
+        <li><b>Payments: MOCKED.</b> Sales and refunds are simulated; no card or bank is involved.</li>
+        <li><b>Publishing and emails: MOCKED.</b> Anything you approve is recorded, not posted online or sent.</li>
+        <li><b>Phase 6 activity (visitors, orders, support tickets): MOCKED.</b> You enter it, and it is labelled as such.</li>
+        <li><b>Legal review: STUBBED.</b> Policy drafts are not legal advice.</li>
+        <li>Nothing happens without your OK: every post, page and decision waits for your button press.</li>
+      </ul>
+    </details>
+  </div>
+</div>
+
+<main>
+  <!-- HOME -->
+  <div id="home" class="home hidden">
+    <section class="card">
+      <span class="eyebrow">New project</span>
+      <h1>Tell us about your idea</h1>
+      <p class="muted">Plain words are perfect. Your advisor will ask follow-up questions, so it doesn't need to be complete.</p>
+      <label for="f-idea">Your idea <small>(what you'd like to sell, and to whom)</small></label>
+      <textarea id="f-idea" rows="4" placeholder="e.g. A pack of templates that helps freelance designers get paid on time"></textarea>
+      <div class="twocol">
+        <div><label for="f-skills">Your skills</label><input id="f-skills" placeholder="e.g. design, writing, teaching"></div>
+        <div><label for="f-market">Who it's for</label><input id="f-market" placeholder="e.g. new freelance designers"></div>
+        <div><label for="f-budget">Budget to start</label><input id="f-budget" placeholder="e.g. $150"></div>
+        <div><label for="f-time">Time you can give</label><input id="f-time" placeholder="e.g. 6 hours a week"></div>
+      </div>
+      <label for="f-values">What matters to you <small>(optional)</small></label>
+      <input id="f-values" placeholder="e.g. honest pricing, no pushy marketing">
+      <div class="row">
+        <button id="go">Start my project</button>
+        <button class="ghost" id="example">Fill in an example</button>
+      </div>
+      <p class="muted" id="privacy"></p>
+    </section>
+    <div class="stack">
+      <section class="card">
+        <h2>How it works</h2>
+        <ol class="how">
+          <li><div><b>Explore the idea.</b> <span class="muted">The team researches the market and competitors, with sources.</span></div></li>
+          <li><div><b>Test demand.</b> <span class="muted">A simple landing page and a sign-up goal fixed in advance.</span></div></li>
+          <li><div><b>Build the product.</b> <span class="muted">A guide, template pack or small web tool, checked by tests.</span></div></li>
+          <li><div><b>Set price and policies.</b> <span class="muted">Based on real competitor prices.</span></div></li>
+          <li><div><b>Launch and sell.</b> <span class="muted">Store page and posts you approve one by one (practice mode).</span></div></li>
+          <li><div><b>Learn and improve.</b> <span class="muted">Review results, then keep going or change course.</span></div></li>
+        </ol>
+        <p class="muted">After each stage the team gives an honest recommendation, including "stop" when the evidence is weak. You always make the call.</p>
+      </section>
+      <section class="card">
+        <h2>Your projects</h2>
+        <div id="projects" class="muted">No projects yet.</div>
+      </section>
     </div>
-    <p class="muted">Chat never approves anything: approvals and gate decisions use the buttons.</p>
-  </section>
+  </div>
+
+  <!-- RUN -->
+  <div id="runView" class="hidden">
+    <span class="eyebrow">Project</span>
+    <h1 id="title"></h1>
+    <div class="muted" id="sub"></div>
+    <ol class="stepper" id="stepper" aria-label="Progress through the six stages"></ol>
+    <div class="run">
+      <div class="stack">
+        <section class="card" id="turn" aria-live="polite"></section>
+        <section class="card">
+          <div class="row" style="margin:0 0 6px;justify-content:space-between">
+            <h2 style="margin:0">What the team has been doing</h2>
+            <label class="muted" style="margin:0;font-weight:400"><input type="checkbox" id="tech" style="width:auto"> Technical details</label>
+          </div>
+          <ul class="feed" id="feed"><li class="muted">Nothing yet.</li></ul>
+        </section>
+        <section class="card docs">
+          <h2>Your documents</h2>
+          <div id="outputs" class="muted">Documents appear here as the team writes them.</div>
+        </section>
+      </div>
+      <section class="card chat">
+        <h2>Your advisor</h2>
+        <p class="muted" style="margin-top:-6px">Ask anything about your project. Answers come only from the team's own records.</p>
+        <div class="log" id="chat"></div>
+        <div class="suggest" id="suggest">
+          <button class="ghost" data-q="Why did you recommend this?">Why this recommendation?</button>
+          <button class="ghost" data-q="What should I do next?">What should I do next?</button>
+          <button class="ghost" data-q="Which of your findings are assumptions rather than facts?">What's still a guess?</button>
+        </div>
+        <div class="row" style="margin-top:0">
+          <input id="say" placeholder="Type a message…" aria-label="Message to your advisor" style="flex:1;width:auto">
+          <button id="send">Send</button>
+        </div>
+        <p class="muted">Approvals and decisions are made only with the buttons, never through chat.</p>
+      </section>
+    </div>
+  </div>
 </main>
+
+<dialog id="dlg"><form method="dialog">
+  <h2 id="dlgTitle"></h2><div id="dlgBody"></div>
+  <div id="dlgField" class="hidden"><label for="dlgInput" id="dlgLabel"></label><textarea id="dlgInput" rows="3"></textarea></div>
+  <div class="row" style="justify-content:flex-end"><button value="cancel" class="ghost" formnovalidate>Cancel</button><button value="ok" id="dlgOk">OK</button></div>
+</form></dialog>
+<div id="toast" class="toast hidden" role="status"></div>
+
 <script>
+window.addEventListener("error", e => { document.body.dataset.lastError = e.message; toast("Something on this page went wrong. Reloading usually fixes it."); });
+window.addEventListener("unhandledrejection", e => { document.body.dataset.lastError = String(e.reason?.stack || e.reason); });
+// Plain-English names come from the server (venture_builder/labels.py), shared with the CLI.
+let PHASES = [], OUTCOME = {}, OPTION_HELP = {}, STATUS = {}, STEP_TEXT = {};
+const EXAMPLE = {
+  idea: "A kit that helps freelance designers get paid on time: proposal and invoice templates, polite late-payment reminder emails, and a short guide on when to send what.",
+  skills: "Graphic design, clear client emails, Figma, Google Docs", market: "Freelance designers in their first three years, English-speaking countries",
+  budget: "$150", time: "About 6 hours a week, evenings", values: "Honest pricing, no spammy marketing, nothing I wouldn't use myself" };
+
 let RUN = new URLSearchParams(location.search).get("run");
-let lastPendingKey = "";
+let INFO = {}; let lastTurnKey = ""; let lastFeed = 0; let FEED = []; let ST = null; let chatCount = -1;
 const $ = id => document.getElementById(id);
-const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const human = s => String(s).replace(/[_-]+/g, " ").replace(/^\w/, c => c.toUpperCase());
+
+function toast(msg, ms = 6000) { const t = $("toast"); t.textContent = msg; t.classList.remove("hidden");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.add("hidden"), ms); }
+function friendlyError(status, detail) {
+  if (status === 409 && /busy/i.test(detail)) return "Your team is still working on the last step. Please give it a moment.";
+  if (status === 404) return "We couldn't find that project. It may have been removed.";
+  if (status >= 500) return "Something went wrong on our side. Please try again in a moment.";
+  return detail || "That didn't work. Please try again.";
+}
 async function api(path, body) {
-  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
-  if (!r.ok) { const t = await r.json().catch(() => ({detail:r.statusText})); alert(t.detail || "Error"); throw new Error(t.detail); }
+  let r;
+  try { r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {}); }
+  catch { toast("Can't reach the app. Is it still running?"); throw new Error("network"); }
+  if (!r.ok) { const t = await r.json().catch(() => ({})); const d = typeof t.detail === "string" ? t.detail : "";
+    toast(friendlyError(r.status, d)); throw new Error(d); }
   return r.json();
 }
-async function loadInfo() {
-  const i = await api("/api/info");
-  $("models").textContent = i.single_model ? `Model: ${i.model_oss} (local)` : `Models: ${i.model_oss} (local) + ${i.model_gemma} (Gemini API)`;
-  $("single").hidden = !i.single_model;
+function ask({title, body = "", field = null, ok = "OK", danger = false}) {
+  return new Promise(resolve => {
+    const d = $("dlg"); $("dlgTitle").textContent = title; $("dlgBody").innerHTML = body;
+    $("dlgField").classList.toggle("hidden", !field); $("dlgInput").value = "";
+    $("dlgInput").required = !!(field && field.required);
+    if (field) $("dlgLabel").textContent = field.label;
+    $("dlgOk").textContent = ok; $("dlgOk").className = danger ? "danger" : "";
+    d.onclose = () => resolve(d.returnValue === "ok" ? (field ? $("dlgInput").value.trim() : true) : null);
+    d.returnValue = ""; d.showModal(); if (field) $("dlgInput").focus();
+  });
+}
+
+// ---------- home ----------
+function composeBrief() {
+  const v = id => $(id).value.trim();
+  const parts = [v("f-idea")];
+  [["Skills", "f-skills"], ["Budget", "f-budget"], ["Time", "f-time"], ["Market", "f-market"], ["Values", "f-values"]]
+    .forEach(([k, id]) => { if (v(id)) parts.push(`${k}: ${v(id)}`); });
+  return parts.filter(Boolean).join("\n");
+}
+$("example").onclick = () => Object.entries(EXAMPLE).forEach(([k, v]) => $("f-" + k).value = v);
+$("go").onclick = async () => {
+  if ($("f-idea").value.trim().length < 15) { toast("Please describe your idea in a sentence or two first."); $("f-idea").focus(); return; }
+  $("go").disabled = true; $("go").textContent = "Starting…";
+  try { const r = await api("/api/runs", {brief: composeBrief()}); location.search = "?run=" + r.run_id; }
+  catch { $("go").disabled = false; $("go").textContent = "Start my project"; }
+};
+$("homeBtn").onclick = () => location.href = "/";
+$("newBtn").onclick = () => { if (RUN) location.href = "/#new"; else { $("f-idea").focus(); $("f-idea").scrollIntoView({behavior: "smooth"}); } };
+
+async function loadHome() {
   const runs = await api("/api/runs");
-  $("runs").innerHTML = `<option value="">Runs…</option>` + runs.map(r => `<option value="${r.run_id}" ${r.run_id===RUN?"selected":""}>${r.run_id} · phase ${r.phase} · ${r.status}</option>`).join("");
+  $("projects").innerHTML = runs.length ? runs.map(r => `<a class="project" href="?run=${esc(r.run_id)}">
+      <b>${esc(firstLine(r.brief))}</b><div class="muted">Stage ${r.phase} of 6 · ${esc(PHASES[r.phase-1]?.[0] || "")} · ${esc(STATUS[r.status] || human(r.status))}</div></a>`).join("")
+    : "No projects yet. Start one on the left.";
+  if (location.hash === "#new") $("f-idea").focus();
 }
-$("runs").onchange = e => { if (e.target.value) location.search = "?run=" + e.target.value; };
-$("go").onclick = async () => { const r = await api("/api/runs", {brief: $("brief").value}); location.search = "?run=" + r.run_id; };
-$("send").onclick = async () => { const t = $("say").value.trim(); if (!t || !RUN) return; $("say").value = ""; await api(`/api/runs/${RUN}/chat`, {text:t}); refresh(); };
-$("say").addEventListener("keydown", e => { if (e.key === "Enter") $("send").click(); });
+function firstLine(s) { const l = String(s || "").split("\n")[0].trim(); return l.length > 90 ? l.slice(0, 87) + "…" : (l || "Untitled project"); }
 
-function renderPending(p, st) {
-  if (!p) return st.status !== "running" ? `<div class="pending">Run ${esc(st.status)}.</div>` : "";
-  const k = p.kind;
-  let h = `<div class="pending"><b>Waiting for you</b> (phase ${p.phase}): `;
-  if (k === "question" || k === "notes") h += `${esc(p.question)}<br><span class="muted">Answer in the chat${p.timeout ? ` (demo: ${p.timeout}s timeout keeps it an assumption)` : ""}.</span>`;
-  if (k === "readback") h += `<p>${esc(p.summary)}</p><p class="muted">Open assumptions: ${esc((p.open_assumptions||[]).join("; "))}</p>
-     <div class="row"><button onclick="chatSay('yes')">Confirm</button><span class="muted">or type a correction in the chat</span></div>`;
-  if (k === "approval") h += `review each item. Publishing is MOCKED.` + p.items.map(it => `
-     <div class="item"><b>${esc(it.title)}</b> <span class="muted">${esc(it.id)} · hash ${esc(it.hash)} · ${esc(it.status)}</span>
-     <pre>${esc(JSON.stringify(it.content, null, 1)).slice(0, 4000)}</pre>
-     ${it.status === "pending" ? `<div class="row"><button onclick="approve('${it.id}','${it.hash}')">Approve</button>
-     <button class="danger" onclick="reject('${it.id}')">Reject…</button></div>` : ""}</div>`).join("");
-  if (k === "gate") {
-    h += `Gate ${p.gate} recommends <b class="${p.recommended}">${esc(p.label.toUpperCase())}</b><ul>${p.reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
-      <a href="/api/runs/${RUN}/outputs/${p.memo_file}" target="_blank">Read the gate memo</a>`;
-    if (p.critical_unconfirmed?.length) h += `<p style="color:var(--warn)">GO needs these decision-critical assumptions confirmed first: ${p.critical_unconfirmed.map(f => `<button class="secondary" onclick="confirmA('${f}')">confirm ${esc(f)}</button>`).join(" ")}</p>`;
-    if (p.variants) h += `<label class="muted">Variant</label><select id="variant">${p.variants.map(v => `<option value="${v.id}" ${v.id===p.suggested_variant?"selected":""}>${esc(v.id)}: ${esc(v.name)}</option>`).join("")}</select>`;
-    h += `<div class="row">${["go","repeat","pivot","stop"].map(d => `<button class="${d===p.recommended?"":"secondary"}" onclick="decide('${d}','${p.code}','${p.recommended}')">${d === "go" && p.gate === 6 ? "persevere" : d}</button>`).join("")}</div>`;
+// ---------- run view ----------
+function stepper(st) {
+  const stoppedAt = st.status === "stopped" ? st.phase : null;
+  return PHASES.map(([name], i) => {
+    const n = i + 1, g = st.gates[String(n)];
+    let cls = "", note = "Not started";
+    if (stoppedAt === n) { cls = "stopped"; note = "Stopped here"; }
+    else if (n < st.phase || (st.status === "finished") || (g && n !== st.phase)) { cls = "done"; note = g ? OUTCOME[g.label] || human(g.label) : "Done"; }
+    else if (n === st.phase) { cls = "current"; note = g ? "Waiting for your decision" : "In progress"; }
+    return `<li class="${cls}" ${cls === "current" ? 'aria-current="step"' : ""}><b>${n}. ${name}</b><span>${esc(note)}</span></li>`;
+  }).join("");
+}
+
+function renderValue(v, depth = 0) {
+  if (v === null || v === undefined || v === "") return "<span class='muted'>(empty)</span>";
+  if (v && typeof v === "object" && !Array.isArray(v) && typeof v.html === "string") {
+    const rest = Object.fromEntries(Object.entries(v).filter(([k]) => k !== "html"));
+    return `<p class="muted" style="margin:0 0 6px">Preview of the web page:</p>
+      <iframe sandbox="" title="Web page preview" srcdoc="${esc(v.html)}" style="width:100%;height:420px;border:1px solid var(--line);border-radius:8px;background:#fff"></iframe>`
+      + (Object.keys(rest).length ? renderValue(rest, depth) : "");
   }
-  if (k === "mocked_input") h += `${esc(p.question)}` + p.fields.map(f => `<label class="muted">${esc(f.label)}</label>` +
-      (f.type === "text" ? `<textarea data-f="${f.name}" rows="3"></textarea>` : f.type === "bool" ? `<select data-f="${f.name}"><option value="true">yes (MOCKED)</option><option value="false">no (real, founder-reported)</option></select>` : `<input data-f="${f.name}" type="number" min="0" step="any">`)).join("") +
-      `<div class="row"><button onclick="submitForm()">Submit</button></div>`;
-  return h + `</div>`;
+  if (Array.isArray(v)) return v.length ? `<ul style="margin:2px 0;padding-left:18px">${v.map(x => `<li>${renderValue(x, depth + 1)}</li>`).join("")}</ul>` : "<span class='muted'>(none)</span>";
+  if (typeof v === "object") {
+    if (depth > 2) return esc(JSON.stringify(v));
+    return `<dl style="margin:0">${Object.entries(v).map(([k, x]) => `<dt>${esc(human(k))}</dt><dd>${renderValue(x, depth + 1)}</dd>`).join("")}</dl>`;
+  }
+  return esc(v);
 }
-window.chatSay = async t => { await api(`/api/runs/${RUN}/chat`, {text:t}); refresh(); };
-window.approve = async (id, hash) => { if (confirm(`Approve ${id}? It is executed by a MOCKED adapter.`)) { await api(`/api/runs/${RUN}/items/${id}/approve`, {hash_prefix: hash}); refresh(); } };
-window.reject = async id => { const note = prompt("What should change?"); if (note !== null) { await api(`/api/runs/${RUN}/items/${id}/reject`, {note}); refresh(); } };
-window.decide = async (d, code, rec) => {
-  let note = ""; if (d !== rec) { note = prompt(`You are overriding the recommendation (${rec}). Why?`); if (note === null) return; }
-  if (!confirm(`Record decision "${d}"?`)) return;
-  await api(`/api/runs/${RUN}/gate`, {decision:d, code, variant_id: $("variant")?.value || null, note}); refresh(); };
-window.confirmA = async f => { await api(`/api/runs/${RUN}/confirm`, {field:f}); refresh(); };
-window.submitForm = async () => { const v = {}; document.querySelectorAll("[data-f]").forEach(e => v[e.dataset.f] = e.value); await api(`/api/runs/${RUN}/form`, {values:v}); refresh(); };
 
-async function refresh() {
+function renderTurn(st) {
+  const body = renderTurnBody(st);
+  if (!st.error || st.busy) return body;
+  return `<div class="warnbox" style="margin:0 0 14px"><b>The last step hit a problem.</b>
+    <p style="margin:4px 0">This usually means the AI model was slow or briefly unavailable. Your progress is saved.</p>
+    <div class="row" style="margin-top:6px"><button onclick="resumeRun()">Try again</button></div>
+    <details style="margin-top:8px"><summary>Technical details</summary><code style="white-space:pre-wrap">${esc(st.error)}</code></details></div>` + body;
+}
+function renderTurnBody(st) {
+  const p = st.pending;
+  if (st.busy) {
+    const last = FEED.filter(r => r.kind !== "chat").slice(-1)[0];
+    return `<div class="working"><div class="spinner" aria-hidden="true"></div><div>
+      <span class="eyebrow">Your team is working</span><h2 style="margin:2px 0">${esc(last ? friendlyEvent(last) : "Getting started…")}</h2>
+      <div class="muted">This can take a few minutes. You can leave this page open, or come back later: your progress is saved.</div></div></div>`;
+  }
+  if (!p) {
+    if (st.status === "finished") return `<span class="eyebrow">All done</span><h2>Your project has been through all six stages.</h2>
+      <p class="muted">Your documents are listed below. Ask your advisor if anything is unclear.</p>`;
+    if (st.status === "stopped") return `<span class="eyebrow">Project stopped</span><h2>This project stopped at stage ${st.phase}.</h2>
+      <p class="muted">The gate report explains why. Stopping early on weak evidence saves you time and money, and you can always start a new project with a different idea.</p>
+      <div class="row"><button onclick="location.href='/#new'">Start a new project</button></div>`;
+    return `<span class="eyebrow">Paused</span><h2>This project is paused.</h2>
+      <p class="muted">It was interrupted part-way through a step (for example, the app was restarted). Nothing is lost.</p>
+      <div class="row"><button onclick="resumeRun()">Continue where it left off</button></div>`;
+  }
+  const head = `<span class="eyebrow">Your turn · stage ${p.phase}: ${esc(PHASES[p.phase-1]?.[0] || "")}</span>`;
+  const k = p.kind;
+  if (k === "question") return `${head}<p class="question">${esc(p.question)}</p>
+      ${p.why && !p.blocking && !["contradiction", "phase kickoff", "spec read-back", "investor objections"].includes(p.why) ? `<p class="muted" style="margin:0 0 8px">Why we're asking: ${esc(p.why)}</p>` : ""}
+      <textarea id="answer" rows="3" placeholder="Type your answer…"></textarea>
+      <div class="row"><button onclick="sendAnswer()">Send answer</button>
+      <button class="ghost" onclick="skipQ()">${p.optional ? "Nothing to add, continue" : "Skip for now"}</button>
+      ${p.timeout ? `<span class="muted">Demo mode: if you don't answer within ${p.timeout} seconds, it's kept as a labelled guess.</span>` : ""}</div>`;
+  if (k === "notes") return `${head}<p class="question">${esc(p.question)}</p>
+      <p class="muted">Talk to a few real potential customers, then paste your notes here. The team never invents interviews.</p>
+      <textarea id="answer" rows="6" placeholder="Paste your interview notes…"></textarea>
+      <div class="row"><button onclick="sendAnswer()">Send notes</button>
+      <button class="ghost" onclick="skipQ()">Continue without notes for now</button></div>`;
+  if (k === "readback") return `${head}<h2>Did we get this right?</h2><p style="white-space:pre-wrap">${esc(p.summary)}</p>
+      ${(p.open_assumptions || []).length ? `<div class="warnbox"><b>Things we're guessing for now:</b><ul class="reasons">${p.open_assumptions.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>` : ""}
+      <div class="row"><button onclick="chatSay('yes')">Yes, that's right</button></div>
+      <label for="answer">Or tell us what to correct</label><textarea id="answer" rows="2" placeholder="e.g. My budget is actually $300"></textarea>
+      <div class="row"><button class="secondary" onclick="sendAnswer()">Send correction</button></div>`;
+  if (k === "approval") return `${head}<h2>Please review before anything goes out</h2>
+      <p class="muted">Approve each item, or ask for changes. Practice mode: approved items are recorded, not posted or sent (MOCKED).</p>` +
+      p.items.map(it => `<div class="item"><div class="row" style="margin:0;justify-content:space-between"><b>${esc(it.title)}</b>
+        <span class="status ${esc(it.status)}">${esc({pending:"Waiting for you", approved:"Approved", rejected:"Changes requested"}[it.status] || it.status)}</span></div>
+        <div class="content" ${it.content && typeof it.content.html === "string" ? 'style="max-height:none;background:none;padding:0"' : ""}>${renderValue(it.content)}</div>
+        ${it.status === "pending" ? `<div class="row"><button onclick="approve('${esc(it.id)}','${esc(it.hash)}','${esc(it.title).replace(/'/g, "&#39;")}')">Approve</button>
+        <button class="danger" onclick="reject('${esc(it.id)}')">Ask for changes</button></div>` : ""}</div>`).join("");
+  if (k === "gate") {
+    const opts = ["go", "repeat", "pivot", "stop"];
+    let h = `${head}<h2>The team recommends: <span class="pill ${esc(p.recommended)}">${esc(OUTCOME[p.label] || human(p.label))}</span></h2>
+      <ul class="reasons">${p.reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+      <a href="/api/runs/${RUN}/outputs/${esc(p.memo_file)}?view=1" target="_blank" rel="noopener">Read the full report</a>`;
+    if (p.versions?.length) h += renderVersions(p.versions);
+    if (p.directions?.length) h += renderDirections(p.directions);
+    if (p.critical_unconfirmed?.length) h += `<div class="warnbox"><b>Before you can go ahead, please confirm these:</b>
+      <p style="margin:4px 0">They are guesses the recommendation depends on. If one is wrong, tell your advisor the right value instead.</p>
+      <div class="row">${p.critical_unconfirmed.map(f => `<button class="secondary" onclick="confirmA('${esc(f)}')">Confirm: ${esc(human(f))}</button>`).join("")}</div></div>`;
+    if (p.variants) h += `<label for="variant">Which version of the idea?</label><select id="variant">${p.variants.map(v =>
+      `<option value="${esc(v.id)}" ${v.id === p.suggested_variant ? "selected" : ""}>${esc(v.name)}${v.id === p.suggested_variant ? " (suggested)" : ""}</option>`).join("")}</select>`;
+    h += `<h3 style="margin-top:16px">What would you like to do?</h3><div class="options">` + opts.map(d => {
+      const name = d === "go" && p.gate === 6 ? "Keep going" : OUTCOME[d];
+      const rec = d === p.recommended;
+      return `<button class="option ${rec ? "rec" : ""}" onclick="decide('${d}','${esc(p.code)}','${esc(p.recommended)}')">
+        <b>${esc(name)} ${rec ? '<span class="pill rec">Recommended</span>' : ""}</b><span>${esc(OPTION_HELP[d])}</span></button>`; }).join("") + `</div>`;
+    return h;
+  }
+  if (k === "mocked_input") return `${head}<p class="question">${esc(p.question)}</p>
+      <p class="muted">These numbers are labelled MOCKED unless you say they are real.</p>` +
+      p.fields.map(f => `<label>${esc(f.label)}</label>` + (f.type === "text" ? `<textarea data-f="${esc(f.name)}" rows="3"></textarea>`
+        : f.type === "bool" ? `<select data-f="${esc(f.name)}"><option value="true">Practice numbers (MOCKED)</option><option value="false">Real numbers I collected</option></select>`
+        : `<input data-f="${esc(f.name)}" type="number" min="0" step="any" inputmode="decimal">`)).join("") +
+      `<div class="row"><button onclick="submitForm()">Submit</button></div>`;
+  return `${head}<p>${esc(JSON.stringify(p))}</p>`;
+}
+
+function friendlyEvent(r) {
+  if ($("tech")?.checked) return r.message;
+  return r.friendly ?? null;
+}
+function renderVersions(vs) {
+  return `<h3 style="margin-top:18px">How each version scored</h3>
+    <p class="muted" style="margin:0">Up to 100 points from five things. The line marks the 60 points needed; enough real evidence and a good fit with you are also required. Tap a version to see why.</p>
+    <div class="versions">` + vs.map((v, i) => {
+      const pass = !v.blockers.length;
+      return `<details ${i === 0 ? "open" : ""}><summary><b>${esc(v.name)}</b>
+        <span class="meter ${pass ? "pass" : ""}" aria-hidden="true"><i style="width:${Math.min(100, v.total)}%"></i><span class="line" style="left:60%"></span></span>
+        <span><b style="flex:none">${v.total}</b><span class="muted"> / 100</span></span></summary>
+        <p class="muted" style="margin:6px 0">For ${esc(v.customer)} · ${esc(v.form)}</p>` +
+        v.factors.map(f => `<div class="factor"><span>${esc(f.name)}</span><b>${f.points} of ${f.max}</b>
+          <div class="fbar"><i style="width:${f.max ? Math.round(100 * f.points / f.max) : 0}%"></i></div>
+          <span class="why">${esc(f.why)}</span></div>`).join("") +
+        `<p style="margin:8px 0 0"><b>${pass ? "Passes every check." : "What holds it back:"}</b> ${pass ? "" : esc(v.blockers.join("; ") + ".")}</p>
+      </details>`; }).join("") + `</div>`;
+}
+function renderDirections(ds) {
+  return `<h3 style="margin-top:18px">Other directions worth considering</h3>
+    <p class="muted" style="margin:0">Ideas that grow out of your original idea and skills. Choose "Change direction" to have the team explore them.</p>
+    <div class="dirs">` + ds.map(d => `<div class="dir"><span class="kind">${esc(d.kind)}</span>
+      <div><b>${esc(d.suggestion)}</b></div><div class="why">${esc(d.why)}</div></div>`).join("") + `</div>`;
+}
+
+window.sendAnswer = async () => { const t = $("answer")?.value.trim(); if (!t) { toast("Please type an answer first."); return; } await chatSay(t); };
+window.skipQ = async () => { await api(`/api/runs/${RUN}/skip`, {}); toast("Skipped. The team will make a clearly marked guess for now."); refresh(true); };
+window.chatSay = async t => { await api(`/api/runs/${RUN}/chat`, {text:t}); refresh(true); };
+window.resumeRun = async () => { await api(`/api/runs/${RUN}/continue`, {}); refresh(true); };
+window.approve = async (id, hash, title) => {
+  const ok = await ask({title: "Approve this item?", ok: "Approve",
+    body: `<p><b>${title}</b></p><p class="muted">In practice mode this is recorded only: nothing is posted, published or sent (MOCKED).</p>`});
+  if (ok) { await api(`/api/runs/${RUN}/items/${id}/approve`, {hash_prefix: hash}); toast("Approved."); refresh(true); } };
+window.reject = async id => {
+  const note = await ask({title: "What should change?", field: {label: "Your feedback for the team", required: true}, ok: "Send feedback"});
+  if (note) { await api(`/api/runs/${RUN}/items/${id}/reject`, {note}); toast("Thanks. The team will take your feedback into account."); refresh(true); } };
+window.decide = async (d, code, rec) => {
+  const name = OUTCOME[d];
+  let note = "";
+  if (d !== rec) {
+    note = await ask({title: `Choose "${name}" instead of "${OUTCOME[rec]}"?`, ok: "Yes, record my decision", danger: d === "stop",
+      body: `<p class="muted">That's your call to make. It's recorded next to the team's recommendation.</p>`,
+      field: {label: "Briefly, why? (required)", required: true}});
+    if (!note) return;
+  } else if (!(await ask({title: `Record your decision: "${name}"?`, ok: "Yes, record it", body: `<p class="muted">${esc(OPTION_HELP[d])}</p>`}))) return;
+  await api(`/api/runs/${RUN}/gate`, {decision:d, code, variant_id: $("variant")?.value || null, note}); refresh(true); };
+window.confirmA = async f => { await api(`/api/runs/${RUN}/confirm`, {field:f}); toast(`Confirmed: ${human(f)}.`); refresh(true); };
+window.submitForm = async () => { const v = {}; document.querySelectorAll("[data-f]").forEach(e => v[e.dataset.f] = e.value); await api(`/api/runs/${RUN}/form`, {values:v}); refresh(true); };
+
+$("send").onclick = async () => { const t = $("say").value.trim(); if (!t || !RUN) return; $("say").value = ""; await chatSay(t); };
+$("say").addEventListener("keydown", e => { if (e.key === "Enter") $("send").click(); });
+$("suggest").onclick = e => { const q = e.target.dataset?.q; if (q) chatSay(q); };
+$("tech").onchange = () => renderFeed();
+
+function renderFeed() {
+  const rows = FEED.filter(r => r.kind !== "chat").map(r => ({r, text: friendlyEvent(r)})).filter(x => x.text);
+  const dedup = rows.filter((x, i) => i === 0 || x.text !== rows[i - 1].text);
+  $("feed").innerHTML = dedup.length ? dedup.slice(-200).map(({r, text}) =>
+    `<li class="${r.kind === "error" ? "error" : r.kind === "output" ? "doc" : ""}"><time>${esc(r.timestamp.slice(11, 16))}</time><span>${esc(text)}</span></li>`).join("")
+    : `<li class="muted">Nothing yet.</li>`;
+  $("feed").scrollTop = $("feed").scrollHeight;
+}
+
+async function refresh(force = false) {
   if (!RUN) return;
-  const st = await api(`/api/runs/${RUN}`);
-  $("start").hidden = true;
-  $("phase").textContent = `· phase ${st.phase} · ${st.status} · ${st.mode}`;
-  $("busy").textContent = st.busy ? "· working…" : "";
-  $("error").textContent = st.error || "";
-  $("gates").innerHTML = Object.entries(st.gates).map(([n, g]) => `<span class="${g.outcome}">Gate ${n}: ${esc(g.label)}</span>`).join("");
-  const key = JSON.stringify([st.pending, st.busy]);
-  if (key !== lastPendingKey) { $("pending").innerHTML = st.busy ? "" : renderPending(st.pending, st); lastPendingKey = key; }
-  $("outputs").innerHTML = st.outputs.length ? st.outputs.map(o => `<a target="_blank" href="/api/runs/${RUN}/outputs/${o}">${esc(o)}</a>`).join("<br>") : "None yet.";
-  $("chat").innerHTML = st.conversation.map(t => `<div class="msg ${t.speaker === "founder" ? "founder" : "liaison"}">${esc(t.text)}</div>`).join("");
-  $("chat").scrollTop = $("chat").scrollHeight;
+  let st; try { st = await api(`/api/runs/${RUN}`); } catch { return; }
+  ST = st;
+  $("sub").textContent = `${STATUS[st.status] || human(st.status)} · stage ${st.phase} of 6${st.mode === "demo" ? " · quick demo mode" : ""}`;
+  $("stepper").innerHTML = stepper(st);
+  const key = JSON.stringify([st.pending, st.busy, st.status, st.error, st.busy ? FEED.length : 0]);
+  if (force || key !== lastTurnKey) { if (!document.activeElement || !$("turn").contains(document.activeElement) || force) { $("turn").innerHTML = renderTurn(st); lastTurnKey = key; } }
+  const groups = {};
+  st.documents.forEach(d => { (groups[d.phase] = groups[d.phase] || []).push(d); });
+  $("outputs").innerHTML = st.documents.length ? Object.keys(groups).sort().map(ph => `<h3>${+ph ? `Stage ${ph}: ${esc(PHASES[ph-1][0])}` : "Other"}</h3>` +
+      groups[ph].map(d => `<a target="_blank" rel="noopener" href="/api/runs/${RUN}/outputs/${esc(d.file)}?view=1">${esc(d.label.replace(/^Stage \d: /, ""))}</a>`).join("")).join("")
+    : "Documents appear here as the team writes them.";
+  if (st.conversation.length !== chatCount) {
+    chatCount = st.conversation.length;
+    $("chat").innerHTML = st.conversation.length ? st.conversation.map(t => `<div class="msg ${t.speaker === "founder" ? "founder" : "liaison"}"><small>${t.speaker === "founder" ? "You" : "Advisor"}</small>${esc(t.text)}</div>`).join("")
+      : `<p class="muted">Your advisor will say hello once the team has read your idea.</p>`;
+    $("chat").scrollTop = $("chat").scrollHeight;
+  }
+}
+async function loadTitle() {
+  const runs = await api("/api/runs").catch(() => []);
+  const r = runs.find(x => x.run_id === RUN);
+  $("title").textContent = r ? firstLine(r.brief) : "Your project";
+  document.title = (r ? firstLine(r.brief).slice(0, 40) + " · " : "") + "Venture Builder";
 }
 function stream() {
-  if (!RUN) return;
   const es = new EventSource(`/api/runs/${RUN}/events`);
-  es.onmessage = e => { const r = JSON.parse(e.data); if (r.kind === "chat") return;
-    $("progress").textContent += `${r.timestamp.slice(11,19)}  ${r.message}\n`; $("progress").scrollTop = $("progress").scrollHeight; };
+  es.onmessage = e => { FEED.push(JSON.parse(e.data)); clearTimeout(stream._t); stream._t = setTimeout(renderFeed, 150); };
 }
-loadInfo(); stream(); refresh(); setInterval(refresh, 2500);
+
+(async function init() {
+  try { INFO = await api("/api/info"); } catch { return; }
+  const T = INFO.text;
+  PHASES = Object.keys(T.phases).sort().map(k => [T.phases[k]]);
+  OUTCOME = T.outcomes; OPTION_HELP = T.option_help; STATUS = T.status; STEP_TEXT = T.steps;
+  $("models").textContent = INFO.single_model ? `AI model: ${INFO.model_oss} on this computer` : `AI models: ${INFO.model_oss} (this computer) + ${INFO.model_gemma} (Google)`;
+  $("privacy").textContent = INFO.single_model ? "Your idea stays on this computer: the AI model runs locally."
+    : `Your idea is processed by ${INFO.model_oss} on this computer and by ${INFO.model_gemma} through Google's free API.`;
+  if (!RUN) { $("home").classList.remove("hidden"); loadHome(); return; }
+  $("runView").classList.remove("hidden");
+  await loadTitle(); stream(); refresh(true); setInterval(refresh, 2500);
+})();
 </script>
 </body>
 </html>

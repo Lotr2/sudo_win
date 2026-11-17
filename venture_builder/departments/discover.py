@@ -11,10 +11,11 @@ import contextvars
 import json
 from concurrent.futures import ThreadPoolExecutor
 
-from .. import gates, templates
+from .. import explain, gates, templates
 from ..agents import (brief_parser, competitor_analyst, founder_liaison, gate_reporter, market_researcher,
                       mom_test_writer, opportunity_scout)
 from ..clarifier import blocking_questions, contradiction_question, contradicts
+from .. import labels
 from ..context import END, Ask, Context, Next
 from ..schemas import DraftProfile
 from ..scoring import DEFAULTS, score_all
@@ -72,9 +73,9 @@ def p1_parse(ctx: Context, answer) -> Next:
         if v not in (None, "", []):  # stated by the founder in the brief: a founder_reported fact
             ctx.assumptions.confirm(f, v, answer="stated in the brief")
     if not ctx.settings.single_model:
-        ctx.say("Before we start: the drafting and conversation roles run on Gemma 4 31B through Google's Gemini "
-                "API, so what you type here is sent to Google. Never share passwords or card numbers. "
-                "Set GEMMA_ROLES_ON_OSS=1 to keep everything on the local model.", kind="notice")
+        ctx.say("Hi! Before we start, one privacy note: part of your team runs on Google's free AI service, so what "
+                "you type here is sent to Google. Please never share passwords or card numbers. (To keep everything "
+                "on this computer instead, the person who set up the app can switch Google off.)", kind="notice")
     return Next("p1_intake_ask")
 
 
@@ -88,7 +89,7 @@ def p1_intake_ask(ctx: Context, answer) -> Next | Ask:
     field = todo[0]
     q = founder_liaison.intake_question(ctx, d.profile.model_dump(), field, asked)
     d.asked.append(f"intake:{field}")
-    ctx.say(f"{q.question} ({q.why_it_matters})", kind="question")
+    ctx.say(f"{q.question}\n\nWhy I'm asking: {q.why_it_matters}", kind="question")
     return Ask("question", {"field": field, "question": q.question, "why": q.why_it_matters},
                resume_to="p1_intake_answer", timeout=ctx.question_timeout())
 
@@ -97,7 +98,8 @@ def p1_intake_answer(ctx: Context, answer) -> Next | Ask:
     d = ctx.dossier
     field = d.asked[-1].removeprefix("intake:")
     if answer is None:
-        ctx.say(f"No answer; I'll keep {field} as a labelled ASSUMPTION for now.")
+        ctx.say(f"No problem. I'll make a sensible guess about your {labels.field_name(field)} for now and mark it "
+                "as a guess (ASSUMPTION). You can correct it any time.")
         return Next("p1_intake_ask")
     text = answer if isinstance(answer, str) else answer.get("text", "")
     ups = founder_liaison.extract_updates(ctx, f"intake question about {field}", text, d.profile.model_dump())
@@ -133,10 +135,12 @@ def p1_readback(ctx: Context, answer) -> Ask:
             setattr(p, f, default)
         else:
             ctx.assumptions.add(f, "not given", status="assumed", source="system")
-    open_items = [f"{a.field} = {a.value}" for a in ctx.assumptions.open()]
+    open_items = [f"Your {labels.field_name(a.field)}: {labels.field_value(a.field, a.value)}" for a in ctx.assumptions.open()]
     rb = founder_liaison.read_back(ctx, p.model_dump(), open_items)
-    ctx.say(f"Here is what I understood: {rb.summary} Open assumptions: {', '.join(rb.open_assumptions or open_items) or 'none'}. Is that right?",
-            kind="readback")
+    guesses = rb.open_assumptions or open_items
+    ctx.say(f"Here's what I understood:\n\n{rb.summary}"
+            + ("\n\nThings I'm guessing for now:\n" + "\n".join(f"- {g}" for g in guesses) if guesses else "")
+            + "\n\nDid I get that right? Reply yes, or tell me what to correct.", kind="readback")
     return Ask("readback", {"summary": rb.summary, "open_assumptions": rb.open_assumptions or open_items},
                resume_to="p1_readback_answer", timeout=ctx.question_timeout())
 
@@ -144,7 +148,7 @@ def p1_readback(ctx: Context, answer) -> Ask:
 def p1_readback_answer(ctx: Context, answer) -> Next:
     d = ctx.dossier
     if answer is None:
-        ctx.say("No reply to the read-back; unconfirmed fields stay labelled ASSUMPTION.")
+        ctx.say("No reply, so I'll go with my summary. Anything you didn't confirm stays marked as a guess (ASSUMPTION).")
         return Next("p1_policy")
     if isinstance(answer, dict) and answer.get("confirm"):
         for a in list(ctx.assumptions.items.values()):
@@ -259,8 +263,10 @@ def p1_score(ctx: Context, answer) -> Next | Ask:
     if qs and len(asked) < limit:
         q = qs[0]
         d.asked.append(f"clarify:{q.field}")
-        text = (f"Your {q.field.replace('_', ' ')} changes which idea comes first or what Gate 1 recommends. "
-                f"I'm assuming {q.current}; is that right, or closer to {q.alternatives[0]}?")
+        fname = labels.field_name(q.field)
+        text = (f"Quick check: your {fname} changes which version of the idea looks best. I'm assuming "
+                f"{labels.field_value(q.field, q.current)}. Is that right, or is it closer to "
+                f"{labels.field_value(q.field, q.alternatives[0])}?")
         ctx.say(text, kind="question")
         return Ask("question", {"field": q.field, "question": text, "why": q.why, "blocking": True},
                    resume_to="p1_clarify_answer", timeout=ctx.question_timeout())
@@ -271,7 +277,8 @@ def p1_clarify_answer(ctx: Context, answer) -> Next:
     d = ctx.dossier
     field = d.asked[-1].removeprefix("clarify:")
     if answer is None:
-        ctx.say(f"No answer; {field} stays an unconfirmed, decision-critical ASSUMPTION.")
+        ctx.say(f"No answer, so I'll keep my guess about your {labels.field_name(field)}. Because the recommendation "
+                "depends on it, you'll be asked to confirm it before going ahead.")
         return Next("p1_gate")
     text = answer if isinstance(answer, str) else answer.get("text", "")
     ups = founder_liaison.extract_updates(ctx, f"question about {field}", text, d.profile.model_dump())
@@ -291,14 +298,23 @@ def p1_clarify_answer(ctx: Context, answer) -> Next:
 def p1_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     res = gates.gate1(d.scores, excluded=d.policy_block, search_failed=d.search_failed,
-                      repeats=d.count("gate1_repeat"), t=ctx.t)
+                      repeats=d.count("gate1_repeat"), t=ctx.t, names={v.id: v.name for v in d.variants})
+    explained = explain.explain_all(d.variants, d.scores, ctx.settings.scoring()["weights"], ctx.t["gate1"],
+                                    d.profile.model_dump())
+    founder = {"original_idea": d.brief, "profile": d.profile.model_dump()}
     memo = gate_reporter.run(ctx, 1, res.model_dump(), {
-        "variants": [v.model_dump() for v in d.variants], "scores": [s.model_dump() for s in d.scores]}).model_dump()
+        "founder": founder, "variants": [v.model_dump() for v in d.variants],
+        "score_breakdown": explained}).model_dump()
+    d.gate1_explained = {"versions": explained, "directions": memo.get("other_directions", [])}
     _write_phase1_outputs(ctx)
-    md = gate_markdown(ctx, res, memo, "Is there a real problem worth solving for this founder?", "gate1")
+    md = gate_markdown(ctx, res, memo, "Is there a real problem worth solving for this founder?", "gate1",
+                       breakdown=explain.markdown(explained))
     options = [{"id": v.id, "name": v.name} for v in d.variants]
-    return present_gate(ctx, res, md, "p1_gate_decided", {"variants": options,
-                                                          "suggested_variant": res.details.get("passing_variant") or res.details.get("top_variant")})
+    best = explained[0] if explained else None
+    return present_gate(ctx, res, md, "p1_gate_decided", {
+        "variants": options, "suggested_variant": res.details.get("passing_variant") or res.details.get("top_variant"),
+        "versions": explained, "directions": memo.get("other_directions", [])},
+        explain={"best_version": best, "other_directions": memo.get("other_directions", [])})
 
 
 def p1_gate_decided(ctx: Context, answer) -> Next | str:
@@ -312,6 +328,12 @@ def p1_gate_decided(ctx: Context, answer) -> Next | str:
         return Next("p1_research")
     if choice == "pivot" and not rec["variant_id"]:
         d.lessons.append("Gate 1 pivot: " + "; ".join(d.gates["1"].reasons))
+        dirs = (d.gate1_explained or {}).get("directions") or []
+        if dirs:
+            d.lessons.append("Directions to explore instead: " + "; ".join(
+                f"{o['kind']}: {o['suggestion']}" for o in dirs))
+        if rec.get("note"):
+            d.lessons.append(f"The founder's own note: {rec['note']}")
         d.asked = [a for a in d.asked if not a.startswith("clarify:")]
         return Next("p1_scout")
     d.chosen_variant = rec["variant_id"] or d.gates["1"].details.get("passing_variant") or d.gates["1"].details.get("top_variant")
@@ -332,9 +354,12 @@ def p1_mom_test(ctx: Context, answer) -> Next | Ask:
         d.interview_notes = None
         ctx.note("Demo mode: interview-notes pause skipped; customer-side claims stay ASSUMPTION.")
         return Next("p2_start")
-    ctx.say("Run a few interviews with this script, then paste your notes here. You can also continue without "
-            "notes; customer-side claims will then stay labelled ASSUMPTION.", kind="question")
-    return Ask("notes", {"question": "Paste interview notes, or continue without them."}, resume_to="p1_notes_answer")
+    ctx.say("Next, the most valuable thing you can do: talk to 3 to 5 people who have this problem. I've written a "
+            "short interview guide for you (see \"Interview script\" in your documents). Paste your notes here when "
+            "you're done. If you'd rather keep going now, just continue: anything about customers will stay marked as "
+            "a guess (ASSUMPTION) until you've talked to real people.", kind="question")
+    return Ask("notes", {"question": "Paste your interview notes, or continue without them for now.", "optional": True},
+               resume_to="p1_notes_answer")
 
 
 def p1_notes_answer(ctx: Context, answer) -> Next:
@@ -349,31 +374,69 @@ def p1_notes_answer(ctx: Context, answer) -> Next:
     return Next("p2_start")
 
 
+KIND_WORDS = {"pain": "People with the problem", "demand": "Signs people want a solution",
+              "channel": "Where these customers gather", "alternative": "Existing options",
+              "complaint": "Complaints about existing options", "price": "What existing options cost"}
+
+
+def _source_links(urls: list[str]) -> str:
+    from urllib.parse import urlparse
+    links = []
+    for u in urls[:3]:
+        host = urlparse(u).netloc.removeprefix("www.") or u
+        links.append(f"[{host}]({u})")
+    return ", ".join(links)
+
+
 def _write_phase1_outputs(ctx: Context) -> None:
     d = ctx.dossier
-    md = ["# Phase 1 · Step 1: Opportunities", ""]
+    explained = {e["id"]: e for e in explain.explain_all(d.variants, d.scores, ctx.settings.scoring()["weights"],
+                                                           ctx.t["gate1"], d.profile.model_dump())} if d.scores else {}
+    md = ["# Stage 1: Versions of your idea and what the research found", "",
+          f"*Your idea:* {d.profile.idea or d.brief.splitlines()[0]}", "",
+          "The team turned your idea into a few small, sellable versions, then searched the web for real people "
+          "describing the problem, existing competitors, and places where these customers gather. Anything without "
+          "a source is marked as a guess (ASSUMPTION).", ""]
     if d.policy_block:
-        md += [f"The brief was blocked by the Policy Guard: {d.policy_block}", ""]
-    for v in d.variants:
-        md += [f"## {v.id}: {v.name}", "", f"- **Customer:** {v.target_customer}", f"- **Problem:** {v.problem}",
-               f"- **Product form:** {v.product_form}", f"- **Build estimate:** {v.est_build_hours:g} h; "
-               f"budget needed ${v.budget_needed_usd:g}", "", "### Findings", ""]
-        found = d.findings.get(v.id, [])
-        if not found:
-            md.append("- No sourced findings (ASSUMPTION only)." if not d.search_failed else
-                      "- Search was unavailable; every claim is an ASSUMPTION.")
-        for f in found:
-            src = ", ".join(f["sources"]) if f["label"] == "SOURCED" else "ASSUMPTION"
-            md.append(f"- [{f['kind']}] {f['claim']} ({src})")
-        md.append("")
+        md += [f"**This idea is outside what the team can help with:** {d.policy_block}", ""]
     if d.search_failed:
-        md += ["Search tools failed during this run; claims without a source are labelled ASSUMPTION.", ""]
+        md += ["**Web search wasn't working during this run,** so nothing below could be checked. That says nothing "
+               "bad about your idea.", ""]
+    for n, v in enumerate(d.variants, 1):
+        e = explained.get(v.id)
+        md += [f"## {n}. {v.name}" + (f" ({e['total']} out of 100)" if e else ""), "",
+               f"- **Who it's for:** {v.target_customer}",
+               f"- **Their problem:** {v.problem}",
+               f"- **What you'd make:** {explain.FORMS.get(v.product_form, v.product_form)}",
+               f"- **Effort:** about {v.est_build_hours:g} hours of work and ${v.budget_needed_usd:,.0f}", ""]
+        found = d.findings.get(v.id, [])
+        sourced = [f for f in found if f["label"] == "SOURCED"]
+        md += ["### What the research found", ""]
+        if not sourced:
+            md.append("- Nothing with a source yet. This is still a guess (ASSUMPTION).")
+        for kind in ("pain", "demand", "channel", "alternative", "complaint", "price"):
+            items = [f for f in sourced if f["kind"] == kind]
+            if items:
+                md.append(f"**{KIND_WORDS[kind]}:**")
+                md += [f"- {f['claim']} ({_source_links(f['sources'])})" for f in items]
+        guesses = [f for f in found if f["label"] != "SOURCED"]
+        if guesses:
+            md += ["", "**Still guesses (ASSUMPTION):**"] + [f"- {f['claim']}" for f in guesses]
+        if e:
+            md += ["", "### Score", ""]
+            md += [f"- **{f['name']}: {f['points']} of {f['max']} points.** {f['why']}" for f in e["factors"]]
+            md += ["", f"**Verdict:** {e['verdict']}"]
+        md.append("")
     ctx.store.write_output("phase1_step1_opportunities.md", "\n".join(md))
     weights = ctx.settings.scoring()["weights"]
     ctx.store.write_output("phase1_step2_scores.json", json.dumps(
-        {"formula": "score = " + " + ".join(f"{w}*{k}" for k, w in weights.items()),
-         "note": "weights are design choices, not facts (config/scoring.toml)",
-         "scores": [s.model_dump() for s in d.scores]}, indent=1))
+        {"how_scores_work": "Each version gets up to 100 points: " + ", ".join(
+            f"{explain.FACTORS[k].lower()} ({round(w * 100)} points)" for k, w in weights.items())
+            + ". These weights are design choices, not facts (config/scoring.toml).",
+         "versions": [{"name": e["name"], "total_out_of_100": e["total"], "verdict": e["verdict"],
+                       "points": {f["name"]: f"{f['points']} of {f['max']}: {f['why']}" for f in e["factors"]}}
+                      for e in sorted(explained.values(), key=lambda x: -x["total"])],
+         "raw_scores": [s.model_dump() for s in d.scores]}, indent=1, ensure_ascii=False))
 
 
 NODES = {

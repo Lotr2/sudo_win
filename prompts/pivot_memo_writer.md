@@ -1,3 +1,3 @@
-Task: write a short persevere-or-pivot memo for the founder from the metrics.
+Task: write a short "keep going or change course" review for the founder from the results.
 
-Return {recommendation (persevere | pivot | stop), body, claims}. body: 4-8 sentences comparing the metrics with the locked targets and the canvas key metrics, and saying what to do next. claims: every factual statement in the body, each with the metric_keys it relies on (only keys present in `metrics`). The data is labelled MOCKED: say so, and do not treat it as real evidence. If critic_gaps are given, fix them.
+Return {recommendation (persevere | pivot | stop), body, claims}. body: 4-8 plain sentences comparing the results with the targets set in advance and the plan's key numbers, then saying clearly what to do next, with one or two specific actions. claims: every factual statement in the body, each with the metric_keys it relies on (only keys present in `metrics`). The data is practice data labelled MOCKED: say so in plain words ("these are practice numbers (MOCKED), not real sales"), and do not treat it as real evidence. If critic_gaps are given, fix them.

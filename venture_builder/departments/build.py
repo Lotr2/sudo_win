@@ -83,8 +83,8 @@ def p3_build(ctx: Context, answer) -> Next:
         if ctx.over_budget(ctx.t["demo"].get("node_budget_seconds", 240)):
             ctx.note("Demo time budget for this step reached; stopping the build loop.")
             break
-        ctx.say(f"Build loop {loop}: {report['total'] - report['passed']} test(s) still fail; the Builder is "
-                "fixing them.", kind="progress")
+        ctx.say(f"Build round {loop}: {report['total'] - report['passed']} quality check(s) still fail, so the team "
+                "is fixing them.", kind="progress")
     d.build = {"dir": str(out), "form": form, "loops": loop, "report": {k: v for k, v in report.items() if k != "output"},
                "content": previous}
     _write_test_report(ctx, report, loop)

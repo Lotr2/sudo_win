@@ -99,7 +99,12 @@ class FakeModels:
 
     def gate_reporter(self, p):
         return {"summary": f"Gate {p['gate']}: {p['result']['outcome']}.", "explanation": "Explained from the numbers.",
-                "what_would_change_it": ["More sourced evidence"]}
+                "what_would_change_it": ["More sourced evidence"],
+                "other_directions": [
+                    {"kind": "customer group", "suggestion": "Sell the same kit to freelance writers.",
+                     "why": "They send invoices too and use the same skills."},
+                    {"kind": "product idea", "suggestion": "A one-page late-payment checklist.",
+                     "why": "Smaller to build and tests the same need."}]}
 
     def canvas_builder(self, p):
         eid = [e["id"] for e in p.get("evidence", [])][:1]

@@ -8,6 +8,8 @@ need a `FounderConfirmation` that only the CLI (interactive TTY) and the UI (but
 
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 import re
 import shutil
 from pathlib import Path
@@ -30,6 +32,9 @@ CONFIRM = re.compile(r"^\s*(yes|yep|yeah|correct|confirm(ed)?|that'?s (right|cor
 CHAT_APPROVAL = re.compile(r"\b(i (approve|agree|confirm)|approved?|go ahead|post (it|this)|publish (it|this)|"
                            r"sign (it|this)|send (it|this)|refund (it|them|the customer))\b", re.I)
 ASK = re.compile(r"^\s*(\?|/ask\b|why\b|where does|where did|how did you|what did you)", re.I)
+# When the founder isn't answering a question of ours, any question in the chat goes to the advisor.
+QUESTION_LIKE = re.compile(r"(\?\s*$)|^\s*(what|which|how|why|where|when|who|can|could|should|would|is|are|do|does|"
+                           r"explain|tell me)\b", re.I)
 
 
 class BlockedDecision(PermissionError):
@@ -42,7 +47,8 @@ class Runtime:
         self.run_id = run_id
         store = RunStore(settings.runs_dir, run_id)
         router = router or Router.from_settings(settings)
-        search = search or SearxSearch(settings.searxng_url, settings.search_timeout)
+        search = search or SearxSearch(settings.searxng_url, settings.search_timeout,
+                                         settings.searxng_engines, settings.searxng_fallback_engines)
         fetch = fetch or PageFetcher(settings.fetch_timeout)
         self.ctx = Context(settings, router, store, search, fetch)
         CONTEXTS[run_id] = self.ctx
@@ -74,6 +80,16 @@ class Runtime:
             self.graph.invoke(Command(resume=NO_ANSWER if resume is None else resume), self.config)
         return self.pending()
 
+    def interrupted(self) -> bool:
+        """Started, not finished, and not waiting for the founder: a step was cut off (e.g. the app restarted)."""
+        return self.started() and not self.finished() and self.pending() is None
+
+    def continue_interrupted(self) -> dict | None:
+        """Re-run the step that was cut off, from the last checkpoint. Does nothing if the run is not interrupted."""
+        if self.interrupted():
+            self.graph.invoke(None, self.config)
+        return self.pending()
+
     def pending(self) -> dict | None:
         snap = self.graph.get_state(self.config)
         for task in snap.tasks:
@@ -91,19 +107,23 @@ class Runtime:
         p = self.pending()
         with self.ctx.bound():
             self.ctx.store.converse("founder", text, phase=self.dossier.phase, kind="chat")
-            if ASK.search(text):
+            answering = bool(p and p["kind"] in QUESTION_KINDS)
+            if ASK.search(text) or (not answering and QUESTION_LIKE.search(text)):
                 ans = self.ask(text.lstrip("?").removeprefix("/ask").strip())
                 return {"liaison": ans}
             if CHAT_APPROVAL.search(text) and (not p or p["kind"] in {"approval", "gate"}):
                 log_action("founder_liaison", "chat_approval_attempt_ignored", text=text[:120])
-                msg = ("I can't take approvals in the chat. Use the approve or reject button (or `venture approve` "
-                       "/ `venture gate` in the terminal) so the decision is recorded.")
+                msg = ("I can't take approvals in the chat. That's on purpose, so nothing goes out by accident. "
+                       "Please use the buttons on screen (or `venture approve` / `venture gate` in the terminal), "
+                       "so your decision is recorded properly.")
                 self.ctx.say(msg)
                 return {"liaison": msg}
             hit = self.ctx.guard.check(text, context="chat", subject="founder_message")
             if not hit.allowed:
-                msg = (f"I can't help with that ({hit.category.replace('_', ' ')}). The system never creates fake "
-                       "reviews or urgency, promises income, poses as anyone, moves money or builds excluded products.")
+                msg = (f"Sorry, I can't help with that ({hit.category.replace('_', ' ')}). To keep things honest, the "
+                       "team never creates fake reviews or urgency, promises income, pretends to be someone else, moves "
+                       "money, or builds products in excluded areas (physical goods, finance or crypto, health or legal "
+                       "advice). Happy to help with anything else.")
                 self.ctx.say(msg)
                 return {"liaison": msg}
         if p and p["kind"] in QUESTION_KINDS:
@@ -115,15 +135,28 @@ class Runtime:
                 value = text
             self.advance(value)
             return {"resumed": True}
-        msg = ("Thanks, noted. Right now I'm waiting for "
-               + ({"approval": "your approve or reject on the listed items",
-                   "gate": "your gate decision (button or `venture gate`)",
-                   "mocked_input": "the values in the form"}.get(p["kind"], "the next step") if p else "nothing") + ".")
+        waiting = ({"approval": "for you to approve each item, or ask for changes, using the buttons",
+                    "gate": "for your decision on this stage: pick one of the options on screen",
+                    "mocked_input": "for the numbers in the form on screen"}.get(p["kind"], "for the next step")
+                   if p else "for nothing right now: the team is working")
+        msg = (f"Thanks, I've noted that and the team will take it into account. Right now I'm waiting {waiting}. "
+               "If you have a question, just ask: I'll answer from what the team has found.")
         with self.ctx.bound():
             self.dossier.founder_inputs.append({"phase": self.dossier.phase, "type": "founder_reported", "text": text})
             self.ctx.save()
             self.ctx.say(msg)
         return {"liaison": msg}
+
+    def skip(self) -> dict | None:
+        """The founder skips a question or check-in. Same as no answer: anything it was about stays a labelled
+        guess (ASSUMPTION). Never used for approvals or stage decisions."""
+        p = self.pending()
+        if not p or p["kind"] not in QUESTION_KINDS:
+            raise ValueError("there is no question to skip right now")
+        with self.ctx.bound():
+            self.ctx.store.converse("founder", "(skipped)", phase=self.dossier.phase, kind="chat")
+            log_action("founder", "skip_question", kind=p["kind"], field=p.get("field"))
+        return self.advance(None)
 
     def timeout(self) -> dict | None:
         """Demo mode: an unanswered question times out; the gap stays a labelled assumption."""
@@ -209,7 +242,18 @@ class Runtime:
         record = self.record_index()
         with self.ctx.bound():
             ans = founder_liaison.answer_from_record(self.ctx, question, record)
-            text = ans.answer + (f" [{', '.join(ans.cited_ids)}]" if ans.cited_ids else "")
+            text = ans.answer
+            sources = []
+            for i in ans.cited_ids:
+                item = self.ctx.ledger.items.get(i)
+                url = getattr(item, "url", None) if item else None
+                host = urlparse(url).netloc.removeprefix("www.") if url else ""
+                if host and host not in sources:
+                    sources.append(host)
+                # Never show internal ids: name the source instead (the prompt asks for this; the code makes sure).
+                text = re.sub(rf"\[?\b{re.escape(i)}\b\]?", host or "the project records", text)
+            if sources:
+                text += "\n\nSources: " + ", ".join(sources[:5])
             self.ctx.say(text, kind="answer")
         return text
 

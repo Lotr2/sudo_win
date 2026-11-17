@@ -124,10 +124,19 @@ class InterviewScript(Strict):
     notes_template: str
 
 
+class Direction(Strict):
+    kind: Literal["customer group", "product idea", "market"] = Field(
+        description="customer group = same idea, different buyers; product idea = different product for these "
+                    "customers; market = same skills applied in another domain or place")
+    suggestion: str = Field(description="One plain sentence: the concrete alternative")
+    why: str = Field(description="One plain sentence linking it to the founder's idea, skills or what the research found")
+
+
 class GateMemo(Strict):
     summary: str
     explanation: str
     what_would_change_it: list[str] = []
+    other_directions: list[Direction] = []
 
 
 class VariantScore(Strict):

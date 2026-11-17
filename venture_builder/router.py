@@ -20,8 +20,15 @@ from pydantic import BaseModel, ValidationError
 
 from .config import Settings
 from .decision_log import log_action
-from .llm_clients import ChatClient, GeminiClient, ModelUnavailable, OllamaClient
+from .llm_clients import ChatClient, GeminiClient, LlamaCppClient, ModelUnavailable, OllamaClient
 from .rate_limit import RateLimiter
+
+
+def oss_client(settings: Settings, timeout: float) -> ChatClient:
+    """The GPT-OSS-20B client for the configured back end (OSS_BACKEND=ollama|llamacpp)."""
+    if settings.oss_backend == "llamacpp":
+        return LlamaCppClient(settings.llamacpp_url, timeout)
+    return OllamaClient(settings.ollama_host, timeout)
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -95,7 +102,7 @@ class Router:
 
     @classmethod
     def from_settings(cls, settings: Settings) -> "Router":
-        oss = OllamaClient(settings.ollama_host, settings.ollama_timeout)
+        oss = oss_client(settings, settings.ollama_timeout)
         gemma = None
         if not settings.single_model:
             limiter = RateLimiter(settings.gemma_rpm, settings.gemma_tpm, settings.gemma_rpd,
@@ -184,6 +191,46 @@ class Router:
 def doctor(settings: Settings, ollama: OllamaClient | None = None, gemini: GeminiClient | None = None) -> tuple[bool, list[str]]:
     """Check both model back ends. Never falls back silently: a missing model is an error."""
     lines: list[str] = []
+    if settings.oss_backend == "llamacpp" and ollama is None:
+        oss_ok = _doctor_llamacpp(settings, lines)
+    else:
+        oss_ok = _doctor_ollama(settings, lines, ollama)
+    gemini_ok = _doctor_gemini(settings, lines, gemini)
+    return oss_ok and gemini_ok, lines
+
+
+def _doctor_llamacpp(settings: Settings, lines: list[str]) -> bool:
+    client = LlamaCppClient(settings.llamacpp_url, timeout=15)
+    try:
+        status = client.health()
+        models = client.models()
+    except Exception as exc:  # noqa: BLE001
+        lines.append(f"  ERROR  cannot reach llama.cpp at {settings.llamacpp_url}: {exc}")
+        lines.append("         Start llama-server with --jinja and set LLAMACPP_URL in .env, e.g. http://localhost:8090")
+        return False
+    lines.append(f"llama.cpp {settings.llamacpp_url}: {status}; serving {', '.join(models) or 'unknown model'} "
+                 f"(requests are labelled {settings.model_oss})")
+    if status != "ok":
+        lines.append("  ERROR  llama-server is not ready (still loading the model?)")
+        return False
+    need = max(r.num_ctx for r in ROUTES.values())
+    ctx = client.context_size()
+    if ctx and ctx < need:
+        lines.append(f"  WARN  server context is {ctx} tokens; the builder asks for {need}. Start llama-server with -c {need} or more.")
+    try:
+        probe = client.chat(role="doctor", model=settings.model_oss, system="Reply with JSON only.",
+                            user='Return {"ok": true}.', effort="low", num_ctx=512,
+                            schema={"type": "object", "properties": {"ok": {"type": "boolean"}}, "required": ["ok"]})
+        json.loads(extract_json(probe.text))
+        lines.append("  OK  structured JSON output and reasoning effort (chat template) work")
+        return True
+    except Exception as exc:  # noqa: BLE001
+        lines.append(f"  ERROR  test request failed: {str(exc)[:200]}")
+        lines.append("         llama-server must be started with --jinja for gpt-oss.")
+        return False
+
+
+def _doctor_ollama(settings: Settings, lines: list[str], ollama: OllamaClient | None) -> bool:
     ok = True
     ollama = ollama or OllamaClient(settings.ollama_host, timeout=15)
     try:
@@ -201,7 +248,12 @@ def doctor(settings: Settings, ollama: OllamaClient | None = None, gemini: Gemin
         ok = False
         lines.append(f"  ERROR  cannot reach Ollama at {settings.ollama_host}: {exc}")
         lines.append("         Set OLLAMA_HOST in .env to the machine running Ollama, e.g. http://192.168.1.50:11434")
+        lines.append("         Using llama.cpp instead? Set OSS_BACKEND=llamacpp and LLAMACPP_URL.")
+    return ok
 
+
+def _doctor_gemini(settings: Settings, lines: list[str], gemini: GeminiClient | None) -> bool:
+    ok = True
     if settings.single_model:
         why = "GEMMA_ROLES_ON_OSS=1" if settings.gemma_roles_on_oss else "no GEMINI_API_KEY set"
         lines.append(f"Single-model mode ({why}): every role runs on {settings.model_oss}; "
@@ -225,7 +277,7 @@ def doctor(settings: Settings, ollama: OllamaClient | None = None, gemini: Gemin
         except Exception as exc:  # noqa: BLE001
             ok = False
             lines.append(f"  ERROR  Gemini API check failed: {str(exc)[:200]}")
-    return ok, lines
+    return ok
 
 
 def _ver(v: str) -> tuple[int, ...]:

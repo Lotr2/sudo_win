@@ -4,7 +4,8 @@ It has no approval or gate tools: it can only produce text."""
 
 from ..schemas import AskAnswer, LiaisonMessage, LiaisonQuestion, ProfileUpdates, ReadBack
 
-NOT_IN_RECORD = "That isn't in the record."
+NOT_IN_RECORD = ("I don't have that in this project's records yet, so I won't guess. You can ask me about the "
+                 "research, the versions of your idea, the scores, or any stage check.")
 
 
 def intake_question(ctx, profile: dict, field: str, asked: list[str]) -> LiaisonQuestion:

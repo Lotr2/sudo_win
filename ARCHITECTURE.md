@@ -86,7 +86,7 @@ All code lives in the `venture_builder/` package; thresholds and scoring weights
 | Policy checks | `policy_guard.py` (rules, classifier, Compliance Linter) |
 | Founder conversation | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`; `runs/<id>/conversation.jsonl` |
 | Evidence | `ledger.py`, `tools/search.py`, `tools/fetch.py`, `tools/research.py` |
-| Model routing | `router.py` (routing table, rules, `venture doctor`), `llm_clients.py` (Ollama and Gemini clients), `rate_limit.py` (Gemini free tier) |
+| Model routing | `router.py` (routing table, rules, `venture doctor`), `llm_clients.py` (Ollama, llama.cpp and Gemini clients), `rate_limit.py` (Gemini free tier) |
 | Product templates and QA | `templates/` (guide, template pack, web tool, each with `acceptance_<form>.py`), `qa.py` (sandboxed test runner) |
 | Logging | `decision_log.py` |
 | Payments and delivery (all MOCKED) | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `events.py` (append-only event store) |
@@ -492,7 +492,7 @@ Everything below is implemented and covered by the smoke tests in `tests/`, whic
 | Part | Status | Files (in `venture_builder/`) |
 |---|---|---|
 | Orchestrator (LangGraph), dossier, decision log, runtime | Working | `orchestrator.py`, `runtime.py`, `dossier.py`, `decision_log.py` |
-| Model router, Ollama + Gemini clients, free-tier rate limiter, `venture doctor` | Working | `router.py`, `llm_clients.py`, `rate_limit.py` |
+| Model router, Ollama / llama.cpp + Gemini clients, free-tier rate limiter, `venture doctor` | Working | `router.py`, `llm_clients.py`, `rate_limit.py` |
 | Phase 1 Discover (all steps, Gate 1) | Working | `departments/discover.py`, `scoring.py`, `agents/brief_parser.py`, `agents/opportunity_scout.py`, `agents/market_researcher.py`, `agents/competitor_analyst.py`, `agents/mom_test_writer.py` |
 | Customer interviews | **STUBBED**: the script is generated; the founder runs real interviews and pastes notes; no simulated personas are offered | `agents/mom_test_writer.py` |
 | Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-up counts founder-entered, labelled **MOCKED** unless real | `departments/validate.py`, `agents/canvas_builder.py`, `agents/skeptical_investor.py`, `agents/experiment_designer.py`, `agents/landing_copywriter.py` |
@@ -546,7 +546,7 @@ At most 3 blocking questions are open at once, highest impact first.
 
 ## Model routing
 
-GPT-OSS-20B (open-weight, Apache-2.0) runs locally through Ollama. Gemma 4 31B (open-weight) is called through Google's Gemini API on its free tier, because the two models do not fit on one machine. The Gemini API key is the only key the system uses; it lives in an untracked `.env`, and without it every role runs on GPT-OSS-20B.
+GPT-OSS-20B (open-weight, Apache-2.0) runs locally through Ollama, or through llama.cpp's `llama-server` with `OSS_BACKEND=llamacpp`. Gemma 4 31B (open-weight) is called through Google's Gemini API on its free tier, because the two models do not fit on one machine. The Gemini API key is the only key the system uses; it lives in an untracked `.env`, and without it every role runs on GPT-OSS-20B.
 
 | Model | Runs on | Roles | Why |
 |---|---|---|---|
@@ -557,7 +557,7 @@ GPT-OSS-20B (open-weight, Apache-2.0) runs locally through Ollama. Gemma 4 31B (
 Router rules:
 1. **The checker is never the maker.** A critic or classifier never runs on the model that wrote the work. Generators that a model critiques run on the other model: Gemma 4 31B drafts the canvas and the pivot memo, GPT-OSS-20B judges them. In single-model mode this rule cannot hold, and each affected log entry carries `same_model_check: true`.
 2. **Reasoning effort per role.** GPT-OSS-20B runs at low effort for extraction and research notes, medium for building, high for judging (Skeptical Investor, Experiment Designer, Critic).
-3. **Structured output is enforced.** Every call asks for a JSON schema (Ollama's `format` for GPT-OSS-20B; the API's JSON mode for Gemma where it is supported, otherwise the schema in the prompt); the output is validated, retried once, and on a second failure the step fails visibly and is logged.
+3. **Structured output is enforced.** Every call asks for a JSON schema (Ollama's `format`, or llama.cpp's `response_format: json_schema`, for GPT-OSS-20B; the API's JSON mode for Gemma where it is supported, otherwise the schema in the prompt); the output is validated, retried once, and on a second failure the step fails visibly and is logged.
 4. **Memory and rate limits.** Only GPT-OSS-20B (about 13 GB) needs local memory. Gemma calls respect the free tier's rate limits: the router spaces requests and retries with backoff on rate-limit and network errors only, never on invalid output.
 5. **What leaves the machine.** Prompts for Gemma's roles (the brief, the confirmed profile, drafts, gate results, chat turns) are sent to Google's API. The founder is told this at intake. No password, card number or key is ever placed in a prompt. `GEMMA_ROLES_ON_OSS=1` keeps everything local.
 
@@ -625,7 +625,7 @@ Problem: open-weight models cannot reliably build any app from scratch. Chosen: 
 Problem: persona interviews feel like validation but are the model talking to itself. Chosen: label them `SIMULATED`, allow them for rehearsal only, weight 0 at every gate. Rejected: counting them as weak evidence. Cost: early runs often end in repeat until the founder brings real interview notes, which is the honest outcome.
 
 **D13. One-command, free setup.**
-Problem: setup must be `docker compose up`, with no paid service. Chosen: compose runs the app, Ollama, a one-time model-pull job and SearXNG; `OLLAMA_HOST` can point to an Ollama already installed on the machine, and `SKIP_MODEL_PULL=1` skips the download. Gemma 4 31B needs only a free Gemini API key in `.env`. Rejected: hosted search, and paid model APIs. Cost: the first start downloads GPT-OSS-20B (about 13 GB).
+Problem: setup must be `docker compose up`, with no paid service. Chosen: compose runs the app, Ollama, a one-time model-pull job and SearXNG; `OLLAMA_HOST` can point to an Ollama already installed on the machine, and `SKIP_MODEL_PULL=1` skips the download; `compose.llamacpp.yaml` swaps the bundled Ollama for a llama.cpp server on the host. Gemma 4 31B needs only a free Gemini API key in `.env`. Rejected: hosted search, and paid model APIs. Cost: the first start downloads GPT-OSS-20B (about 13 GB).
 
 **D14. A talkative Founder Liaison with code-chosen blocking questions.**
 Problem: a system that fills gaps silently can misunderstand the founder and only discover it gates later; a system that asks about everything wastes the founder's time. Chosen: one conversational agent that interviews, reads back, checks in at every phase, puts the investor's objections to the founder and explains any result on request; code (sensitivity and contradiction checks) decides which questions must be answered before a decision is final; an Assumption Ledger tracks what each decision rests on. Rejected: a form with no follow-up, and letting the model decide which questions matter. Cost: more turns per run (capped in demo mode), and the conversation must be kept from becoming a back door for approvals, which the Policy Guard and the missing approval tools prevent.

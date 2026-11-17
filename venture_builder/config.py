@@ -36,11 +36,15 @@ def _bool(value: str | None, default: bool = False) -> bool:
 class Settings:
     ollama_host: str = "http://localhost:11434"
     model_oss: str = "gpt-oss:20b"
+    oss_backend: str = "ollama"  # "ollama" or "llamacpp" (llama.cpp's llama-server)
+    llamacpp_url: str = "http://localhost:8090"
     gemini_api_key: str = field(default="", repr=False)
     model_gemma: str = "gemma-4-31b-it"
     gemma_roles_on_oss: bool = False
     run_mode: str = "full"
     searxng_url: str = "http://localhost:8080"
+    searxng_engines: str = ""
+    searxng_fallback_engines: str = "bing,yandex"
     ollama_timeout: float = 600.0
     gemini_timeout: float = 180.0
     search_timeout: float = 20.0
@@ -91,11 +95,15 @@ def load_settings(env: dict[str, str] | None = None, dotenv: Path | None = ROOT 
     return Settings(
         ollama_host=get("OLLAMA_HOST", "http://localhost:11434").rstrip("/"),
         model_oss=get("MODEL_OSS", "gpt-oss:20b"),
+        oss_backend="llamacpp" if get("OSS_BACKEND", "ollama").lower() in {"llamacpp", "llama.cpp", "llama-cpp"} else "ollama",
+        llamacpp_url=get("LLAMACPP_URL", "http://localhost:8090").rstrip("/").removesuffix("/v1"),
         gemini_api_key=get("GEMINI_API_KEY", ""),
         model_gemma=get("MODEL_GEMMA", "gemma-4-31b-it"),
         gemma_roles_on_oss=_bool(merged.get("GEMMA_ROLES_ON_OSS")),
         run_mode="demo" if get("RUN_MODE", "full") == "demo" else "full",
         searxng_url=get("SEARXNG_URL", "http://localhost:8080").rstrip("/"),
+        searxng_engines=get("SEARXNG_ENGINES", ""),
+        searxng_fallback_engines=get("SEARXNG_FALLBACK_ENGINES", "bing,yandex"),
         ollama_timeout=float(get("OLLAMA_TIMEOUT", "600")),
         gemini_timeout=float(get("GEMINI_TIMEOUT", "180")),
         search_timeout=float(get("SEARCH_TIMEOUT", "20")),

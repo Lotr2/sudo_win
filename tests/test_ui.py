@@ -44,3 +44,14 @@ def test_ui_flow(settings, router):
     c.post(f"/api/runs/{run_id}/items/{item['id']}/approve", json={"hash_prefix": item["hash"]})
     st = _wait(c, run_id)
     assert next(i for i in st["outbox"] if i["id"] == item["id"])["status"] == "approved"
+
+
+def test_continue_only_when_paused_and_plain_labels(settings, router):
+    app = create_app(settings, runtime_factory=lambda brief: Runtime.new(settings, brief, router=router,
+                                                                          search=FakeSearch(), fetch=fake_fetch))
+    c = TestClient(app)
+    assert c.get("/api/info").json()["text"]["phases"]["1"] == "Explore the idea"
+    run_id = c.post("/api/runs", json={"brief": "I'm a designer selling invoice templates; $200, 8 h/week."}).json()["run_id"]
+    st = _wait(c, run_id, "readback")
+    assert c.post(f"/api/runs/{run_id}/continue", json={}).status_code == 409   # waiting for the founder, not paused
+    assert all({"file", "label", "phase"} <= set(d) for d in st["documents"])

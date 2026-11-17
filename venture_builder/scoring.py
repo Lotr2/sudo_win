@@ -20,12 +20,70 @@ def _sourced_web(findings: list[dict], kinds: set[str], ledger: EvidenceLedger) 
     return items
 
 
+# Skills that cover each other: a founder who "does web dev" can handle "database design" or "front-end".
+SKILL_FAMILIES = [
+    {"web", "web dev", "web development", "developer", "development", "programming", "coding", "software",
+     "javascript", "python", "front end", "frontend", "front-end", "back end", "backend", "back-end", "full stack",
+     "database", "database design", "sql", "api", "html", "css", "react", "web layout", "basic web layout",
+     "no-code", "website", "app development"},
+    {"design", "graphic design", "ui", "ux", "ui/ux", "ui/ux design", "ui design", "ux design", "figma",
+     "visual design", "branding", "layout", "template design", "basic design", "canva", "illustration"},
+    {"marketing", "digital marketing", "social media", "seo", "content", "content writing", "copywriting",
+     "marketing copy", "advertising", "growth", "community", "email marketing", "branding", "sales", "outreach"},
+    {"writing", "content writing", "copywriting", "editing", "blogging", "documentation", "technical writing",
+     "research", "storytelling"},
+    {"teaching", "training", "coaching", "tutoring", "course creation", "explaining"},
+    {"data", "data analysis", "analytics", "spreadsheets", "excel", "google sheets", "statistics"},
+    {"business", "operations", "project management", "management", "customer service", "negotiation"},
+]
+
+
+def _norm(skill: str) -> str:
+    return " ".join(str(skill).lower().replace("_", " ").split())
+
+
+def _family(skill: str) -> set[int]:
+    s = _norm(skill)
+    words = set(s.replace("/", " ").replace("-", " ").split())
+    found = set()
+    for i, fam in enumerate(SKILL_FAMILIES):
+        if s in fam or any(w in fam for w in words) or any(f in s for f in fam if len(f) > 3):
+            found.add(i)
+    return found
+
+
+def match_skills(needed: list[str], have: list[str]) -> tuple[list[str], list[str], list[str]]:
+    """Split needed skills into (covered by the founder, learnable basics, missing)."""
+    have_n = [_norm(h) for h in have if h]
+    have_fams = set().union(*[_family(h) for h in have_n]) if have_n else set()
+    covered, learnable, missing = [], [], []
+    for n in needed:
+        nn = _norm(n)
+        direct = any(nn in h or h in nn for h in have_n)
+        if direct or (_family(nn) & have_fams):
+            covered.append(n)
+        elif nn.startswith(("basic ", "simple ", "some ")):
+            learnable.append(n)
+        else:
+            missing.append(n)
+    return covered, learnable, missing
+
+
 def skill_coverage(needed: list[str], have: list[str]) -> float:
+    """Share of the needed skills the founder has; a 'basic' skill they lack counts half (it can be learned)."""
     if not needed:
         return 1.0
-    have_l = [h.lower() for h in have]
-    hits = sum(1 for n in needed if any(n.lower() in h or h in n.lower() for h in have_l if h))
-    return hits / len(needed)
+    covered, learnable, _ = match_skills(needed, have)
+    return (len(covered) + 0.5 * len(learnable)) / len(needed)
+
+
+# Sites where people with a problem talk to each other: a sourced complaint there is also a place to reach them.
+COMMUNITY_DOMAINS = ("reddit.com", "quora.com", "facebook.com", "stackexchange.com", "stackoverflow.com",
+                     "news.ycombinator.com", "indiehackers.com", "producthunt.com", "discord", "forum", "community",
+                     "groups.google", "linkedin.com", "medium.com", "tripadvisor", "trustpilot.com", "twitter.com", "x.com")
+
+# Cash per missing skill that is enough to learn it (a course) or buy a little help (a freelancer).
+HELP_BUDGET_PER_SKILL = 300.0
 
 
 def score_variant(v: Variant, findings: list[dict], profile: dict, ledger: EvidenceLedger, scoring: dict,
@@ -36,18 +94,31 @@ def score_variant(v: Variant, findings: list[dict], profile: dict, ledger: Evide
     skills = profile.get("skills") or []
 
     pain_items = _sourced_web(findings, {"pain", "demand"}, ledger)
+    pain_claims = [f["claim"] for f in findings if f["kind"] in {"pain", "demand"} and f.get("label") == "SOURCED"]
     urls = {i.url for i in pain_items}
     domains = {i.domain for i in pain_items}
     pain = min(len(urls), cap) / cap
 
+    covered, learnable, missing = match_skills(v.skills_needed, skills)
     coverage = skill_coverage(v.skills_needed, skills)
     budget_ok = v.budget_needed_usd <= budget
+    spare = budget - v.budget_needed_usd
+    help_affordable = bool(missing) and spare >= HELP_BUDGET_PER_SKILL * len(missing)
     month_hours = hours * 4
     hours_ratio = min(1.0, month_hours / v.est_build_hours) if v.est_build_hours > 0 else 1.0
-    founder_fit = round((coverage + (1.0 if budget_ok else 0.0) + hours_ratio) / 3, 3)
-    fit_pass = budget_ok and v.est_build_hours <= month_hours and coverage >= 0.5
+    skill_part = max(coverage, 0.75) if help_affordable else coverage
+    founder_fit = round((skill_part + (1.0 if budget_ok else 0.0) + hours_ratio) / 3, 3)
+    skills_ok = coverage >= 0.5 or help_affordable
+    fit_pass = budget_ok and v.est_build_hours <= month_hours and skills_ok
 
-    channels = {i.url for i in _sourced_web(findings, {"channel"}, ledger)}
+    channel_items = _sourced_web(findings, {"channel"}, ledger)
+    community = [i for i in pain_items + channel_items + _sourced_web(findings, {"complaint"}, ledger)
+                 if any(c in (i.domain or "") for c in COMMUNITY_DOMAINS)]
+    # A page already counted as evidence of the problem only counts as a place to reach customers when it is a
+    # community (a forum, group, Q&A site): an article about the problem is not where customers gather.
+    channel_items = [i for i in channel_items if i.url not in urls] + community
+    channels = {i.url for i in channel_items}
+    channel_domains = sorted({i.domain for i in channel_items})
     reachability = min(len(channels), 3) / 3
 
     in_templates = v.product_form in templates
@@ -65,7 +136,10 @@ def score_variant(v: Variant, findings: list[dict], profile: dict, ledger: Evide
         pain_signals=len(urls), pain_domains=len(domains), fit_rules_pass=fit_pass,
         inputs={"hours_per_week": hours, "budget_usd": budget, "skill_coverage": round(coverage, 2),
                 "budget_ok": budget_ok, "build_hours": v.est_build_hours, "complaints": complaints,
-                "alternatives": alternatives, "channels": len(channels)},
+                "alternatives": alternatives, "channels": len(channels), "skills_covered": covered,
+                "skills_learnable": learnable, "skills_missing": missing, "help_affordable": help_affordable,
+                "budget_needed": v.budget_needed_usd, "month_hours": month_hours, "channel_sites": channel_domains,
+                "problem_sites": sorted(domains), "in_templates": in_templates, "problem_claims": pain_claims[:3]},
     )
 
 

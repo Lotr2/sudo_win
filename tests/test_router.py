@@ -119,3 +119,60 @@ def test_rate_limiter_daily_limit_fails_loudly(tmp_path):
     with pytest.raises(DailyLimitReached):
         rl.acquire(1)
     assert RateLimiter(100, 100000, 2, state_path=tmp_path / "u.json").used_today() == 2
+
+
+# ---------------- llama.cpp back end ----------------
+
+def _llamacpp_client(handler):
+    import httpx
+    from venture_builder.llm_clients import LlamaCppClient
+    client = LlamaCppClient("http://llama:8090/v1", sleep=lambda s: None)
+    client._http = httpx.Client(transport=httpx.MockTransport(handler))
+    return client
+
+
+def test_backend_setting_picks_llamacpp_client():
+    from venture_builder.llm_clients import LlamaCppClient, OllamaClient
+    from venture_builder.router import oss_client
+    s = load_settings({"OSS_BACKEND": "llamacpp", "LLAMACPP_URL": "http://h:8090/v1/"}, dotenv=None)
+    client = oss_client(s, 5)
+    assert isinstance(client, LlamaCppClient) and client.base_url == "http://h:8090"
+    assert isinstance(oss_client(load_settings({}, dotenv=None), 5), OllamaClient)
+
+
+def test_llamacpp_sends_schema_and_effort_and_returns_only_the_answer():
+    sent = {}
+
+    def handler(request):
+        import httpx
+        sent["url"] = str(request.url)
+        sent["body"] = json.loads(request.content)
+        return httpx.Response(200, json={
+            "choices": [{"message": {"content": '{"ok": true}', "reasoning_content": "thinking..."}}],
+            "usage": {"prompt_tokens": 12, "completion_tokens": 3}})
+
+    schema = {"type": "object", "properties": {"ok": {"type": "boolean"}}}
+    result = _llamacpp_client(handler).chat(role="r", model="gpt-oss:20b", system="s", user="u",
+                                            schema=schema, effort="high", num_ctx=8192)
+    assert sent["url"] == "http://llama:8090/v1/chat/completions"
+    assert sent["body"]["response_format"]["json_schema"]["schema"] == schema
+    assert sent["body"]["chat_template_kwargs"] == {"reasoning_effort": "high"}
+    assert result.text == '{"ok": true}' and result.prompt_tokens == 12 and result.completion_tokens == 3
+
+
+def test_llamacpp_falls_back_to_json_object_when_schema_rejected():
+    import httpx
+    bodies = []
+
+    def handler(request):
+        body = json.loads(request.content)
+        bodies.append(body)
+        if body["response_format"]["type"] == "json_schema":
+            return httpx.Response(400, text="failed to parse JSON schema")
+        return httpx.Response(200, json={"choices": [{"message": {"content": "{}"}}], "usage": {}})
+
+    result = _llamacpp_client(handler).chat(role="r", model="m", system="s", user="u",
+                                            schema={"type": "object"}, effort=None, num_ctx=1)
+    assert [b["response_format"]["type"] for b in bodies] == ["json_schema", "json_object"]
+    assert "matching this JSON schema" in bodies[1]["messages"][1]["content"]
+    assert result.meta["structured_output"] == "json_object"

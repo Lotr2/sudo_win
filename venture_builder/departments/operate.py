@@ -32,11 +32,12 @@ def p6_start(ctx: Context, answer) -> Ask:
     d.gate6_targets = dict(ctx.t["gate6"])
     d.gate6_hash = gates.lock_hash(d.gate6_targets)
     log_action("threshold_lock", "lock_gate6_targets", targets=d.gate6_targets, hash=d.gate6_hash)
-    ctx.say(f"Phase 6 targets are locked before any data: conversion ≥ {d.gate6_targets['min_conversion']:.0%}, "
-            f"refund rate ≤ {d.gate6_targets['max_refund_rate']:.0%}. Enter the activity to review; it is MOCKED "
-            "in this build and labelled as such. Add a few support questions buyers asked, one per line.",
-            kind="question")
-    return Ask("mocked_input", {"question": "Enter MOCKED activity for the review period", "fields": [
+    ctx.say(f"Time to review how things went. The goals were set before any data: at least "
+            f"{d.gate6_targets['min_conversion']:.0%} of visitors buy, and at most "
+            f"{d.gate6_targets['max_refund_rate']:.0%} of buyers ask for a refund. Enter the numbers for the period "
+            "(in this version they're practice numbers, labelled MOCKED), plus a few questions buyers asked, one "
+            "per line.", kind="question")
+    return Ask("mocked_input", {"question": "How did the launch go? (practice numbers, MOCKED)", "fields": [
         {"name": "visitors", "label": "Store visitors (MOCKED)", "type": "number"},
         {"name": "orders", "label": "Orders (MOCKED)", "type": "number"},
         {"name": "refunds", "label": "Refunds (MOCKED)", "type": "number"},

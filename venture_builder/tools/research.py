@@ -14,7 +14,7 @@ from .search import SearchUnavailable
 def research(query: str, *, ledger: EvidenceLedger, search, fetch, max_sources: int = 5,
              fetch_pages: int = 2, agent: str = "research_tool") -> list[str]:
     """Return evidence IDs for one query. Raises SearchUnavailable if search is down."""
-    results = search(query, limit=max_sources)
+    results = search(query, limit=max_sources + 3)
     ids: list[str] = []
     for r in results[:max_sources]:
         if r.get("content"):

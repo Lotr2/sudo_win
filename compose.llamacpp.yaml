@@ -1,0 +1,19 @@
+# Use GPT-OSS-20B served by llama.cpp on the host instead of the bundled Ollama (no 13 GB model download):
+#   docker compose -f docker-compose.yml -f compose.llamacpp.yaml up
+# Start llama-server on the host first, listening on all interfaces and with the gpt-oss chat template:
+#   llama-server -m gpt-oss-20b.gguf --jinja -c 16384 -ngl 99 --host 0.0.0.0 --port 8090
+# LLAMACPP_URL in .env is used for runs outside Docker; inside the container the host is host.docker.internal.
+services:
+  ollama:
+    profiles: ["bundled-ollama"]   # never activated: the bundled Ollama is not started
+  model-init:
+    profiles: ["bundled-ollama"]
+  app:
+    depends_on: !override
+      searxng:
+        condition: service_started
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      OSS_BACKEND: llamacpp
+      LLAMACPP_URL: http://host.docker.internal:${LLAMACPP_PORT:-8090}

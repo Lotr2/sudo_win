@@ -132,6 +132,70 @@ class OllamaClient:
         )
 
 
+# ---------------- llama.cpp (OpenAI-compatible llama-server) ----------------
+
+class LlamaCppClient:
+    """GPT-OSS-20B through llama.cpp's `llama-server` (start it with `--jinja`). Structured output uses
+    `response_format: json_schema` (grammar-constrained); reasoning effort goes to the gpt-oss chat template
+    as `chat_template_kwargs.reasoning_effort`. The server serves the model it was started with, so `model`
+    is sent only as a label."""
+
+    def __init__(self, base_url: str, timeout: float = 600.0, sleep=time.sleep):
+        self.base_url = base_url.rstrip("/").removesuffix("/v1")
+        self.timeout = timeout
+        self._sleep = sleep
+        self._http = httpx.Client(timeout=httpx.Timeout(timeout, connect=15.0))
+
+    def health(self) -> str:
+        resp = _with_retries(lambda: self._http.get(f"{self.base_url}/health"), attempts=2, sleep=self._sleep)
+        resp.raise_for_status()
+        return resp.json().get("status", "unknown")
+
+    def models(self) -> list[str]:
+        resp = _with_retries(lambda: self._http.get(f"{self.base_url}/v1/models"), attempts=2, sleep=self._sleep)
+        resp.raise_for_status()
+        return [m.get("id", "") for m in resp.json().get("data", [])]
+
+    def context_size(self) -> int | None:
+        try:
+            resp = self._http.get(f"{self.base_url}/props")
+            return int(resp.json().get("default_generation_settings", {}).get("n_ctx") or 0) or None
+        except Exception:  # noqa: BLE001
+            return None
+
+    def chat(self, *, role, model, system, user, schema, effort, num_ctx) -> ChatResult:
+        body: dict = {
+            "model": model,
+            "stream": False,
+            "temperature": 0.3,
+            "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            "response_format": {"type": "json_schema", "json_schema": {"name": "reply", "schema": schema}},
+        }
+        if effort:
+            body["chat_template_kwargs"] = {"reasoning_effort": effort}
+        method = "json_schema"
+        url = f"{self.base_url}/v1/chat/completions"
+        resp = _with_retries(lambda: self._http.post(url, json=body), sleep=self._sleep)
+        if resp.status_code == 400 and "schema" in resp.text.lower():
+            # The server could not turn this schema into a grammar: ask for plain JSON, schema in the prompt.
+            body["response_format"] = {"type": "json_object"}
+            body["messages"][1]["content"] = f"{user}\n\nReply with JSON only, matching this JSON schema:\n{json.dumps(schema)}"
+            method = "json_object"
+            resp = _with_retries(lambda: self._http.post(url, json=body), sleep=self._sleep)
+        if resp.status_code != 200:
+            raise ModelUnavailable(f"llama.cpp HTTP {resp.status_code}: {resp.text[:300]}")
+        data = resp.json()
+        usage = data.get("usage", {})
+        message = (data.get("choices") or [{}])[0].get("message", {})
+        return ChatResult(
+            text=message.get("content") or "",
+            prompt_tokens=int(usage.get("prompt_tokens") or 0),
+            completion_tokens=int(usage.get("completion_tokens") or 0),
+            meta={"backend": "llamacpp", "structured_output": method,
+                  "think_method": "chat_template" if effort else "none"},
+        )
+
+
 # ---------------- Gemini API (Gemma) ----------------
 
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta"

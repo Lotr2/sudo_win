@@ -83,8 +83,10 @@ def p2_review(ctx: Context, answer) -> Next | Ask:
     weak = [s for s in d.review.scores if s.score <= 2]
     if rnd == 1 and (d.review.objections or weak):
         objections = (d.review.objections or [f"{s.box}: {s.comment}" for s in weak])[:3]
-        text = "The investor's toughest objections:\n" + "\n".join(f"- {o}" for o in objections) + \
-               "\nHow would you answer them? (Your answers are stored as founder_reported.)"
+        text = ("A sceptical reviewer read your one-page business plan. These are the toughest questions an investor "
+                "or customer might ask:\n" + "\n".join(f"- {o}" for o in objections) +
+                "\n\nHow would you answer them? A sentence or two each is plenty. Your answers help the team improve "
+                "the plan (they describe your situation; they don't count as proof that customers want it).")
         ctx.say(text, kind="question")
         return Ask("question", {"question": text, "objections": objections, "why": "investor objections"},
                    resume_to="p2_objection_answer", timeout=ctx.question_timeout())
@@ -114,11 +116,12 @@ def p2_experiment(ctx: Context, answer) -> Ask:
     d.experiment = exp
     _write_canvas(ctx)
     item = ctx.outbox.propose(kind="experiment_targets", action="lock",
-                              title=f"Lock target: {exp['target']:g} {exp['metric']} in {exp['window_days']} days",
+                              title=f"Demand test goal: {exp['target']:g} {exp['metric']} in {exp['window_days']} days",
                               content={k: exp[k] for k in ("kind", "metric", "target", "window_days")}, phase=2)
-    ctx.say(f"The Experiment Designer proposes: {exp['description']} Success means {exp['target']:g} "
-            f"{exp['metric']} within {exp['window_days']} days (floor {floor:g}). Approve to lock it before any "
-            "result exists, or reject with a note naming a different target.", kind="approval")
+    ctx.say(f"Here's a simple test to see if people really want this: {exp['description']}\n\nSuccess means "
+            f"{exp['target']:g} {exp['metric']} within {exp['window_days']} days (the lowest sensible target is "
+            f"{floor:g}). Setting the goal now, before any results, keeps the test honest. Approve it, or ask for "
+            "changes and say what target you'd prefer.", kind="approval")
     return Ask("approval", items_payload(ctx, [item["id"]]), resume_to="p2_lock")
 
 
@@ -182,11 +185,12 @@ def p2_landing(ctx: Context, answer) -> Ask:
                                    benefits="".join(f"<li>{html.escape(b)}</li>" for b in copy.benefits),
                                    body=html.escape(copy.body), cta=html.escape(copy.cta_text))
     ctx.store.write_output("phase2_step3_landing_page.html", page)
-    item = ctx.outbox.propose(kind="landing_page", action="publish", title="Publish the waitlist landing page (MOCKED)",
+    item = ctx.outbox.propose(kind="landing_page", action="publish", title="Your waitlist page (publishing MOCKED)",
                               content={"html": page}, phase=2)
     d.landing_item = item["id"]
-    ctx.say("The waitlist page is ready for your review. Publishing is MOCKED: nothing goes online; you host it "
-            "yourself if you want real sign-ups.", kind="approval")
+    ctx.say("Your waitlist page is ready to review. Practice mode: approving it doesn't put it online (MOCKED). "
+            "If you want real sign-ups, you can host the page yourself afterwards (it's in your documents).",
+            kind="approval")
     return Ask("approval", items_payload(ctx, [item["id"]]), resume_to="p2_publish")
 
 
@@ -197,7 +201,8 @@ def p2_publish(ctx: Context, answer) -> Next:
         if d.bump("landing_rewrites") <= 1:
             d.history.append({"event": "landing_rejected", "landing_feedback": item["note"] or ""})
             return Next("p2_landing")
-        ctx.say("The landing page was rejected twice; continuing without publishing it.")
+        ctx.say("You asked for changes to the waitlist page twice, so we'll continue without it for now. You can "
+                "still share your own page or a simple sign-up form for the demand test.")
     else:
         ctx.outbox.publish(d.landing_item, adapter="MOCKED landing-page host")
     return Next("p2_signups")
@@ -205,11 +210,13 @@ def p2_publish(ctx: Context, answer) -> Next:
 
 def p2_signups(ctx: Context, answer) -> Ask:
     t = ctx.dossier.locked_targets
-    ctx.say(f"Enter the {t['metric']} result for the {t['window_days']}-day test. In a demo the count is MOCKED "
-            "and labelled as such; a MOCKED result never counts as validation.", kind="question")
-    return Ask("mocked_input", {"question": f"Result for: {t['metric']}", "fields": [
-        {"name": "result", "label": t["metric"], "type": "number"},
-        {"name": "mocked", "label": "Is this a MOCKED value (not real sign-ups)?", "type": "bool", "default": True}]},
+    ctx.say(f"When your {t['window_days']}-day test is done, enter how many {t['metric']} you got. If you're just "
+            "trying the app out, you can enter a practice number: it's labelled MOCKED and never counts as real proof.",
+            kind="question")
+    return Ask("mocked_input", {"question": f"How many {t['metric']} did you get?", "fields": [
+        {"name": "result", "label": f"Number of {t['metric']}", "type": "number"},
+        {"name": "mocked", "label": "Is this a practice number (MOCKED) rather than real sign-ups?", "type": "bool",
+         "default": True}]},
                resume_to="p2_gate")
 
 

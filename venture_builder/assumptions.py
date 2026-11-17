@@ -114,15 +114,16 @@ class AssumptionLedger:
         return done, len(fields)
 
     def rests_on_markdown(self, decision: str, brief_fields: list[str]) -> str:
+        from . import labels
         done, total = self.confirmed_share(brief_fields)
-        lines = ["## This recommendation rests on", ""]
+        lines = ["## What this is based on", ""]
         items = self.rests_on(decision)
         if not items:
-            lines.append("- No open assumptions recorded for this decision.")
+            lines.append("- Nothing we're still guessing.")
         for a in items:
-            flag = " (decision-critical)" if a.critical else ""
-            label = {"assumed": "ASSUMPTION, not confirmed", "confirmed": "confirmed by the founder",
-                     "corrected": "corrected by the founder"}[a.status]
-            lines.append(f"- `{a.id}` {a.field} = {a.value}: {label}{flag}")
-        lines += ["", f"{done} of {total} brief fields confirmed."]
+            flag = " (the recommendation depends on this)" if a.critical else ""
+            label = {"assumed": "a guess, not confirmed yet (ASSUMPTION)", "confirmed": "confirmed by you",
+                     "corrected": "corrected by you"}[a.status]
+            lines.append(f"- Your {labels.field_name(a.field)}: {labels.field_value(a.field, a.value)} ({label}){flag}")
+        lines += ["", f"{done} of {total} details about you are confirmed."]
         return "\n".join(lines)

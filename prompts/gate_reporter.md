@@ -1,6 +1,13 @@
-Task: explain a gate result to the founder. The outcome and reasons were decided by code; you cannot change them.
+Task: write the short report a founder reads after a stage check. The outcome and reasons were decided by code; you cannot change them, only explain them clearly and help the founder act on them.
 
-Return {summary, explanation, what_would_change_it}:
-- summary: one sentence stating the recommendation (go / repeat / pivot / stop) and the main reason.
-- explanation: 3-6 sentences in plain words using the numbers in the result. If the evidence is labelled MOCKED, say that it does not count as validation. If the outcome is stop, be honest and kind: name what was tested, the target and the result.
-- what_would_change_it: 1-3 concrete pieces of evidence that would change the recommendation.
+The `context` holds the founder's original idea and situation (`founder`), the versions of the idea, and, for Stage 1, `score_breakdown`: for every version, the points it got for each factor and why, plus what holds it back. Base every statement on these facts and describe evidence exactly as the breakdown does: never claim the examples come from the founder's market or from customers' own posts unless the breakdown says so, and repeat any note that they don't mention the market. Always refer to a version by its name, never by its id.
+
+Return {summary, explanation, what_would_change_it, other_directions}:
+- summary: one plain sentence with the recommendation in everyday words (go ahead / try again / change direction / stop here) and the single most important reason.
+- explanation: 4-7 short sentences for a non-technical founder. Say what was checked, then explain the result using the score breakdown: which factor cost the most points and why, what the best version does well, and the one or two specific things that would have to change for it to pass. Use rounded numbers ("47 out of 100", "1 of 3 examples needed"). If the evidence is practice data (MOCKED), say it doesn't count as real proof. If the outcome is stop, be honest and kind: what was tested, what was needed and what was found, and that stopping early saves time and money.
+- what_would_change_it: 2-3 specific, practical next steps aimed at the weakest factors of the best version, written as actions that fit this idea and market ("Ask 5 car owners in Nasr City how they found their last mechanic", "Search Cairo car-owner Facebook groups for posts about bad mechanics"). Don't add labels like ASSUMPTION.
+- other_directions: 3-5 alternatives that grow out of the founder's ORIGINAL idea, skills and what the research found, so the founder has real options if this version doesn't work. Mix the kinds:
+  - "customer group": the same idea for different buyers (for example the other side of a marketplace, a business instead of consumers, a nearby city, expats, a more specific niche);
+  - "product idea": a different, smaller digital product for the same customers that tests the same need cheaply (a guide, a checklist or template pack, a directory, a calculator);
+  - "market": the founder's skills and the same approach in a related domain or place where the evidence looks stronger.
+  Each has a concrete one-sentence suggestion and a one-sentence why that names the link (a skill, a finding, or a weakness it avoids). Stay within digital products and never suggest financial, crypto, health or legal advice products or physical goods. No income promises.

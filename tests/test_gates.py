@@ -19,7 +19,7 @@ def test_gate1_stops_an_excluded_product(make_runtime):
     rt = make_runtime(brief="I want to build a crypto trading bot and sell signals to retail investors.")
     p = drive(rt, stop_at_gate=1)
     assert p["gate"] == 1 and p["recommended"] == "stop"
-    assert "Excluded" in p["reasons"][0]
+    assert "outside what the team can help with" in p["reasons"][0]
     assert "opportunity_scout" not in rt.ctx.router.clients["oss"].responder.calls
 
 
@@ -27,7 +27,7 @@ def test_gate1_repeat_when_search_fails(make_runtime):
     rt = make_runtime(search=FakeSearch(fail=True))
     p = drive(rt, stop_at_gate=1)
     assert p["recommended"] == "repeat"
-    assert "not evidence of absence" in p["reasons"][0]
+    assert "says nothing bad about your idea" in p["reasons"][0]
 
 
 def test_gate1_tool_failure_is_never_stop_even_after_repeats():
@@ -89,3 +89,52 @@ def test_override_is_logged_against_recommendation(make_runtime):
     rec = rt.ctx.outbox.gate_decision(1, p["attempt"])
     assert rec["override"] == 1 and rec["recommended"] == "repeat"
     assert rt.dossier.status == "stopped"
+
+
+def test_gate_report_is_human_readable(make_runtime):
+    import re
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=1)
+    report = (rt.ctx.store.outputs / p["memo_file"]).read_text()
+    assert "```" not in report                                      # no raw JSON or code blocks
+    assert not re.search(r"\b(v\d|as_\d+|ev_\d+|log_\d+)\b", report)  # no internal ids
+    assert not re.search(r"\b(budget_usd|hours_per_week|pain_signals|fit_rules_pass)\b", report)
+    assert not re.search(r"\b(budget_usd|hours_per_week|pain_signals)\b", " ".join(p["reasons"]))
+
+
+def test_stage1_explains_every_point(make_runtime):
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=1)
+    assert p["versions"], "the decision card carries the score breakdown"
+    for v in p["versions"]:
+        assert abs(sum(f["points"] for f in v["factors"]) - v["total"]) <= 2      # points add up (rounding)
+        assert all(f["why"] for f in v["factors"])                               # every factor has a reason
+        assert bool(v["blockers"]) == (v["verdict"] != "Passes every check.")
+    report = (rt.ctx.store.outputs / p["memo_file"]).read_text()
+    assert "How each version scored" in report
+    docs = (rt.ctx.store.outputs / "phase1_step1_opportunities.md").read_text()
+    assert "What the research found" in docs and "Who it's for" in docs
+
+
+def test_skill_matching_is_fair():
+    from venture_builder.scoring import match_skills, skill_coverage
+    assert skill_coverage(["web development", "database design"], ["web dev"]) == 1.0
+    assert skill_coverage(["content writing", "marketing copy"], ["marketing"]) == 1.0
+    covered, learnable, missing = match_skills(["basic design", "tax law"], ["marketing"])
+    assert learnable == ["basic design"] and missing == ["tax law"]
+
+
+def test_breakdown_flags_evidence_that_does_not_mention_the_market():
+    from venture_builder.explain import explain_version
+    from venture_builder.schemas import Variant, VariantScore
+    v = Variant(id="v1", name="Mechanic Guide", target_customer="car owners in Cairo", problem="p",
+                product_form="guide", est_build_hours=20, budget_needed_usd=200)
+    s = VariantScore(variant_id="v1", pain=0.6, founder_fit=1, reachability=0, buildability=1, competition_gap=0.4,
+                     score=0.6, pain_signals=3, pain_domains=3, fit_rules_pass=True,
+                     inputs={"problem_claims": ["People struggle to find honest mechanics."], "problem_sites": ["blog.example.com"]})
+    w = {"pain": .3, "founder_fit": .25, "reachability": .2, "buildability": .15, "competition_gap": .1}
+    g1 = {"min_pain_signals": 3, "min_source_domains": 2, "min_score": 0.6}
+    why = explain_version(v, s, w, g1, {"market": "people in Cairo"})["factors"][0]["why"]
+    assert "don't mention your market" in why or "none of these examples mention your market" in why
+    s.inputs["problem_claims"] = ["Drivers in Cairo say mechanics overcharge."]
+    assert "mention your market" not in explain_version(v, s, w, g1, {"market": "people in Cairo"})["factors"][0]["why"]
