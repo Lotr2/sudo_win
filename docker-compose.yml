@@ -1,12 +1,17 @@
 # One-command setup: `docker compose up`
-#   ollama  serves the open-weight model locally (no paid API, no key)
-#   model   pulls the model once, then exits
-#   app     the six-phase pipeline (workflow.py)
+#   ollama   serves the open-weight models locally (no paid API, no key)
+#   models   pulls gpt-oss:20b and qwen3:14b once (qwen3 is skipped when QWEN_ROLES_ON_OSS=1), then exits
+#   searxng  self-hosted search for the research agents (free, no key)
+#   app      the venture builder; open it with `docker compose exec app python -m venture_builder.cli`
 # The repo is mounted into the app, so outputs/ and decision_log.json land in the repo.
+# Both models together need about 22 GB of memory; set QWEN_ROLES_ON_OSS=1 in .env to run on GPT-OSS-20B only.
+# To use an Ollama already running on this machine: OLLAMA_HOST=http://host.docker.internal:11434 and SKIP_MODEL_PULL=1.
 
 services:
   ollama:
     image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    environment:
+      OLLAMA_MAX_LOADED_MODELS: ${OLLAMA_MAX_LOADED_MODELS:-2}
     volumes:
       - ollama:/root/.ollama
     healthcheck:
@@ -15,30 +20,47 @@ services:
       timeout: 5s
       retries: 60
 
-  model:
+  models:
     image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
     depends_on:
       ollama:
         condition: service_healthy
     environment:
       OLLAMA_HOST: http://ollama:11434
-    entrypoint: ["ollama", "pull", "${LLM_MODEL:-qwen3:8b}"]
+      MODEL_MAIN: ${MODEL_MAIN:-gpt-oss:20b}
+      MODEL_FAST: ${MODEL_FAST:-qwen3:14b}
+      QWEN_ROLES_ON_OSS: ${QWEN_ROLES_ON_OSS:-0}
+      SKIP_MODEL_PULL: ${SKIP_MODEL_PULL:-0}
+    entrypoint: ["/bin/sh", "-c", "[ \"$$SKIP_MODEL_PULL\" = 1 ] && exit 0; ollama pull \"$$MODEL_MAIN\" && if [ \"$$QWEN_ROLES_ON_OSS\" != 1 ]; then ollama pull \"$$MODEL_FAST\"; fi"]
     restart: "no"
+
+  searxng:
+    image: ${SEARXNG_IMAGE:-searxng/searxng:latest}
+    environment:
+      SEARXNG_SECRET: ${SEARXNG_SECRET:-local-only-placeholder}
+    volumes:
+      - ./config/searxng/settings.yml:/etc/searxng/settings.yml:ro
 
   app:
     build: .
     depends_on:
-      model:
+      models:
         condition: service_completed_successfully
+      searxng:
+        condition: service_started
     environment:
-      LLM_BASE_URL: http://ollama:11434/v1
-      LLM_MODEL: ${LLM_MODEL:-qwen3:8b}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
+      SEARXNG_URL: http://searxng:8080
     env_file:
       - path: .env
         required: false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # lets OLLAMA_HOST reach an Ollama on this machine
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./:/app
+    ports:
+      - "8000:8000"   # web UI
     stdin_open: true
     tty: true
 

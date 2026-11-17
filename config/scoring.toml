@@ -1,0 +1,11 @@
+# Phase 1 weighted-sum scoring. These weights are design choices, not facts.
+# score = sum(weight * criterion), each criterion from 0 to 1; weights sum to 1.
+[weights]
+pain = 0.30
+founder_fit = 0.25
+reachability = 0.20
+buildability = 0.15
+competition_gap = 0.10
+
+[caps]
+pain_signals = 5   # pain = min(signals, 5) / 5

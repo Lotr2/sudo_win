@@ -1,0 +1,8 @@
+# Self-hosted SearXNG for the research tools. The secret key comes from SEARXNG_SECRET (see .env.example).
+use_default_settings: true
+server:
+  limiter: false
+search:
+  formats:
+    - html
+    - json

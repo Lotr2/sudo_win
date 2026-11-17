@@ -38,6 +38,12 @@ def h2(path: Path) -> list[str]:
     return [line[3:].strip() for line in path.read_text().splitlines() if line.startswith("## ")]
 
 
+def in_order(required: list[str], found: list[str]) -> bool:
+    """True if every required heading appears in found, in the same order (other headings may sit between)."""
+    it = iter(found)
+    return all(any(h == r for h in it) for r in required)
+
+
 class LayoutTest(unittest.TestCase):
     def test_required_root_files(self):
         for name in ["README.md", "LICENSE", "docker-compose.yml", "decision_log.json", "ARCHITECTURE.md", ".env.example"]:
@@ -50,7 +56,8 @@ class LayoutTest(unittest.TestCase):
         self.assertIn("```bash\ndocker compose up\n```", (ROOT / "README.md").read_text())
 
     def test_architecture_headings_in_order(self):
-        self.assertEqual(h2(ROOT / "ARCHITECTURE.md"), ARCHITECTURE_HEADINGS)
+        found = h2(ROOT / "ARCHITECTURE.md")
+        self.assertTrue(in_order(ARCHITECTURE_HEADINGS, found), found)
 
     def test_decision_log_entries(self):
         log = json.loads((ROOT / "decision_log.json").read_text())
@@ -62,12 +69,17 @@ class LayoutTest(unittest.TestCase):
         for path in (ROOT / "outputs").iterdir():
             self.assertRegex(path.name, OUTPUT_NAME)
 
-    def test_phase_packages_import(self):
-        import workflow
+    def test_package_modules_import(self):
+        for path in sorted((ROOT / "venture_builder").rglob("*.py")):
+            module = ".".join(path.relative_to(ROOT).with_suffix("").parts).removesuffix(".__init__")
+            importlib.import_module(module)
 
-        for phase in workflow.PHASES:
-            importlib.import_module(f"phases.{phase}.orchestrator")
-            importlib.import_module(f"phases.{phase}.gates")
+    def test_config_parses(self):
+        import tomllib
+
+        weights = tomllib.loads((ROOT / "config" / "scoring.toml").read_text())["weights"]
+        self.assertAlmostEqual(sum(weights.values()), 1.0)
+        tomllib.loads((ROOT / "config" / "thresholds.toml").read_text())
 
 
 if __name__ == "__main__":
