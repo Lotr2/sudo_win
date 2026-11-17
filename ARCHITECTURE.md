@@ -227,12 +227,12 @@ Everything below is covered by the smoke tests in `tests/` (fake model client). 
 | Model router, Ollama / llama.cpp + Gemini clients, free-tier rate limiter | Working | `router.py`, `llm_clients.py` |
 | Phase 1 Discover (all steps, Gate 1) | Working | `departments/discover.py`, `scoring.py` |
 | Customer interviews | **STUBBED**: the founder runs real interviews from the generated script; no simulated personas | `agents/mom_test_writer.py` |
-| Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-ups founder-reported in a real project, **MOCKED** in a practice run | `departments/validate.py`, `landing.py` |
-| Phase 3 Build (all steps, Gate 3) | Working (3 templates); web-tool browser behaviour **STUBBED** (tested statically) | `departments/build.py`, `templates/`, `qa.py` |
-| Phase 4 Commercial setup | Working; legal review **STUBBED** (drafts marked not legal advice) | `departments/commercial.py`, `policy_guard.py` |
-| Phase 5 Launch | Working; publishing **MOCKED** | `departments/launch.py`, `approval.py` |
-| Sale to cash | Working against **MOCKED** payment events | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py` |
-| Phase 6 Operate and learn | Working; activity founder-reported in a real project, **MOCKED** in a practice run; reply sending **MOCKED** | `departments/operate.py`, `metrics.py` |
+| Phase 2 Validate (all steps, Gate 2) | **MOCKED**: landing-page publishing, and sign-ups in a practice run (founder-reported in a real one). Rest working | `departments/validate.py`, `landing.py` |
+| Phase 3 Build (all steps, Gate 3) | **STUBBED**: web-tool browser behaviour (tested statically). 3 templates working | `departments/build.py`, `templates/`, `qa.py` |
+| Phase 4 Commercial setup | **STUBBED**: legal review (drafts marked not legal advice). Rest working | `departments/commercial.py`, `policy_guard.py` |
+| Phase 5 Launch | **MOCKED**: publishing. Outbox and approvals working | `departments/launch.py`, `approval.py` |
+| Sale to cash | **MOCKED** payment events; delivery, refund and reconciliation code working | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py` |
+| Phase 6 Operate and learn | **MOCKED**: reply sending, and activity in a practice run (founder-reported in a real one). Rest working | `departments/operate.py`, `metrics.py` |
 | Gates, approvals, policy guard | Working | `gates.py`, `labels.py`, `approval.py`, `policy_guard.py` |
 | Founder conversation | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py` |
 | Evidence and search (SearXNG, self-hosted) | Working | `ledger.py`, `tools/` |
