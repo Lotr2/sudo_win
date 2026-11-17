@@ -275,6 +275,9 @@
 window.addEventListener("error", e => { document.body.dataset.lastError = e.message; toast("Something on this page went wrong. Reloading usually fixes it."); });
 window.addEventListener("unhandledrejection", e => { document.body.dataset.lastError = String(e.reason?.stack || e.reason); });
 // Plain-English names come from the server (venture_builder/labels.py), shared with the CLI.
+const outcomeName = (label, gate) => { const base = String(label || "").split(" (")[0].toLowerCase();
+  const n = base === "go" && gate === 6 ? OUTCOME.persevere : (OUTCOME[base] || human(base));
+  return n + (/mocked/i.test(label) ? " (practice data)" : ""); };
 let PHASES = [], OUTCOME = {}, OPTION_HELP = {}, STATUS = {}, STEP_TEXT = {};
 const EXAMPLE = {
   idea: "A kit that helps freelance designers get paid on time: proposal and invoice templates, polite late-payment reminder emails, and a short guide on when to send what.",
@@ -349,7 +352,7 @@ function stepper(st) {
     const n = i + 1, g = st.gates[String(n)];
     let cls = "", note = "Not started";
     if (stoppedAt === n) { cls = "stopped"; note = "Stopped here"; }
-    else if (n < st.phase || (st.status === "finished") || (g && n !== st.phase)) { cls = "done"; note = g ? OUTCOME[g.label] || human(g.label) : "Done"; }
+    else if (n < st.phase || (st.status === "finished") || (g && n !== st.phase)) { cls = "done"; note = g ? outcomeName(g.label, n) : "Done"; }
     else if (n === st.phase) { cls = "current"; note = g ? "Waiting for your decision" : "In progress"; }
     return `<li class="${cls}" ${cls === "current" ? 'aria-current="step"' : ""}><b>${n}. ${name}</b><span>${esc(note)}</span></li>`;
   }).join("");
@@ -424,7 +427,7 @@ function renderTurnBody(st) {
         <button class="danger" onclick="reject('${esc(it.id)}')">Ask for changes</button></div>` : ""}</div>`).join("");
   if (k === "gate") {
     const opts = ["go", "repeat", "pivot", "stop"];
-    let h = `${head}<h2>The team recommends: <span class="pill ${esc(p.recommended)}">${esc(OUTCOME[p.label] || human(p.label))}</span></h2>
+    let h = `${head}<h2>The team recommends: <span class="pill ${esc(p.recommended)}">${esc(outcomeName(p.label, p.gate))}</span></h2>
       <ul class="reasons">${p.reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
       <a href="/api/runs/${RUN}/outputs/${esc(p.memo_file)}?view=1" target="_blank" rel="noopener">Read the full report</a>`;
     if (p.versions?.length) h += renderVersions(p.versions);

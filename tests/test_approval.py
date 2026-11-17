@@ -99,3 +99,36 @@ def test_rejected_item_note_reaches_the_writer(make_runtime, models):
     rt.reject(p["items"][0]["id"], "Say who it is for in the headline", "cli")
     assert seen[-1] == "Say who it is for in the headline"
     assert rt.pending()["kind"] == "approval"
+
+
+def test_simulation_channel_is_refused_unless_explicitly_enabled(monkeypatch):
+    import pytest
+    from venture_builder.approval import FounderConfirmation, InvalidConfirmation
+    monkeypatch.delenv("VENTURE_SIMULATED_FOUNDER", raising=False)
+    with pytest.raises(InvalidConfirmation):
+        FounderConfirmation(channel="simulation", item_ref="x", typed_hash_prefix="abcdef")
+    monkeypatch.setenv("VENTURE_SIMULATED_FOUNDER", "1")
+    FounderConfirmation(channel="simulation", item_ref="x", typed_hash_prefix="abcdef")
+
+
+def test_web_ui_never_starts_with_a_simulated_founder(settings, monkeypatch):
+    import pytest
+    from venture_builder.ui.server import create_app
+    monkeypatch.setenv("VENTURE_SIMULATED_FOUNDER", "1")
+    with pytest.raises(RuntimeError):
+        create_app(settings)
+
+
+def test_simulated_founder_decisions_are_labelled_in_the_log(make_runtime, monkeypatch):
+    import json
+    from conftest import drive
+    from venture_builder.approval import FounderConfirmation, gate_token
+    monkeypatch.setenv("VENTURE_SIMULATED_FOUNDER", "1")
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=1)
+    rt.decide_gate(p["recommended"], FounderConfirmation(channel="simulation", item_ref=f"gate1-{p['attempt']}",
+                   typed_hash_prefix=gate_token(1, p["attempt"])[:8]), variant_id=p.get("suggested_variant"))
+    log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
+    decision = [e for e in log if e["action"] == "gate1_decision"][-1]
+    assert decision["approved_by"] == "founder" and decision["simulated_founder"] is True
+    assert decision["channel"] == "simulation"

@@ -60,3 +60,21 @@ def test_compliance_linter_flags_income_promise_and_missing_label():
                       "DRAFT: not legal advice. Request within 14 days. We guarantee you will earn money.", 14)
     assert any("missing the 'DRAFT" in x for x in v)
     assert any("income_promise" in x for x in v)
+
+
+def test_disclaimers_are_not_mistaken_for_promises():
+    from venture_builder.policy_guard import check_rules
+    for ok in ["We make no guarantees of results.", "This kit does not guarantee results or income.",
+               "You won't make passive income from this."]:
+        assert check_rules(ok, "output") is None, ok
+    for bad in ["We guarantee results within 30 days!", "Guaranteed results or your money back.",
+                "Earn passive income fast."]:
+        assert check_rules(bad, "output") is not None, bad
+
+
+def test_memo_critic_sees_the_targets_and_the_data_label(make_runtime):
+    from conftest import drive
+    rt = make_runtime()
+    drive(rt)
+    calls = [c for c in rt.ctx.router.clients["oss"].calls if c["role"] == "critic"]
+    assert calls and '"targets"' in calls[-1]["user"] and "MOCKED" in calls[-1]["user"]

@@ -21,6 +21,21 @@ from .decision_log import log_action, now_iso
 
 CHANNELS = {"cli", "ui"}
 
+# A scripted founder for the committed demo run (scripts/simulate_founder.py). Its confirmations are accepted
+# only when VENTURE_SIMULATED_FOUNDER=1 is set for that process, the web UI refuses to start with it, and every
+# decision it makes is labelled simulated_founder in the decision log. Real use only ever accepts CLI or UI.
+SIMULATION_CHANNEL = "simulation"
+SIMULATION_ENV = "VENTURE_SIMULATED_FOUNDER"
+
+
+def simulation_enabled() -> bool:
+    import os
+    return os.environ.get(SIMULATION_ENV) == "1"
+
+
+def allowed_channels() -> set[str]:
+    return CHANNELS | ({SIMULATION_CHANNEL} if simulation_enabled() else set())
+
 
 class NotApproved(PermissionError):
     pass
@@ -42,7 +57,7 @@ class FounderConfirmation:
     typed_hash_prefix: str
 
     def __post_init__(self):
-        if self.channel not in CHANNELS:
+        if self.channel not in allowed_channels():
             raise InvalidConfirmation(f"approvals come only from the CLI or the UI, not '{self.channel}'")
         if len(self.typed_hash_prefix) < 6:
             raise InvalidConfirmation("confirm with at least 6 characters of the item hash")
@@ -129,7 +144,7 @@ class Outbox:
         return record
 
     def reject(self, item_id: str, note: str, channel: str) -> None:
-        if channel not in CHANNELS:
+        if channel not in allowed_channels():
             raise InvalidConfirmation("rejections come only from the CLI or the UI")
         with self._lock:
             self._db.execute("UPDATE items SET status='rejected', note=? WHERE id=?", (note, item_id))

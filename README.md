@@ -29,6 +29,7 @@ Open **http://localhost:8000**, describe your idea and press **Start my project*
 | All | Orchestrator (LangGraph, SQLite checkpoints), Venture Dossier, decision log on every agent, tool and gate call | Working |
 | All | Model router: GPT-OSS-20B on Ollama + Gemma 4 31B on the Gemini API, free-tier rate limiter, `venture doctor` | Working |
 | All | Founder Liaison: intake interview, read-back, kickoffs, clarifying questions chosen by code, gate walk-throughs, "why?" answers from the record | Working |
+| All | Founder decisions in the committed demo run (`outputs/`, `decision_log.json`) | **MOCKED**: made by `scripts/simulate_founder.py` on a separate channel, each labelled `simulated_founder` in the log; the app itself only accepts a person's approvals in the UI or CLI |
 | All | Policy Guard (rules, then a classifier on the other model) on the brief, chat, outputs and outbox | Working |
 | 1 Discover | Brief parsing, Opportunity Scout, parallel research (SearXNG search, page fetch, Evidence Ledger), Scorer, Gate 1, interview script | Working |
 | 1 Discover | Customer interviews | **STUBBED**: the founder runs them and pastes notes; nothing is simulated |
@@ -58,7 +59,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Cost per run
 
-**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). The committed demo run (`decision_log.json`) used about 28,000 tokens for Stage 1 of the main idea and about 3,900 tokens for the weak idea, all on GPT-OSS-20B locally: $0.00.
+**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). The committed demo run (`decision_log.json`) took the main idea through all six stages with about 149,000 tokens and the weak idea to its STOP with about 6,300 tokens, all on GPT-OSS-20B locally: $0.00.
 
 ## Demo video
 

@@ -150,9 +150,9 @@ def gate4(*, violations: list[str], price: float, price_range: tuple[float, floa
           price_justified: bool, t: dict) -> GateResult:
     detail = {"violations": violations, "price": price, "sourced_range": price_range}
     if violations:
-        return GateResult(gate=4, outcome="repeat", details=detail,
-                          reasons=[f"{len(violations)} wording problem(s) remain in the price or policy texts (for example a promise "
-                                  "we can't make). They need fixing first."])
+        return GateResult(gate=4, outcome="repeat", details=detail, reasons=[
+            f"{labels.plural(len(violations), 'wording problem')} still need fixing before launch: "
+            + "; ".join(labels.violation_text(v) for v in violations[:3]) + "."])
     if price_range and not (price_range[0] <= price <= price_range[1]) and not price_justified:
         return GateResult(gate=4, outcome="repeat", details=detail, reasons=[
             f"The price of ${price:g} is outside what similar products charge (${price_range[0]:g} to "

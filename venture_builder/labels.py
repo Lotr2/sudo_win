@@ -73,9 +73,10 @@ def phase_name(n: int) -> str:
 
 
 def outcome_name(label: str, gate: int | None = None) -> str:
-    if label == "go" and gate == 6:
-        return OUTCOMES["persevere"]
-    return OUTCOMES.get(label, label.replace("_", " ").capitalize())
+    """'go' -> 'Go ahead'; 'go (MOCKED evidence)' -> 'Go ahead (practice data)'."""
+    base = str(label).split(" (")[0].strip().lower()
+    name = OUTCOMES["persevere"] if base == "go" and gate == 6 else OUTCOMES.get(base, base.replace("_", " ").capitalize())
+    return name + (" (practice data)" if "mocked" in str(label).lower() else "")
 
 
 def human(name: str) -> str:
@@ -189,6 +190,7 @@ DETAIL_NAMES = {
     "metrics": "Results", "targets": "Goals", "misses": "Goals missed", "conversion": "Visitors who bought",
     "refund_rate": "Buyers who asked for a refund", "min_conversion": "Lowest acceptable share of visitors who buy",
     "max_refund_rate": "Highest acceptable refund share", "visitors": "Visitors", "orders": "Orders", "refunds": "Refunds",
+    "support_tickets": "Support questions", "tickets_per_order": "Support questions per order",
 }
 
 
@@ -203,7 +205,9 @@ def detail_value(key: str, value):
     try:
         if key == "score":
             return f"{float(value) * 100:.0f}"
-        if key in {"ratio", "conversion", "refund_rate", "min_conversion", "max_refund_rate"}:
+        if key in {"conversion", "refund_rate"}:
+            return f"{float(value):.1%}"
+        if key in {"ratio", "min_conversion", "max_refund_rate"}:
             return f"{float(value):.0%}"
         if key == "price":
             return f"${float(value):g}"
@@ -231,3 +235,19 @@ def policy_reason(hit) -> str:
     area = POLICY_AREAS.get(hit.rule or "", POLICY_AREAS.get(hit.category, hit.category.replace("_", " ")))
     m = re.search(r": '([^']+)'", hit.reason or "")
     return area + (f" (your idea mentions “{m.group(1)}”)" if m else "")
+
+
+DOCS = {"terms": "the terms of service", "privacy": "the privacy policy", "refunds": "the refund policy",
+        "store_page": "the store page", "posts": "a launch post", "price": "the pricing"}
+CATEGORY_WORDS = {"income_promise": "reads like a promise of results or income",
+                  "fake_urgency": "creates fake urgency", "fake_social_proof": "suggests reviews or user numbers we don't have",
+                  "impersonation": "speaks as someone else", "credentials": "asks for passwords or card details"}
+
+
+def violation_text(v: str) -> str:
+    """'refunds: matched rule R7 (income_promise): 'guarantees of results'' -> plain words."""
+    m = re.match(r"^(\w+): matched rule \w+ \((\w+)\): '(.*)'$", v or "")
+    if not m:
+        m2 = re.match(r"^(\w+): (.*)$", v or "")
+        return f"{DOCS.get(m2[1], m2[1])}: {m2[2]}" if m2 else str(v)
+    return f"{DOCS.get(m[1], m[1])} says \u201c{m[3]}\u201d, which {CATEGORY_WORDS.get(m[2], m[2].replace('_', ' '))}"

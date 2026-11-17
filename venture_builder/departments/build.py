@@ -6,10 +6,13 @@ Builder ⇄ QA Runner [code, sandbox, max 3 loops] → Docs Writer → Gate 3 �
 
 from __future__ import annotations
 
+import re
+
 import json
 
 from .. import gates, qa, templates
 from ..agents import builder, docs_writer, founder_liaison, gate_reporter, product_manager
+from .. import labels
 from ..context import Ask, Context, Next
 from .common import decision, gate_markdown, present_gate, stop_run
 
@@ -132,8 +135,10 @@ def p3_gate_decided(ctx: Context, answer) -> Next:
 
 def _write_spec(ctx: Context) -> None:
     s = ctx.dossier.spec
-    md = [f"# Phase 3 · Step 1: Spec: {s.title}", "", s.summary, "", f"**Template:** {s.product_form}", "",
-          "## Features", ""] + [f"- {f}" for f in s.features] + ["", "## Acceptance criteria (machine-checked)", ""]
+    from ..explain import FORMS
+    md = [f"# Phase 3 · Step 1: Product plan: {s.title}", "", s.summary, "",
+          f"**What it is:** {FORMS.get(s.product_form, s.product_form)}", "",
+          "## Features", ""] + [f"- {f}" for f in s.features] + ["", "## Quality checks (run automatically)", ""]
     if s.product_form == "guide":
         md += [f"- Section **{x.heading}** exists ({x.purpose}) with at least {s.min_words_per_section} words"
                for x in s.sections]
@@ -141,19 +146,25 @@ def _write_spec(ctx: Context) -> None:
         md += [f"- Exactly {s.item_count} templates", f"- Every template has: {', '.join(s.item_fields)}",
                "- An index lists every template"]
     else:
-        md += [f"- Number input `{i.id}` ({i.label})" for i in s.inputs]
+        md += [f"- A number box for {i.label}" for i in s.inputs]
         md += ["- A Calculate button and a result area", "- No external resources, network calls or eval"]
     md += ["- No income promises, fake urgency or testimonials"]
     ctx.store.write_output("phase3_step1_spec.md", "\n".join(md) + "\n")
 
 
 def _write_test_report(ctx: Context, report: dict, loops: int) -> None:
-    md = ["# Phase 3 · Step 2: Test report", "",
-          f"- Result: **{report['passed']}/{report['total']} acceptance tests pass** after {loops} build loop(s)",
-          f"- Sandbox: {report.get('isolation', '')}", ""]
+    passed, total = report["passed"], report["total"]
+    md = ["# Phase 3 · Step 2: Quality check report", "",
+          f"**Result: {passed} of {total} quality checks pass**"
+          + (" (all of them)" if total and passed == total else "") + f", after {labels.plural(loops, 'build round')}.", "",
+          "The product was built and checked in a sealed sandbox with no internet access "
+          f"({report.get('isolation', 'isolated')}).", ""]
     if report.get("failures"):
-        md += ["## Remaining failures", ""] + [f"- {f}" for f in report["failures"]]
-    md += ["", "## Runner output (tail)", "", "```", report.get("output", "")[-2500:], "```"]
+        md += ["## Checks that still fail", ""] + [f"- {f}" for f in report["failures"]]
+    names = re.findall(r"^(test_\w+) .*\.\.\. (ok|FAIL|ERROR)", report.get("output", ""), re.M)
+    if names:
+        md += ["## Each check", ""] + [f"- {'Passed' if r == 'ok' else 'Failed'}: {n.removeprefix('test_').replace('_', ' ')}"
+                                     for n, r in names]
     if ctx.dossier.spec.product_form == "web_tool":
         md += ["", "Browser behaviour of the web tool is not executed by the tests (STUBBED); the founder tries "
                "the preview before approving."]

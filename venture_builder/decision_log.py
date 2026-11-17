@@ -57,6 +57,10 @@ class DecisionLog:
                 "approved_by": approved_by,
             }
             entry.update({k: v for k, v in extra.items() if v is not None})
+            if agent == "founder" or approved_by == "founder":
+                from .approval import simulation_enabled
+                if simulation_enabled():
+                    entry["simulated_founder"] = True   # made by scripts/simulate_founder.py, not a person
             self._entries.append(entry)
             if self.path:
                 self.path.parent.mkdir(parents=True, exist_ok=True)

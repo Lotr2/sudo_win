@@ -87,6 +87,10 @@ class ConfirmIn(BaseModel):
 
 
 def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | None = None) -> FastAPI:
+    from ..approval import SIMULATION_ENV, simulation_enabled
+    if simulation_enabled():
+        raise RuntimeError(f"{SIMULATION_ENV}=1 is only for scripts/simulate_founder.py; the web UI never runs "
+                           "with a simulated founder")
     app = FastAPI(title="Venture Builder")
     handles: dict[str, Handle] = {}
 

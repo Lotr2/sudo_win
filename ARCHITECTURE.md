@@ -487,7 +487,7 @@ The executor recomputes the item's hash. If the item changed after approval, the
 
 ## Built vs. stubbed
 
-Everything below is implemented and covered by the smoke tests in `tests/`, which run on a fake model client. `outputs/` and `decision_log.json` hold only output of a real run on the real models; until that run is committed they are empty.
+Everything below is implemented and covered by the smoke tests in `tests/`, which run on a fake model client. `outputs/` and `decision_log.json` hold only output of real runs on the real models (GPT-OSS-20B, live search). In the committed demo run the founder's approvals and stage decisions are **MOCKED**: `scripts/simulate_founder.py` makes them with fixed rules on a separate `simulation` channel, which is accepted only when `VENTURE_SIMULATED_FOUNDER=1` is set for that process (the web UI refuses to start with it), and every such log entry carries `simulated_founder: true`.
 
 | Part | Status | Files (in `venture_builder/`) |
 |---|---|---|

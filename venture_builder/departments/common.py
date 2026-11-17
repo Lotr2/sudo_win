@@ -25,7 +25,7 @@ def _readable_details(details: dict, depth: int = 0) -> list[str]:
     lines = []
     pad = "  " * depth
     for k, v in (details or {}).items():
-        if k in {"top_variant", "passing_variant"}:  # internal ids; the names are shown instead
+        if k in {"top_variant", "passing_variant", "label"}:  # internal ids and labels shown elsewhere
             continue
         name = labels.detail_name(k)
         v = labels.detail_value(k, v)
@@ -49,7 +49,7 @@ def gate_markdown(ctx: Context, result: GateResult, memo: dict | None, title: st
     n = result.gate
     lines = [f"# Stage {n} check: {labels.phase_name(n)}", "",
              f"*{STAGE_QUESTIONS.get(n, title)}*", "",
-             f"**The team recommends: {labels.outcome_name(result.label, n)}** ({result.label.upper()})"
+             f"**The team recommends: {labels.outcome_name(result.outcome, n)}** ({result.outcome.upper()})"
              + ("  \nThe numbers here are practice data (MOCKED), so they don't count as real validation."
                 if result.mocked_evidence else ""), ""]
     if memo and memo.get("summary"):
@@ -57,14 +57,14 @@ def gate_markdown(ctx: Context, result: GateResult, memo: dict | None, title: st
     lines += ["## Why", ""] + [f"- {r}" for r in result.reasons]
     if memo and memo.get("explanation"):
         lines += ["", "## What the team found", "", memo["explanation"]]
-    if memo and memo.get("what_would_change_it"):
+    if memo and any(str(w).strip() for w in memo.get("what_would_change_it") or []):
         lines += ["", "## What you can do next", ""]
-        lines += [f"- {w}" for w in memo["what_would_change_it"]]
-    if memo and memo.get("other_directions"):
+        lines += [f"- {w}" for w in memo["what_would_change_it"] if str(w).strip()]
+    if memo and [o for o in memo.get("other_directions") or [] if str(o.get("suggestion", "")).strip()]:
         lines += ["", "## Other directions worth considering", "",
                   "If this version doesn't work out, these grow out of your original idea and skills. They are "
                   "suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:", ""]
-        for o in memo["other_directions"]:
+        for o in [o for o in memo["other_directions"] if str(o.get("suggestion", "")).strip()]:
             lines.append(f"- **{o['kind'].capitalize()}:** {o['suggestion']} *{o['why']}*")
     if breakdown:
         lines += [""] + breakdown

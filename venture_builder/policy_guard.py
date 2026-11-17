@@ -50,10 +50,20 @@ class GuardResult:
     classifier_model: str | None = None
 
 
+# A promise rule must not fire on the disclaimer that denies the promise ("We make no guarantees of results").
+NEGATION = re.compile(r"\b(no|not|never|without|none|cannot|can't|can not|don't|do not|doesn't|does not|won't|"
+                      r"will not|make no|makes no|nor)\b[^.!?\n]{0,25}$", re.I)
+NEGATABLE = {"income_promise"}
+
+
 def check_rules(text: str, context: str) -> GuardResult | None:
     active = CONTEXT_RULES.get(context, {r[0] for r in RULES})
     for rid, cat, rx in _COMPILED:
-        if rid in active and (m := rx.search(text)):
+        if rid not in active:
+            continue
+        for m in rx.finditer(text):
+            if cat in NEGATABLE and NEGATION.search(text[max(0, m.start() - 40):m.start()] + m.group(0)[:12]):
+                continue
             return GuardResult(False, cat, rid, f"matched rule {rid} ({cat}): '{m.group(0)[:60]}'")
     return None
 

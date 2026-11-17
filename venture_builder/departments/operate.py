@@ -11,6 +11,7 @@ import re
 
 from .. import gates, metrics
 from ..agents import critic, pivot_memo_writer, support_agent
+from .. import labels
 from ..context import END, Ask, Context, Next
 from ..decision_log import log_action
 from ..events import EventStore
@@ -57,15 +58,17 @@ def p6_events(ctx: Context, answer) -> Next:
                visitors=answer.get("visitors"), orders=answer.get("orders"), refunds=answer.get("refunds"))
     d.metrics = metrics.compute(store)
     t = d.gate6_targets
-    md = ["# Phase 6 · Step 1: Metrics (event log MOCKED)", "", "Computed by code from the event log; every input "
-          "below was entered as a MOCKED value.", "", "| Metric | Value | Target |", "|---|---|---|",
+    md = ["# Phase 6 · Step 1: Results (practice data, MOCKED)", "", "Calculated by code from the activity entered for "
+          "the review period. Every number below is practice data (MOCKED), not real sales.", "",
+          "| Measure | Value | Goal |", "|---|---|---|",
           f"| Visitors | {d.metrics['visitors']} | |", f"| Orders | {d.metrics['orders']} | |",
-          f"| Conversion | {d.metrics['conversion']:.1%} | ≥ {t['min_conversion']:.0%} |",
+          f"| Visitors who bought | {d.metrics['conversion']:.1%} | at least {t['min_conversion']:.0%} |",
           f"| Refunds | {d.metrics['refunds']} | |",
-          f"| Refund rate | {d.metrics['refund_rate']:.1%} | ≤ {t['max_refund_rate']:.0%} |",
+          f"| Buyers who asked for a refund | {d.metrics['refund_rate']:.1%} | at most {t['max_refund_rate']:.0%} |",
           f"| Support tickets | {d.metrics['support_tickets']} | |", "",
-          f"Lean Canvas key metrics: {d.canvas.key_metrics.text if d.canvas else 'n/a'}", "",
-          f"Targets locked before data entry: `{d.gate6_hash}`"]
+          f"Numbers the business plan said to watch: {d.canvas.key_metrics.text if d.canvas else 'not set'}", "",
+          f"Fingerprint of the goals: `{d.gate6_hash}`. It was logged before any data was entered, so the goals "
+          "can't quietly change afterwards."]
     ctx.store.write_output("phase6_step1_metrics.md", "\n".join(md) + "\n")
     return Next("p6_support")
 
@@ -121,13 +124,16 @@ def p6_support(ctx: Context, answer) -> Next | Ask:
 def p6_support_send(ctx: Context, answer) -> Next:
     d = ctx.dossier
     ids = next((h["ids"] for h in reversed(d.history) if h.get("event") == "support_items"), [])
-    md = ["# Phase 6 · Step 2: Support log (tickets and sending MOCKED)", "",
-          "Replies come only from the user docs (cited passage IDs). Refund requests always go to the founder.", ""]
+    md = ["# Phase 6 · Step 2: Support log (questions and sending MOCKED)", "",
+          "Replies use only the product's own user guide and FAQ, so they never invent promises. Refund requests "
+          "always go to the founder for approval.", ""]
     for s in d.support:
         r = s["reply"]
-        md += [f"## Ticket: {s['ticket']}", "", r["answer"], "",
-               f"Cited passages: {', '.join(r['cited_doc_ids']) or 'none (escalated to the founder)'}", ""]
-    md += ["## Outbox", ""]
+        n = len(r["cited_doc_ids"])
+        md += [f"## Question: {s['ticket']}", "", r["answer"], "",
+               (f"Answered from {labels.plural(n, 'passage')} of the user guide and FAQ." if n else
+                "Not covered by the user guide, so it was passed to the founder."), ""]
+    md += ["## What was sent", ""]
     for i in ids:
         item = ctx.outbox.get(i)
         if item["status"] == "approved":
@@ -137,7 +143,10 @@ def p6_support_send(ctx: Context, answer) -> Next:
             else:
                 ctx.outbox.publish(i, adapter="MOCKED email sender")
             item = ctx.outbox.get(i)
-        md.append(f"- {i} {item['title']}: **{item['status']}**" + (f" (note: {item['note']})" if item["note"] else ""))
+        status = {"published": "approved and recorded (sending MOCKED)", "approved": "approved",
+                  "rejected": "changes requested", "refunded": "refund approved and recorded (MOCKED)",
+                  "pending": "waiting for the founder"}.get(item["status"], item["status"])
+        md.append(f"- {item['title']}: **{status}**" + (f" (note: {item['note']})" if item["note"] else ""))
     ctx.store.write_output("phase6_step2_support_log.md", "\n".join(md) + "\n")
     return Next("p6_memo")
 
@@ -152,19 +161,24 @@ def p6_memo(ctx: Context, answer) -> Next:
         memo = pivot_memo_writer.run(ctx, {"metrics": m, "targets": d.gate6_targets, "label": "MOCKED data",
                                            "ticket_themes": [s["ticket"] for s in d.support],
                                            "canvas_key_metrics": d.canvas.key_metrics.text, "critic_gaps": feedback})
-        review = critic.run(ctx, memo.model_dump(), m)
+        review = critic.run(ctx, memo.model_dump(), m, d.gate6_targets, "MOCKED (practice data entered by the founder)")
         if review.rubric_score >= 3 and all(c.matches_data for c in review.checks):
             break
         feedback = review.gaps + [c.comment for c in review.checks if not c.matches_data]
     passes = review.rubric_score >= 3 and all(c.matches_data for c in review.checks)
     d.memo = {"memo": memo.model_dump(), "review": review.model_dump(), "passes": passes}
-    md = ["# Phase 6 · Step 3: Persevere-or-pivot memo (data MOCKED)", "",
-          f"**Recommendation in the memo: {memo.recommendation.upper()}**", "", memo.body, "", "## Claims checked by the critic", ""]
+    rec = {"persevere": "Keep going", "pivot": "Change direction", "stop": "Stop here"}.get(memo.recommendation,
+                                                                                            memo.recommendation)
+    md = ["# Phase 6 · Step 3: Keep going or change course? (practice data, MOCKED)", "",
+          f"**The review recommends: {rec}**", "", memo.body, "",
+          "## Fact-check", "", "A second model checked every statement against the numbers and the goals:", ""]
     for i, c in enumerate(memo.claims):
         chk = next((x for x in review.checks if x.claim_index == i), None)
-        md.append(f"- {c.text} (metrics: {', '.join(c.metric_keys) or 'none'}) → "
-                  f"{'matches the data' if chk and chk.matches_data else 'does not match / unchecked'}")
-    md += ["", f"Critic rubric score: {review.rubric_score}/5. Passes: **{passes}**"]
+        ok = bool(chk and chk.matches_data)
+        md.append(f"- {'Checks out' if ok else 'Does not check out'}: {c.text}"
+                  + ("" if ok or not chk or not chk.comment else f" ({chk.comment})"))
+    md += ["", f"Fact-check score: {review.rubric_score} out of 5. "
+               + ("The review passes." if passes else "The review does not pass yet, so it is rewritten before the decision.")]
     ctx.store.write_output("phase6_step3_pivot_memo.md", "\n".join(md) + "\n")
     return Next("p6_gate")
 
@@ -175,10 +189,13 @@ def p6_gate(ctx: Context, answer) -> Ask:
         raise gates.ThresholdTamperError("Gate 6 targets changed after locking")
     res = gates.gate6(metrics=d.metrics, targets=d.gate6_targets, memo_passes=d.memo["passes"],
                       alternative_supported=bool(d.lessons), t=ctx.t)
-    memo = {"summary": f"Gate 6 recommends {res.label.upper()} (persevere = go).",
-            "explanation": "Code filled this memo from the metrics, the locked targets and the critic's rubric. "
-                           "The data is MOCKED, so this review exercises the loop but is not real evidence.",
-            "what_would_change_it": ["Real sales and support data instead of MOCKED values"]}
+    memo = {"summary": f"The team recommends: {labels.outcome_name(res.label, 6)}.",
+            "explanation": "This check compares the review period's results with the goals set before any data "
+                           "existed, and only counts the written review if a second model's fact-check passes. The "
+                           "numbers are practice data (MOCKED), so this shows how the review works; it is not real "
+                           "proof that the product sells.",
+            "what_would_change_it": ["Run the product with real visitors and buyers, then enter the real numbers",
+                                     "Collect real support questions to see where buyers get stuck"]}
     md = gate_markdown(ctx, res, memo, "Is it working, and what next?", "gate6")
     return present_gate(ctx, res, md, "p6_gate_decided", {"labels": {"go": "persevere"}})
 

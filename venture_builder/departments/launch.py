@@ -11,6 +11,7 @@ from __future__ import annotations
 from .. import gates, reconcile, webhooks
 from ..agents import launch_writers
 from ..approval import NotApproved
+from .. import labels
 from ..context import Ask, Context, Next
 from ..decision_log import log_action, now_iso
 from ..events import EventStore
@@ -197,9 +198,14 @@ def p5_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     items = [ctx.outbox.get(i) for i in d.launch_items]
     res = gates.gate5(items=items, delivery_tests_passed=bool(d.payment_test.get("passed")), withdrawn=False, t=ctx.t)
-    memo = {"summary": f"Gate 5 recommends {res.outcome.upper()}.",
-            "explanation": "Code filled this memo from the outbox records and the payment test run "
-                           "(publishing and payments MOCKED).", "what_would_change_it": []}
+    memo = {"summary": f"The team recommends: {labels.outcome_name(res.label, 5)}.",
+            "explanation": "This check makes sure every page and post was approved by the founder before anything went "
+                           "out, and runs a practice sale: one payment delivers the product exactly once, a repeated "
+                           "payment message does not deliver twice, a refund only happens after the founder approves it "
+                           "and then removes access, and the books add up. Publishing and payments are MOCKED, so "
+                           "nothing went online and no money moved (see payment_test_log.md).",
+            "what_would_change_it": ["Connect a real payment provider in test mode and repeat the practice sale",
+                                     "Publish the approved pages yourself when you're ready"]}
     md = gate_markdown(ctx, res, memo, "Put it in front of people and get it to buyers", "gate5")
     return present_gate(ctx, res, md, "p5_gate_decided")
 

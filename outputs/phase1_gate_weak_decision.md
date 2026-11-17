@@ -6,7 +6,7 @@
 
 ## In short
 
-Stop here because the idea is a medical advice product, which we don't support.
+Stop the idea because it involves medical advice, which the venture builder cannot support.
 
 ## Why
 
@@ -14,23 +14,23 @@ Stop here because the idea is a medical advice product, which we don't support.
 
 ## What the team found
 
-We checked if the idea fits our allowed product types. The idea is an AI meal coach that gives daily food recommendations for people with type 2 diabetes. This is medical advice, which we cannot help with because it could cause harm if wrong. The team requires licensed experts for such products, and we don't have that. Stopping early saves time and money.
+The idea is to give daily meal plans for people with type 2 diabetes based on blood sugar readings. That is medical advice, and the builder does not help with health or medical products. The founder does not have a nutrition or medical background, so the risk of giving wrong advice is high. Because of this, the builder must stop the project. Stopping early saves time and money and keeps the founder from facing regulatory or safety issues.
 
 ## What you can do next
 
-- Pivot to a general meal planner that doesn't target a medical condition.
-- Use spreadsheets to create a grocery budgeting tool for any household.
-- Write a guide on healthy eating for the general public without medical claims.
+- Pivot to a general meal‑planning tool that suggests recipes for healthy eating but does not give personalized medical advice.
+- Create a spreadsheet‑based tracker that lets users log meals and calories, using the founder’s spreadsheet skills.
+- Build a recipe recommendation engine that focuses on low‑carb or balanced meals for anyone, not just diabetes patients.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Create a recipe recommendation app for busy professionals, using your writing and spreadsheet skills. This keeps the meal planning focus but removes medical claims. *It uses your strengths and avoids the disallowed medical advice.*
-- **Product idea:** Build a grocery list generator that helps users save money, leveraging spreadsheets. This is a digital tool that fits your skill set and market. *It stays in the food domain without medical content.*
-- **Customer group:** Launch a nutrition tracker for general users that logs meals and calories, not tied to diabetes. This expands the audience beyond medical conditions. *It uses your writing and spreadsheet skills and avoids health advice.*
-- **Product idea:** Develop a meal prep calendar for families, providing weekly menus. This is a simple digital product that can be built quickly. *It uses your strengths and stays clear of medical claims.*
-- **Product idea:** Offer a digital cookbook with customizable menus for different dietary preferences. This lets you write and organize recipes without medical guidance. *It leverages your writing ability and stays within allowed product types.*
+- **Customer group:** Offer an AI meal planner for people who want to eat healthier, not specifically for diabetes. *It uses the same AI idea but targets a broader audience and avoids medical advice.*
+- **Product idea:** Develop a spreadsheet‑based diet tracker that lets users log meals and calories, without giving advice. *It fits the founder’s spreadsheet skill and stays outside health advice.*
+- **Product idea:** Create a digital cookbook of low‑carb recipes that people can browse, with no personalized advice. *It uses the founder’s writing skill and avoids medical claims.*
+- **Market:** Build a community forum where people with chronic conditions share recipes and support, moderated by experts. *It leverages community building and keeps the founder away from giving direct medical advice.*
+- **Market:** Launch a mobile app that logs blood sugar readings and provides general wellness tips, but not specific meal plans. *It still uses data but stays outside the medical advice domain.*
 
 ## What this is based on
 

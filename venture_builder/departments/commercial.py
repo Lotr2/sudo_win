@@ -9,6 +9,7 @@ from __future__ import annotations
 from .. import gates
 from ..agents import pricing_analyst, policy_drafter
 from ..clarifier import _as_number
+from .. import labels
 from ..context import Ask, Context, Next
 from ..policy_guard import lint_policies
 from .common import decision, gate_markdown, present_gate, stop_run
@@ -62,13 +63,16 @@ def p4_pricing(ctx: Context, answer) -> Next:
     d.pricing = pricing_analyst.run(ctx, payload, ids)
     claim = ctx.ledger.check_claim(d.pricing.reasoning, d.pricing.evidence_ids) if d.pricing.evidence_ids else None
     rng = _sourced_range(ctx, ids)
-    md = ["# Phase 4 · Step 1: Pricing", "", f"**Price:** {d.pricing.currency} {d.pricing.price:g}", ""]
+    sym = "$" if d.pricing.currency.upper() == "USD" else f"{d.pricing.currency} "
+    md = ["# Phase 4 · Step 1: Pricing", "", f"**Launch price:** {sym}{d.pricing.price:g}", ""]
     if d.pricing.tiers:
-        md += ["| Tier | Price | Includes |", "|---|---|---|"]
-        md += [f"| {t.name} | {t.price:g} | {'; '.join(t.includes)} |" for t in d.pricing.tiers]
-    label = "SOURCED: " + ", ".join(claim.sources) if claim and claim.label == "SOURCED" else "ASSUMPTION"
-    md += ["", "## Reasoning", "", d.pricing.reasoning, "", f"Source: {label}", "",
-           f"Sourced competitor price range: {f'${rng[0]:g}-${rng[1]:g}' if rng else 'not enough sourced prices (ASSUMPTION)'}",
+        md += ["| Option | Price | What's included |", "|---|---|---|"]
+        md += [f"| {t.name} | {sym}{t.price:g} | {'; '.join(t.includes)} |" for t in d.pricing.tiers]
+    label = ("based on " + ", ".join(claim.sources)) if claim and claim.label == "SOURCED" else \
+        "a reasoned guess (ASSUMPTION): no sourced prices back it yet"
+    md += ["", "## Why this price", "", d.pricing.reasoning, "", f"Sources: {label}", "",
+           "What similar products charge (from sourced pages): "
+           + (f"${rng[0]:g} to ${rng[1]:g}" if rng else "not enough sourced prices found (ASSUMPTION)"),
            "", "No revenue forecast is made, and no income is promised."]
     d.build["price_range"] = list(rng) if rng else None
     ctx.store.write_output("phase4_step1_pricing.md", "\n".join(md) + "\n")
@@ -105,9 +109,13 @@ def p4_gate(ctx: Context, answer) -> Ask:
     rng = tuple(d.build["price_range"]) if d.build.get("price_range") else None
     res = gates.gate4(violations=d.lint, price=d.pricing.price, price_range=rng,
                       price_justified=bool(d.pricing.evidence_ids), t=ctx.t)
-    memo = {"summary": f"Gate 4 recommends {res.outcome.upper()}.",
-            "explanation": "Code filled this memo from the linter report and the price check.",
-            "what_would_change_it": ["Fixing the remaining violations"] if d.lint else []}
+    memo = {"summary": f"The team recommends: {labels.outcome_name(res.outcome, 4)}.",
+            "explanation": "This check reads the price, the terms of service, the privacy policy and the refund policy. "
+                           "It looks for promises the product can't keep (like guaranteed income), fake urgency, and "
+                           "missing basics such as a refund window, and compares the price with what similar products "
+                           "charge on sourced pages. The policies are drafts, not legal advice (STUBBED legal review).",
+            "what_would_change_it": (["Fix the wording problems listed above, then run the check again"] if d.lint else
+                                     ["Have the policy drafts reviewed by someone qualified before real sales"])}
     md = gate_markdown(ctx, res, memo, "What does it cost, and on what terms?", "gate4")
     ctx.say("Signing off here approves the price and the policy drafts for this product (DRAFT: not legal advice).")
     return present_gate(ctx, res, md, "p4_gate_decided")

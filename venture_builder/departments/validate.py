@@ -266,10 +266,11 @@ def _write_canvas(ctx: Context) -> None:
     md += ["## Skeptical Investor review (rubric 1-5)", "", "| Box | Score | Comment |", "|---|---|---|"]
     md += [f"| {s.box} | {s.score} | {s.comment} |" for s in d.review.scores]
     md += ["", "### Riskiest assumptions", ""]
-    md += [f"- ({r.severity}/5{', FATAL' if r.fatal else ''}) {r.assumption}" for r in
+    md += [f"- {r.assumption} (risk {r.severity} of 5{'; could sink the business if wrong' if r.fatal else ''})" for r in
            sorted(d.review.risks, key=lambda r: -r.severity)]
     if d.objection_answers:
-        md += ["", "### Founder's answers to the objections (founder_reported)", ""]
+        md += ["", "### Your answers to the reviewer's questions", "",
+               "*Your own view: it describes your situation, and never counts as proof that customers want this.*", ""]
         md += [f"- {a['answer']}" for a in d.objection_answers]
     ctx.store.write_output("phase2_step1_lean_canvas.md", "\n".join(md) + "\n")
 
@@ -277,11 +278,15 @@ def _write_canvas(ctx: Context) -> None:
 def _write_experiment(ctx: Context) -> None:
     d = ctx.dossier
     e, t = d.experiment, d.locked_targets
-    md = ["# Phase 2 · Step 2: Experiment and locked targets", "", f"**Test:** {e['description']}", "",
-          f"**Why:** {e['rationale']}", "", "## Locked before any result existed", "",
-          f"- Metric: {t['metric']}", f"- Target: {t['target']:g}", f"- Window: {t['window_days']} days",
-          f"- Hash: `{d.lock_hash}` (written to the decision log at lock time)", "",
-          f"Floors from config/thresholds.toml: {ctx.t['gate2']['floors']}"]
+    target = f"{t['target']:.0%}" if e.get("kind") == "conversion" or t["target"] < 1 else f"{t['target']:g}"
+    floors = ctx.t["gate2"]["floors"]
+    md = ["# Phase 2 · Step 2: Demand test and its goal", "", f"**The test:** {e['description']}", "",
+          f"**Why this goal:** {e['rationale']}", "", "## Goal set before any result existed", "",
+          f"- What is measured: {t['metric']}", f"- Success means: {target}", f"- Time allowed: {t['window_days']} days",
+          f"- Fingerprint of this goal: `{d.lock_hash}`. It was written to the decision log when the goal was set, "
+          "so anyone can check the goal wasn't changed after the results came in.", "",
+          f"Lowest goals the team may propose (config/thresholds.toml): {floors['waitlist_signups']} waitlist sign-ups, "
+          f"or {floors['visitor_signup_rate']:.0%} of visitors signing up; at most {floors['max_window_days']} days."]
     if e.get("raised_to_floor"):
         md.append("\nThe proposed target was below the floor and was raised to it.")
     ctx.store.write_output("phase2_step2_experiment.md", "\n".join(md) + "\n")
