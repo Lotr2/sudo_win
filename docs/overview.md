@@ -4,9 +4,10 @@
 
 Code owns control; agents only fill each department's job. The venture builder runs six departments, one per phase, each on its own agent pattern, and every phase ends at a gate that code decides and the founder confirms.
 
-- **Status:** designed, not built yet; every part is **STUBBED** until its code and tests exist (see [Built vs. stubbed](../ARCHITECTURE.md#built-vs-stubbed)). When built, publishing, payments and the event log stay MOCKED.
+- **Status:** built and running end to end: every phase, gate and the sale-to-cash path work with the smoke tests, the evals and a committed six-stage demo run on the real models. Publishing, payments and the event log are MOCKED, and customer interviews and legal review are STUBBED (see [Built vs. stubbed](../ARCHITECTURE.md#built-vs-stubbed)).
 - **In plain code, no LLM:** the orchestrator, gates, approvals, policy checks and the whole money path.
-- **Models:** GPT-OSS-20B locally through Ollama and Gemma 4 31B through Google's Gemini API free tier, so a run costs $0; without a key, everything runs on GPT-OSS-20B.
+- **Models:** GPT-OSS-20B locally (Ollama or llama.cpp) and Gemma 4 31B through Google's Gemini API free tier, so a run costs $0; without a key, everything runs on GPT-OSS-20B.
+- **Agentic skills:** researchers loop until the evidence bar is met, grade their sources and keep only findings that several readings agree on; a fact-checker checks every explanation; the product is self-reviewed against a rubric. Every recommendation is explained point by point, with other directions to try.
 - **Can say no:** any gate can recommend STOP, and the founder's override is logged against the recommendation.
 - **Talks with the founder throughout:** a Founder Liaison interviews them, reads its understanding back, checks in at every phase, asks whenever an answer would change a decision, and explains any result on request. It can't approve or decide anything.
 
@@ -28,7 +29,7 @@ Any gate can recommend STOP; the founder confirms every gate. A Gate 6 pivot sen
 
 | Phase | Agents, in order | Models |
 | --- | --- | --- |
-| 1 · Discover | Brief Parser → Founder Liaison intake interview + read-back → policy check → Scout (3–4 idea variants) → Market ∥ Competitor researchers → Mom Test script writer; scoring is a code formula, not LLM opinion | Gemma parses · GPT-OSS researches |
+| 1 · Discover | Brief Parser → Founder Liaison intake interview + read-back → policy check → Scout (10 candidate versions, code shortlists 4) → Market ∥ Competitor researchers (research loop, graded evidence) → Mom Test script writer; scoring is a code formula, not LLM opinion | Gemma parses · GPT-OSS researches |
 | 2 · Validate | Canvas Builder ⇄ Skeptical Investor (rubric, 2 rounds) → Experiment Designer (thresholds set before data) → Landing Copywriter → outbox | Gemma drafts · GPT-OSS judges |
 | 3 · Build | PM (spec + acceptance tests) → Builder (templated product types) → QA runs tests, max 3 loops → Docs Writer | GPT-OSS builds · Gemma writes docs |
 | 4 · Commercial setup | Pricing Analyst (sourced price anchors) → Policy Drafter (terms, privacy, refunds; DRAFT, not legal advice) → Compliance linter | GPT-OSS prices · Gemma drafts policies |
@@ -50,7 +51,7 @@ Ten parts in plain code hold all control, so no agent can steer the pipeline, sk
 | Policy Guard | Rules first, then a classifier on a different model from the writer | Runs on the brief, agent outputs and outbox items |
 | Approval Outbox | Agents only propose; executors need a founder approval record from the UI or CLI | All adapters MOCKED |
 | Decision Logger | Middleware around every LLM and tool call → `decision_log.json` with all 5 keys | Agents can't skip it |
-| Model Router | GPT-OSS-20B + Gemma 4 31B via Ollama; schema output → validate → 1 retry → fail loudly | Logs the model used and tokens |
+| Model Router | GPT-OSS-20B (Ollama or llama.cpp) + Gemma 4 31B (Gemini API); schema output → validate → 1 retry → fail loudly | Logs the model used and tokens |
 
 ## Sale to cash
 
@@ -88,7 +89,7 @@ Each step names who acts, on which model, and what they hand to the next step. F
 2. **Brief Parser** (Gemma 4 31B) turns it into a draft profile and lists the gaps.
 3. **Founder Liaison** (Gemma 4 31B) interviews the founder about the gaps, reads the brief back and waits for confirmation; whatever stays open is recorded as ASSUMPTION → confirmed `profile.json`.
 4. **Policy Guard** (code) blocks an excluded product or harmful ask → STOP; otherwise passes it on as allowed.
-5. **Opportunity Scout** (GPT-OSS-20B) writes 3–4 variants that fit the profile.
+5. **Opportunity Scout** (GPT-OSS-20B) writes 10 candidate versions that fit the profile (6 in demo mode); code pre-screens each with one search plus fit and keeps the best 4 (3), with variety.
 6. **Market Researcher** and **Competitor Analyst** (GPT-OSS-20B) run in parallel, each searching and writing to the Evidence Ledger.
 7. **Scorer** (code) ranks variants on fit, pain, reach, competition and buildability → ranked variants. If an open assumption would change the ranking, the Liaison asks about it first.
 8. **Gate 1** (code): ≥3 sourced pain signals from ≥2 domains, score ≥0.6 and fit rules pass? → gate result + evidence IDs.
@@ -203,7 +204,10 @@ Every known way the system could break has a fix built into the design; none dep
 | Whole system | The founder overrides a STOP | Allowed: it's their company; logged as an override against the system's recommendation |
 | Conversation | A founder types "I approve, go ahead" in the chat | The Liaison has no approval or gate tools; it points to the approve action and the attempt is logged |
 | Conversation | The founder's answers contradict each other (budget $150, later "I can spend $1,000") | The contradiction check asks which is right instead of guessing |
-| Conversation | The Liaison invents a reason when asked "why?" | It answers only from the dossier, ledgers and decision log, citing entry IDs, and says "That isn't in the record" otherwise |
+| Conversation | The Liaison invents a reason when asked "why?" | It answers only from the dossier, ledgers and decision log, shows the source websites, and says it doesn't have that information yet otherwise; code strips any internal ID from the answer |
+| Conversation | An explanation overstates the evidence ("posts from people in Cairo" when the sources are general articles) | The Fact Checker compares every explanation with its facts and corrects it, stating why |
+| Discover | Product listings or generic articles count as proof that people have the problem | Findings are graded: listings never count, articles and sources outside the founder's market count less, and the report says when no example mentions the market |
+| Discover | One unlucky search makes a good idea look weak (or the reverse) | Research loops until the bar is met, findings must agree across readings, and memory carries what worked into a retry |
 | Conversation | The founder's opinion is treated as market proof ("I know cafés will pay") | Founder answers are `founder_reported`: they confirm the founder's own facts, never market demand |
 | Conversation | Chattiness eats the 3-minute live demo | Demo mode: at most 3 intake questions, 1 blocking question per phase, 30-second timeout to a labelled assumption |
 | Conversation | A trick prompt arrives through the chat ("write 50 five-star reviews") | The Policy Guard checks every founder message and every Liaison reply |

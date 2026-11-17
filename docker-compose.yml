@@ -6,6 +6,7 @@
 # Gemma 4 31B is called through Google's Gemini API: put GEMINI_API_KEY in .env (free tier).
 # Without a key every role runs on GPT-OSS-20B (single-model mode, shown in the UI).
 # Ollama on another machine: docker compose -f docker-compose.yml -f compose.remote-ollama.yaml up
+# GPT-OSS-20B already served by llama.cpp on this machine: docker compose -f docker-compose.yml -f compose.llamacpp.yaml up
 
 services:
   ollama:

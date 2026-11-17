@@ -13,13 +13,13 @@ How the design in [ARCHITECTURE.md](../ARCHITECTURE.md) is turned into code: wha
 | `venture_builder/` stubs (one docstring per module, from the code map) | Kept as the file layout; every module is implemented |
 | `tests/test_layout.py` | Kept |
 
-Missing (everything that runs): settings, schemas, the model router with an Ollama and a Gemini client, the rate limiter, the decision log middleware, the ledgers, gates, outbox, policy guard, orchestrator, tools, all 20 agents and their prompts, product templates and acceptance packs, the QA sandbox, sale to cash, the event log and metrics, the web UI, the CLI, and the tests.
+Missing (everything that runs): settings, schemas, the model router with an Ollama and a Gemini client, the rate limiter, the decision log middleware, the ledgers, gates, outbox, policy guard, orchestrator, tools, all agents and their prompts (22 today, including the Fact Checker and Product Reviewer), product templates and acceptance packs, the QA sandbox, sale to cash, the event log and metrics, the web UI, the CLI, and the tests.
 
 ## Target file tree
 
 ```
 pyproject.toml, uv.lock, requirements.txt      dependencies (LangGraph, pydantic, httpx, FastAPI, uvicorn)
-docker-compose.yml, compose.remote-ollama.yaml  one-command setup; override for a remote Ollama
+docker-compose.yml, compose.remote-ollama.yaml, compose.llamacpp.yaml  one-command setup; overrides for a remote Ollama or llama.cpp
 config/                                        scoring.toml, thresholds.toml, searxng/settings.yml
 prompts/<role>.md                              one prompt per agent (+ policy_classifier.md)
 briefs/                                        founder briefs for the demo runs
@@ -28,7 +28,7 @@ venture_builder/
   schemas.py           pydantic models: dossier, evidence, every agent's output, gate results
   decision_log.py      logging middleware (one entry per agent, tool or gate action)
   router.py            routing table, router rules, preflight (venture doctor)
-  llm_clients.py       Ollama /api/chat client, Gemini generateContent client, fake client hook
+  llm_clients.py       Ollama /api/chat, llama.cpp (OpenAI-compatible) and Gemini generateContent clients, fake client hook
   rate_limit.py        Gemini free-tier limiter (requests/min, tokens/min, requests/day)
   ledger.py            Evidence Ledger, citation check, verbatim-number check
   assumptions.py       Assumption Ledger
@@ -45,10 +45,12 @@ venture_builder/
   templates/           guide, template_pack, web_tool, each with an acceptance-test pack
   qa.py                QA runner: acceptance tests in a no-network sandbox
   payments.py, webhooks.py, delivery.py, refunds.py, reconcile.py, events.py, metrics.py
-  outputs.py           writes phase outputs and exports the demo run
+  explain.py, labels.py, landing.py, research_memory.py   score explanations, plain-language labels, landing page renderer, cross-project site memory
   cli.py               `venture` command
   ui/                  FastAPI server and a single-page UI
 tests/                 smoke tests on a fake model client; `live` marker for real models
+evals/                 briefs with expected outcomes and readability checks (real models or fakes)
+scripts/               simulate_founder.py: the labelled simulated founder for the committed demo run
 outputs/, decision_log.json   the committed demo run
 ```
 
@@ -70,10 +72,11 @@ outputs/, decision_log.json   the committed demo run
 
 | Milestone | State |
 |---|---|
-| 1-9: spine, tools, founder conversation, Phases 1-6, interfaces, tests, repository files | Done; 80 smoke tests pass on the fake model client |
-| Live checks | Gemma 4 31B on the Gemini API: verified (structured output, rate limiter). GPT-OSS-20B on Ollama: not yet run |
-| 10: real demo runs | Not run yet |
-| 11: final checklist | Done except for the items that need the demo run (`outputs/`, `decision_log.json`, cost figure) |
+| 1-9: spine, tools, founder conversation, Phases 1-6, interfaces, tests, repository files | Done |
+| Live checks | Done: GPT-OSS-20B (Ollama and llama.cpp) and Gemma 4 31B (Gemini API) both verified with `venture doctor` and real runs |
+| 10: real demo runs | Done: the plausible brief through all six stages and the weak brief to STOP, committed in `outputs/` and `decision_log.json` (founder decisions by `scripts/simulate_founder.py`, labelled MOCKED) |
+| 11: final checklist | Done except the demo video link |
+| 12: plain-language interface, explainable gates, agentic skills, evals | Done: 114 smoke tests pass on the fake model client; 8 of 8 evals pass on the real models (`evals/results.md`) |
 
 ## Continuing on another machine
 

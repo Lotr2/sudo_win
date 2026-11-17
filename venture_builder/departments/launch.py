@@ -204,8 +204,9 @@ def p5_gate(ctx: Context, answer) -> Ask:
                            "payment message does not deliver twice, a refund only happens after the founder approves it "
                            "and then removes access, and the books add up. Publishing and payments are MOCKED, so "
                            "nothing went online and no money moved (see payment_test_log.md).",
-            "what_would_change_it": ["Connect a real payment provider in test mode and repeat the practice sale",
-                                     "Publish the approved pages yourself when you're ready"]}
+            "what_would_change_it": ["Publish the approved pages yourself, under your own name, when you're ready",
+                                     "When you sell for real, use a store or payment service you set up yourself: "
+                                     "this system never takes, holds or moves money"]}
     md = gate_markdown(ctx, res, memo, "Put it in front of people and get it to buyers", "gate5")
     return present_gate(ctx, res, md, "p5_gate_decided")
 

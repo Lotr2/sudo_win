@@ -4,7 +4,7 @@ Diagrams for every phase. The text behind them is in [ARCHITECTURE.md](../ARCHIT
 
 ## Models and routing
 
-GPT-OSS-20B runs locally through Ollama; Gemma 4 31B runs on Google's Gemini API free tier. No paid service, $0 per run; without a Gemini key every role runs on GPT-OSS-20B.
+GPT-OSS-20B runs locally through Ollama or llama.cpp; Gemma 4 31B runs on Google's Gemini API free tier. No paid service, $0 per run; without a Gemini key every role runs on GPT-OSS-20B.
 
 Full role table: [ARCHITECTURE.md · Model routing](../ARCHITECTURE.md#model-routing).
 
@@ -61,7 +61,7 @@ sequenceDiagram
     end
   end
   F->>FL: "Why did you…?" (any time)
-  FL-->>F: Answer from dossier, ledgers and log only, with entry IDs
+  FL-->>F: Answer from dossier, ledgers and log only, with source websites
 ```
 
 ## Phases
@@ -78,7 +78,7 @@ flowchart LR
   liaison["Founder Liaison · Gemma 4 31B<br/>intake interview + read-back"]
   confirm(["Founder confirms or corrects"])
   guard["Policy Guard [code]<br/>excluded product / harmful ask"]
-  scout["Opportunity Scout · GPT-OSS-20B<br/>3–4 variants"]
+  scout["Opportunity Scout · GPT-OSS-20B<br/>10 candidates, shortlist of 4"]
   market["Market Researcher · GPT-OSS-20B"]
   comp["Competitor Analyst · GPT-OSS-20B"]
   ledger[("Evidence Ledger [code]<br/>id, url, snippet, fetched_at")]

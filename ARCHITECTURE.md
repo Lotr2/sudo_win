@@ -1,6 +1,6 @@
 # Architecture
 
-An open-source team of AI agents that takes a founder's brief toward a validated, sellable digital product, and that recommends **STOP** when the evidence is weak. The system is organised like a small company: six departments, one per phase, each built on the agent design pattern that suits its kind of work. Plain code (not an LLM) controls the pipeline, the gates, approvals and the money path. Agents only do the work inside each department. A **Founder Liaison** agent keeps up a running conversation with the founder: it interviews them, reads its understanding back, checks in at every phase, asks when an answer would change a decision, and explains any result on request. GPT-OSS-20B runs locally through Ollama and Gemma 4 31B is called through Google's Gemini API on its free tier; without a Gemini key every role runs on GPT-OSS-20B, so no paid service is ever required.
+An open-source team of AI agents that takes a founder's brief toward a validated, sellable digital product, and that recommends **STOP** when the evidence is weak. The system is organised like a small company: six departments, one per phase, each built on the agent design pattern that suits its kind of work. Plain code (not an LLM) controls the pipeline, the gates, approvals and the money path. Agents only do the work inside each department. A **Founder Liaison** agent keeps up a running conversation with the founder: it interviews them, reads its understanding back, checks in at every phase, asks when an answer would change a decision, and explains any result on request. GPT-OSS-20B runs locally (Ollama or llama.cpp) and Gemma 4 31B is called through Google's Gemini API on its free tier; without a Gemini key every role runs on GPT-OSS-20B, so no paid service is ever required. Each agent also has agentic skills (a research loop, graded evidence, agreement between readings, a fact-checker and a self-review), described in [Agentic skills](#agentic-skills).
 
 ## Overview
 
@@ -113,34 +113,40 @@ flowchart LR
   parser -->|"draft profile + gaps"| liaison["Founder Liaison · Gemma 4 31B<br/>intake interview + read-back"]
   liaison <-->|"questions / answers"| fdr(["Founder confirms<br/>or corrects"])
   liaison -->|confirmed profile.json| guard["Policy Guard [code]"]
-  guard -->|allowed| scout["Opportunity Scout · GPT-OSS-20B"]
+  guard -->|allowed| scout["Opportunity Scout · GPT-OSS-20B<br/>10 candidate versions"]
   guard -->|blocked| rep["Gate Reporter · Gemma 4 31B"]
-  scout -->|variants| market["Market Researcher · GPT-OSS-20B"] & comp["Competitor Analyst · GPT-OSS-20B"]
-  market & comp -->|search results| ledger[("Evidence Ledger [code]")]
-  ledger -->|evidence IDs| scorer["Scorer [code]"] -->|ranked variants| g1{"Gate 1 [code]"}
-  g1 -->|result + reasons| rep -->|memo| founder(["Founder picks a variant or accepts STOP"])
+  scout -->|candidates| pre["Pre-screen + shortlist [code]<br/>one search + fit each"]
+  pre -->|best 4 with variety| market["Market Researcher · GPT-OSS-20B"] & comp["Competitor Analyst · GPT-OSS-20B"]
+  market & comp -->|search and read pages| ledger[("Evidence Ledger [code]")]
+  ledger -->|quotes, read 2-3 times, agreed findings kept| bar{"Evidence bar met? [code]"}
+  bar -.->|no: refine queries, next round| market & comp
+  bar -->|yes, or rounds used| scorer["Scorer [code]<br/>points per factor"] -->|ranked versions| g1{"Gate 1 [code]"}
+  g1 -->|result + breakdown| rep -->|"memo + other directions"| fc["Fact Checker · GPT-OSS-20B"] -->|checked| founder(["Founder picks a version or accepts STOP"])
   founder -->|chosen variant| mom["Mom Test Writer · Gemma 4 31B"]
   mom --> notes(["Founder pastes interview notes<br/>or resumes without them"])
 ```
 
 **Step 1: Find opportunities** → `phase1_step1_opportunities.md`
 
-What it means: understand the founder properly before doing anything, then turn the brief into a structured profile, reject ideas the system must not help with, produce 3–4 concrete variants of the idea and collect real evidence about each.
+What it means: understand the founder properly before doing anything, then turn the brief into a structured profile, reject ideas the system must not help with, generate many concrete versions of the idea, shortlist the most promising and collect real evidence about each.
 
 | Agent | Model | Reads | Writes | Tools |
 |---|---|---|---|---|
 | Brief Parser | Gemma 4 31B | raw brief | draft `profile`: idea, skills, budget, hours/week, market, values, and the list of gaps | none |
 | Founder Liaison | Gemma 4 31B | draft profile, gaps | intake questions, the read-back, the confirmed `profile`; each remaining gap as a labelled `ASSUMPTION` in the Assumption Ledger | `ask_founder`, `assumptions.add` |
 | Policy Guard | [code] + classifier (GPT-OSS-20B, because Gemma 4 31B wrote the profile) | `profile` | `allowed` or `blocked` with the rule that matched | rules list, classifier |
-| Opportunity Scout | GPT-OSS-20B (medium) | `profile` | 3–4 `variants`: target customer, problem, digital product form | none |
-| Market Researcher | GPT-OSS-20B (low) | one variant | evidence items about pain, demand signals, where customers gather | `web_search`, `fetch_page`, `ledger.add` |
-| Competitor Analyst | GPT-OSS-20B (low) | one variant | evidence items about alternatives, their prices and complaints | `web_search`, `fetch_page`, `ledger.add` |
+| Opportunity Scout | GPT-OSS-20B (medium) | `profile`, lessons from earlier attempts | 10 candidate `variants` (6 in demo mode): target customer, problem, digital product form | none |
+| Shortlist | [code] | candidates, profile | the best 4 (3 in demo mode) by one quick search each plus fit, with at most two of the same product form | `web_search` (count only, not evidence) |
+| Market Researcher | GPT-OSS-20B (low) | one version, its research log | graded findings about pain, demand and where customers gather | `web_search`, `fetch_page`, `ledger.add` |
+| Competitor Analyst | GPT-OSS-20B (low) | one version, its research log | graded findings about alternatives, their prices and complaints | `web_search`, `fetch_page`, `ledger.add` |
 
 Method:
 - **Intake interview.** The Liaison asks about every missing or vague field, one question at a time, and follows up on vague answers ("When you say small cafés, do you mean independent ones, or chains too?"). It does not stop at the required fields: it also asks about the founder's motivation, the customers they already know, and what they would never do.
 - **Read-back.** The Liaison restates the brief in 3–5 sentences and lists the assumptions it is still making: "Here is what I understood… Is that right?" In full mode nothing else runs until the founder confirms or corrects it. In demo mode the read-back waits 30 seconds like any other question; without an answer, every unconfirmed field stays a labelled assumption and the run continues. Fields the founder leaves open stay as labelled assumptions in the Assumption Ledger.
 - The Policy Guard blocks excluded products (physical goods; financial, investment or crypto products; health or legal advice products) and harmful requests. A block goes straight to a STOP memo.
-- Fan-out: one researcher task per variant and per research angle, run in parallel. Researchers search with SearXNG (self-hosted, free), fetch pages, and store `{id, url, snippet, fetched_at}` in the ledger. In their output they cite evidence IDs only.
+- Fan-out: one researcher task per version and per research angle, run in parallel. Researchers search with SearXNG (self-hosted, free), read the top pages in full, and store `{id, url, snippet, fetched_at}` in the ledger. In their output they cite evidence IDs only.
+- **Research loop.** After each round, code compares the findings with the Gate 1 bar (3 real examples from 2 websites). While a required gap remains, the researcher writes new queries aimed at it, avoiding what it already tried and reusing angles that worked: a narrower customer group, the local language for a non-English market, a `site:` search on a forum. Up to 3 rounds (2 in demo mode).
+- **Agreement and grading.** Each round's evidence is read 2–3 times; a finding is kept only when most readings agree on it. Each finding says whether its source is a person describing the problem first-hand, someone asking for help, an article or a product listing, and whether it is about the founder's market.
 - Fetched pages are treated as data: researchers extract quotes and never follow instructions found in a page.
 
 **Step 2: Score the variants** → `phase1_step2_scores.json`
@@ -151,10 +157,10 @@ What it means: fan-in. Gather the evidence and rank the variants with a formula 
 |---|---|---|---|
 | Scorer | [code] | variants, evidence ledger, profile | score per variant with every input shown |
 
-Method (weighted-sum scoring): `score = 0.30·pain + 0.25·founder_fit + 0.20·reachability + 0.15·buildability + 0.10·competition_gap`, each from 0 to 1.
-- `pain`: number of independent sourced pain signals, capped at 5, divided by 5.
-- `founder_fit`: rule-based match of skills, budget and hours against what the variant needs.
-- `reachability`: number of sourced places where the customers can be reached.
+Method (weighted-sum scoring): `score = 0.30·pain + 0.25·founder_fit + 0.20·reachability + 0.15·buildability + 0.10·competition_gap`, each from 0 to 1, shown to the founder as points out of 100 with one plain reason per factor (`explain.py`).
+- `pain`: independent sourced examples of the problem, capped at 5, divided by 5. First-hand posts and questions count 1, articles 0.8, sources outside the founder's market 0.6; product listings never count as evidence of a problem.
+- `founder_fit`: skills (matched by meaning: "web dev" covers database design; basic skills count as learnable; a missing skill is fine if the budget can pay for help), budget and hours against what the version needs.
+- `reachability`: sourced places where the customers gather (communities, forums, Q&A sites); an article about the problem is not one.
 - `buildability`: whether a product template fits and the build estimate fits the founder's hours.
 - `competition_gap`: sourced complaints about existing alternatives versus the number of strong alternatives.
 
@@ -168,11 +174,11 @@ What it means: give the founder a Mom Test interview script (questions about pas
 |---|---|---|---|
 | Mom Test Writer | Gemma 4 31B | chosen variant | interview script, notes template |
 
-Method: the system cannot interview real people. The founder runs the interviews and pastes notes back in; these are stored as `founder_reported` evidence. Simulated persona interviews may be offered for rehearsal only; they are labelled `SIMULATED` and count for nothing at any gate.
+Method: the system cannot interview real people. The founder runs the interviews and pastes notes back in; these are stored as `founder_reported` evidence. Interviews are never simulated; if a simulated source were ever added, it would be labelled `SIMULATED` and count for nothing at any gate.
 
-**Between Phase 1 and Phase 2: interview notes.** After Gate 1, the run pauses and the Liaison asks the founder to paste their interview notes (`cli.py notes <file>` or the notes box in the UI). The founder can resume without notes; Phase 2 then records "no interviews yet" in the dossier, the Canvas Builder labels every customer-side claim `ASSUMPTION`, and the Skeptical Investor must rank "customers have this problem" among the riskiest assumptions. In demo mode the pause is skipped and the missing notes are shown in the Gate 2 memo.
+**Between Phase 1 and Phase 2: interview notes.** After Gate 1, the run pauses and the Liaison asks the founder to paste their interview notes (the notes box in the UI, or `venture answer RUN_ID "..."` in the terminal). The founder can resume without notes; Phase 2 then records "no interviews yet" in the dossier, the Canvas Builder labels every customer-side claim `ASSUMPTION`, and the Skeptical Investor must rank "customers have this problem" among the riskiest assumptions. In demo mode the pause is skipped and the missing notes are shown in the Gate 2 memo.
 
-**Gate 1** → `phase1_gate_decision.md` (see [Gates](#gates)).
+**Gate 1** → `phase1_gate_decision.md` (see [Gates](#gates)). The report gives the recommendation, the points breakdown for every version with its sources, practical next steps, and 3–5 other directions (other customer groups, smaller products, related markets) that grow out of the founder's original idea; choosing "pivot" sends those directions back to the Opportunity Scout.
 
 ### Phase 2 · Validate: "Would people actually want this, by a standard we set before looking?"
 
@@ -220,11 +226,12 @@ What it means: write a waitlist page that states the value honestly, and queue i
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Landing Copywriter | Gemma 4 31B | canvas, unique value | page copy and HTML |
-| Policy Guard | [code] + classifier (GPT-OSS-20B) | page | pass, or the violations found |
+| Landing Copywriter | Gemma 4 31B | canvas, version, founder's brand | structured copy (headline, frustrations, features, steps, contents, FAQ) and design choices: layout (product-led, story-led or minimal), section order, type style, colour mood |
+| Page renderer | [code] (`landing.py`) | copy, brand | a self-contained HTML page in the founder's colour and logo; text escaped, nothing loaded from outside |
+| Policy Guard | [code] + classifier (GPT-OSS-20B) | every piece of copy | pass, or the violations found |
 | Approval Outbox | [code] | page | queued item; publishing is MOCKED |
 
-Method: no fake urgency, countdown timers, testimonials, sign-up counts or income claims. Sign-up results are entered by the founder or labelled `MOCKED`.
+Method: the model writes only text and picks from fixed design options; code builds the page, so there are no slots for testimonials, ratings, counts, timers or scripts, and internal labels such as `ASSUMPTION` are stripped from customer-facing copy. The founder's brand (name, `#rrggbb` colour, PNG/JPEG/WebP logo under 100 KB) is validated in code. Sign-up results are entered by the founder or labelled `MOCKED`.
 
 **Gate 2 on MOCKED sign-ups.** When the sign-up count is MOCKED (the demo cannot wait 14 days), Gate 2 computes its outcome the same way so the flow can be exercised, but the outcome is recorded as `go (MOCKED evidence)`, `repeat (MOCKED evidence)` and so on. A MOCKED go lets the run continue; it never counts as validation, and the memo, the gate output and the Phase 6 review all say so.
 
@@ -251,7 +258,7 @@ What it means: decide exactly what the MVP must do, written as acceptance tests 
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Product Manager | GPT-OSS-20B (medium) | canvas, landing-page promise | spec + acceptance tests |
+| Product Manager | GPT-OSS-20B (medium) | canvas, landing-page promise | spec + acceptance tests; code rejects a spec that doesn't fill its own product type's fields (for example a template pack without template headings) and clears the others |
 | Template Picker | [code] | spec | one of: written guide, template pack, small web tool |
 
 **Step 2: Build and test** → `phase3_step2_test_report.md`
@@ -260,10 +267,11 @@ What it means: produce the product from the template and prove it meets the spec
 
 | Agent | Model | Reads | Writes | Tools |
 |---|---|---|---|---|
-| Builder | GPT-OSS-20B (medium) | spec, scaffold, failing tests | product files | file write inside the build sandbox |
-| QA Runner | [code] | product, tests | test report | test runner in a container with no network (sandboxed execution) |
+| Builder | GPT-OSS-20B (medium) | spec, scaffold, failing tests, review issues | product files | file write inside the build sandbox |
+| QA Runner | [code] | product, tests | test report | an isolated subprocess with sockets, DNS and subprocesses blocked |
+| Product Reviewer | Gemma 4 31B (the other model) | product, spec, landing promise | score 1–5 on a rubric and specific issues | none |
 
-Method: up to 3 build–test loops. After 3 failures the gate recommends repeat with a smaller spec, or stop.
+Method: up to 3 build–test loops. Once the tests pass, the Product Reviewer scores the product; below 4 the Builder revises it once with the issues, the tests must pass again, and the revision is re-scored so the report shows whether it improved. After 3 failed loops the gate recommends repeat with a smaller spec, or stop.
 
 **Step 3: User docs** → `phase3_step3_user_guide.md`
 
@@ -374,7 +382,7 @@ flowchart LR
 
 ## Gates
 
-A gate is a pure function in `gates.py`: it reads the dossier and the thresholds, returns an outcome with reasons, and writes a log entry. For Gates 1–3, the Gate Reporter (Gemma 4 31B) turns that result into a readable memo; for Gates 4–6, code fills a memo template. Neither can change the outcome. The founder then decides. The founder can override the recommendation, and the log records it as an override against the recommendation.
+A gate is a pure function in `gates.py`: it reads the dossier and the thresholds, returns an outcome with reasons, and writes a log entry. For Gates 1–3, the Gate Reporter (Gemma 4 31B) turns that result into a readable memo; for Gates 4–6, code fills a memo template. Before the founder reads a memo or the Liaison's walk-through, the Fact Checker compares every factual statement with the facts it came from and corrects anything unsupported, stating why. None of them can change the outcome. The founder then decides. The founder can override the recommendation, and the log records it as an override against the recommendation.
 
 **Outcomes**
 - **go**: move to the next phase.
@@ -396,7 +404,7 @@ A gate is a pure function in `gates.py`: it reads the dossier and the thresholds
 
 | Gate | Checks | go | repeat | pivot | stop |
 |---|---|---|---|---|---|
-| 1 Discover | Independent sourced pain signals for the top variant; founder-fit rules (budget, hours, skills); excluded categories | ≥3 signals from ≥2 domains, score ≥0.6, fit rules pass | 1–2 signals, or search tools failed | another variant passes | excluded category, or 0 signals after the limit of 2 repeats |
+| 1 Discover | Independent sourced, graded examples of the problem for the top version; founder-fit rules (budget, hours, skills); excluded categories | ≥3 examples from ≥2 websites, score ≥60/100, fit rules pass | 1–2 signals, or search tools failed | another variant passes | excluded category, or 0 signals after the limit of 2 repeats |
 | 2 Validate ★ | Investor rubric; result vs locked target; threshold hash matches | no unaddressed fatal risk and result ≥100% of target | result 50–99% of target (once) | a different segment or offer is supported by the evidence | result <50% of target, or a fatal risk with no answer |
 | 3 Build | Acceptance tests | all pass + founder approves | failures after 3 loops (once, with smaller spec) | spec cannot meet the landing-page promise | still failing after the repeat |
 | 4 Commercial | Linter result; price within the sourced competitor range or justified | zero violations + founder sign-off | violations remain | — | founder rejects |
@@ -411,7 +419,7 @@ A tool failure is not evidence of absence: if search is unreachable, claims fall
 
 ## Sale to cash
 
-Everything here is plain code with tests, and every event is **MOCKED**. No payment SDK, payment keys or real accounts are used. No LLM can trigger delivery, refunds or payouts. Patterns: event-driven processing, idempotent consumer, compensating action, reconciliation.
+Everything here is plain code with tests, and every event is **MOCKED**. There is no payment provider, SDK, sandbox or test mode, no payment keys and no real accounts: payments are left out completely, and the mock events exist only to show how the sale-to-cash logic behaves. No LLM can trigger delivery, refunds or payouts. Patterns: event-driven processing, idempotent consumer, compensating action, reconciliation.
 
 ```mermaid
 stateDiagram-v2
@@ -443,7 +451,7 @@ flowchart TB
   CL["Clarifier [code]"] -->|decision-critical questions| FL
   D --> CL
   O -->|dossier slice + task| A["Agent"]
-  A -->|request| R["Model Router"] --> M["GPT-OSS-20B (local Ollama) / Gemma 4 31B (Gemini API)"]
+  A -->|request| R["Model Router"] --> M["GPT-OSS-20B (local: Ollama or llama.cpp) / Gemma 4 31B (Gemini API)"]
   A -->|search, fetch| T["Tools"] -->|evidence items| L[("Evidence Ledger")]
   A -->|JSON output| V["Schema validation"] --> D[("Venture Dossier")]
   D --> GK["Gatekeeper"] -->|outcome| O
@@ -503,8 +511,12 @@ Everything below is implemented and covered by the smoke tests in `tests/`, whic
 | Phase 6 Operate and learn | Working; event log and reply sending **MOCKED** | `departments/operate.py`, `metrics.py`, `agents/support_agent.py`, `agents/pivot_memo_writer.py`, `agents/critic.py` |
 | Gates, approval, policy guard, gate reporter | Working | `gates.py`, `approval.py`, `policy_guard.py`, `agents/gate_reporter.py` |
 | Founder conversation (intake, read-back, kickoffs, clarifying questions, gate walk-through, ask-anything) | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`, `runtime.py` |
-| Evidence and search | Working (SearXNG, self-hosted) | `ledger.py`, `tools/` |
-| Web UI and CLI | Working | `ui/`, `cli.py` |
+| Evidence and search | Working (SearXNG, self-hosted, with engine fallback) | `ledger.py`, `tools/` |
+| Agentic skills: research loop, grading, agreement, shortlist, memory, fact-check, self-review | Working | `departments/discover.py`, `scoring.py`, `explain.py`, `research_memory.py`, `agents/fact_checker.py`, `agents/product_reviewer.py` |
+| Landing page renderer with the founder's brand and three layouts | Working | `landing.py` |
+| Evals (8 briefs, expected outcomes, readability checks) | Working | `evals/` |
+| Web UI and CLI | Working | `ui/`, `cli.py`, `labels.py` |
+| Founder decisions in the committed demo run | **MOCKED** (simulated founder, labelled in every log entry) | `scripts/simulate_founder.py` |
 
 ## Roadmap
 
@@ -544,7 +556,7 @@ The system talks with the founder throughout the run, like a co-founder who chec
 | Clarifying questions (any time) | Asks a question chosen by the Clarifier (below), explaining why it matters: "Your weekly hours change which idea comes first. Is it closer to 4 or 10?" | the answer; the assumption becomes confirmed or corrected |
 | Gate conversation | Walks through the gate memo, the evidence and the assumptions it rests on; answers objections; asks for the decision | the decision via the gate command, plus the founder's reasons |
 | Pushback follow-up (after an override or rejection) | Asks what should change and why | a note passed to the agent that redoes the work |
-| Ask anything | Answers "why?" and "what?" questions about the run ("Why B over D?", "Where does that price come from?") from the dossier, the ledgers and the decision log only, citing entry IDs; says "That isn't in the record" when it doesn't know | nothing; questions never change state |
+| Ask anything | Answers "why?" and "what?" questions about the run ("Why B over D?", "Where does that price come from?") from the dossier, the ledgers and the decision log only; shows the source websites (never internal IDs); says it doesn't have that information yet when the record can't answer | nothing; questions never change state |
 
 **How the system decides what to ask.** The Liaison chats freely, but which questions *block* progress is decided by code in `clarifier.py`:
 1. **Sensitivity check.** For each open assumption, the Clarifier re-runs the Scorer or gate function with plausible alternative values. If the top variant or the gate outcome changes, the assumption is **decision-critical** and becomes a question the founder must answer before the decision is final.
@@ -565,8 +577,8 @@ GPT-OSS-20B (open-weight, Apache-2.0) runs locally through Ollama, or through ll
 
 | Model | Runs on | Roles | Why |
 |---|---|---|---|
-| GPT-OSS-20B | Local Ollama, default | Opportunity Scout, Market Researcher, Competitor Analyst, Skeptical Investor, Experiment Designer, Product Manager, Builder, Pricing Analyst, Support Agent, Critic, Policy Guard classifier for Gemma's text | Best tool calling and reasoning of the two; adjustable reasoning effort |
-| Gemma 4 31B | Google Gemini API (free tier) | Founder Liaison, Brief Parser, Mom Test Writer, Gate Reporter, Canvas Builder, Landing Copywriter, Docs Writer, Policy Drafter, Launch Writers, Pivot Memo Writer, Policy Guard classifier for all other text | Strong writer for parsing, drafting, copy and conversational turns, without using local memory |
+| GPT-OSS-20B | Local: Ollama (default) or llama.cpp | Opportunity Scout, Market Researcher, Competitor Analyst, Skeptical Investor, Experiment Designer, Product Manager, Builder, Pricing Analyst, Support Agent, Critic, Fact Checker, Policy Guard classifier for Gemma's text | Best tool calling and reasoning of the two; adjustable reasoning effort |
+| Gemma 4 31B | Google Gemini API (free tier) | Founder Liaison, Brief Parser, Mom Test Writer, Gate Reporter, Canvas Builder, Landing Copywriter, Docs Writer, Policy Drafter, Launch Writers, Pivot Memo Writer, Product Reviewer, Policy Guard classifier for all other text | Strong writer for parsing, drafting, copy and conversational turns, without using local memory |
 | Single-model mode | `GEMMA_ROLES_ON_OSS=1`, or no `GEMINI_API_KEY` | All roles on GPT-OSS-20B; same-model checks flagged in the log | Fully local and keyless; announced at startup and in `venture doctor`, never a silent fallback |
 
 Router rules:
@@ -578,7 +590,7 @@ Router rules:
 
 **Run modes.** `RUN_MODE=full` runs every phase with the full conversation. `RUN_MODE=demo` sets a time budget per node, caps research at 5 sources per variant, streams progress to the UI, and keeps the conversation short: at most 3 intake questions, one read-back, at most 1 blocking question per phase, and a 30-second timeout after which an open question stays a labelled assumption. Phases 1–2 and their gates then finish within a few minutes on a laptop.
 
-**Cost per run.** $0.00: GPT-OSS-20B is local and Gemma 4 31B runs on the Gemini API free tier. Tokens are logged for every call, per model, so the cost of other setups can be compared.
+**Cost per run.** $0.00: GPT-OSS-20B is local and Gemma 4 31B runs on the Gemini API free tier. Tokens are logged for every call, per model, so the cost of other setups can be compared. The committed six-stage demo run used about 237,000 tokens; the agentic skills account for most of the increase over a single-pass design (about 28,000 tokens for Stage 1), in exchange for steadier, better-sourced results.
 
 ## Safety and founder control
 
@@ -595,9 +607,11 @@ The Policy Guard (policy as code) runs at four points: on the brief, on every fo
 | Treats a chat message as an approval or a decision | The Liaison has no approval or gate tools; "I approve" in chat gets a pointer to the approve action, and the attempt is logged |
 | Hides core features behind its own paywall | The whole system is open source under an OSI licence |
 | Sends secrets or payment data to a model API | No password, card number or key is ever put in a prompt; Gemma's prompts go to Google's API only for its roles, and `GEMMA_ROLES_ON_OSS=1` keeps every call local |
-| Helps with excluded products | Policy Guard on the brief returns STOP for physical goods; financial, investment or crypto products; health or legal advice products |
+| Helps with excluded products | Policy Guard on the brief returns STOP for physical goods; financial, investment or crypto products; health or legal advice products, and suggests safe alternatives |
+| Overstates evidence to the founder | The Fact Checker checks every explanation against its facts; evidence is graded and listings never count as proof of a problem |
+| Presents internal codes or raw data to people | Gate reasons and reports are written in plain words by code; customer-facing copy has internal labels stripped; `evals/` checks every output for codes, ids and raw scores |
 
-Prompts that test these guardrails live in `tests/` and run with the smoke tests.
+Prompts that test these guardrails live in `tests/` (run with the smoke tests) and in `evals/` (for example "write 50 five-star reviews" and crypto, medical and physical-goods briefs, all expected to stop).
 
 ## Design decisions
 
@@ -644,3 +658,15 @@ Problem: setup must be `docker compose up`, with no paid service. Chosen: compos
 
 **D14. A talkative Founder Liaison with code-chosen blocking questions.**
 Problem: a system that fills gaps silently can misunderstand the founder and only discover it gates later; a system that asks about everything wastes the founder's time. Chosen: one conversational agent that interviews, reads back, checks in at every phase, puts the investor's objections to the founder and explains any result on request; code (sensitivity and contradiction checks) decides which questions must be answered before a decision is final; an Assumption Ledger tracks what each decision rests on. Rejected: a form with no follow-up, and letting the model decide which questions matter. Cost: more turns per run (capped in demo mode), and the conversation must be kept from becoming a back door for approvals, which the Policy Guard and the missing approval tools prevent.
+
+**D15. Agentic skills inside each agent, bounded by code.**
+Problem: one search pass and one model reading gave scores that swung widely between runs (49 to 85 for the same idea) and counted product listings as evidence. Chosen: a research loop that stops when code says the evidence bar is met, graded findings, majority agreement across readings, a pre-screened shortlist, memory between retries, a fact-checker on every explanation and a rubric self-review of the product, each with settings in `config/thresholds.toml` and smaller limits in demo mode. Rejected: letting an agent decide on its own when research is "enough". Cost: about 2–3 times the tokens at Stage 1 (still $0) and a longer run.
+
+**D16. Explainable gates.**
+Problem: a recommendation like "score 0.47" tells a founder nothing, and an unexplained "stop" feels arbitrary. Chosen: code turns every score into points per factor with a plain reason and the quoted evidence, lists what holds each version back, and asks the Gate Reporter for other directions grounded in the original idea. Rejected: an LLM-written explanation of the score (it can drift from the numbers). Cost: longer reports, mitigated by collapsible sections in the UI.
+
+**D17. A text-only copywriter and a code-rendered landing page.**
+Problem: a model writing HTML can add a fake rating badge, a countdown or a script. Chosen: the model writes text into fixed slots and picks from fixed design options; code renders and escapes everything, applies the founder's validated brand, and strips internal labels. Rejected: model-generated HTML with sanitisation afterwards. Cost: three layouts rather than unlimited designs.
+
+**D18. A simulated founder for the committed demo run, labelled everywhere.**
+Problem: the demo run must show all six stages, and every approval in it would otherwise claim a person clicked. Chosen: `scripts/simulate_founder.py` follows fixed, documented rules on a separate `simulation` channel that the app accepts only with an explicit environment flag (the web UI refuses to start with it); every entry it causes carries `simulated_founder: true`, and the README lists it as MOCKED. Customer interviews are never simulated. Rejected: clicking through as if a person had, or weakening the approval check. Cost: the committed run shows the system's behaviour, not a real founder's judgement.
