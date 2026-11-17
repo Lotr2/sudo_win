@@ -1,0 +1,5 @@
+{
+ "how_scores_work": "Each version gets up to 100 points: evidence that people have this problem (30 points), fit with your skills, budget and time (25 points), places to reach these customers (20 points), can be built as a first version (15 points), room next to existing options (10 points). These weights are design choices, not facts (config/scoring.toml).",
+ "versions": [],
+ "raw_scores": []
+}

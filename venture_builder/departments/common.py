@@ -62,7 +62,8 @@ def gate_markdown(ctx: Context, result: GateResult, memo: dict | None, title: st
         lines += [f"- {w}" for w in memo["what_would_change_it"]]
     if memo and memo.get("other_directions"):
         lines += ["", "## Other directions worth considering", "",
-                  "If this version doesn't work out, these grow out of your original idea and skills:", ""]
+                  "If this version doesn't work out, these grow out of your original idea and skills. They are "
+                  "suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:", ""]
         for o in memo["other_directions"]:
             lines.append(f"- **{o['kind'].capitalize()}:** {o['suggestion']} *{o['why']}*")
     if breakdown:

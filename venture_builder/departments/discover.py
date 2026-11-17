@@ -424,7 +424,8 @@ def _write_phase1_outputs(ctx: Context) -> None:
             md += ["", "**Still guesses (ASSUMPTION):**"] + [f"- {f['claim']}" for f in guesses]
         if e:
             md += ["", "### Score", ""]
-            md += [f"- **{f['name']}: {f['points']} of {f['max']} points.** {f['why']}" for f in e["factors"]]
+            md += [f"- **{f['name']}: {f['points']} of {f['max']} points.** {f['why']}"
+                   + (" Sources: " + _source_links(f["sources"]) + "." if f.get("sources") else "") for f in e["factors"]]
             md += ["", f"**Verdict:** {e['verdict']}"]
         md.append("")
     ctx.store.write_output("phase1_step1_opportunities.md", "\n".join(md))

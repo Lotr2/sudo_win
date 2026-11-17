@@ -139,7 +139,8 @@ def score_variant(v: Variant, findings: list[dict], profile: dict, ledger: Evide
                 "alternatives": alternatives, "channels": len(channels), "skills_covered": covered,
                 "skills_learnable": learnable, "skills_missing": missing, "help_affordable": help_affordable,
                 "budget_needed": v.budget_needed_usd, "month_hours": month_hours, "channel_sites": channel_domains,
-                "problem_sites": sorted(domains), "in_templates": in_templates, "problem_claims": pain_claims[:3]},
+                "problem_sites": sorted(domains), "in_templates": in_templates, "problem_claims": pain_claims[:3],
+                "problem_urls": sorted(urls)[:5]},
     )
 
 

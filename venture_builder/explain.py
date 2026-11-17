@@ -73,7 +73,8 @@ def explain_version(v: Variant, s: VariantScore, weights: dict, g1: dict, profil
     else:
         why = ("The research didn't find people describing this problem online yet. That doesn't mean nobody has it: "
                "it may be discussed in places search can't see (private groups, WhatsApp, in person).")
-    factors.append({"name": FACTORS["pain"], "points": pts("pain", s.pain), "max": mx("pain"), "why": why})
+    factors.append({"name": FACTORS["pain"], "points": pts("pain", s.pain), "max": mx("pain"), "why": why,
+                    "sources": list(i.get("problem_urls") or [])})
 
     covered, learnable, missing = i.get("skills_covered", []), i.get("skills_learnable", []), i.get("skills_missing", [])
     bits = []
@@ -155,6 +156,11 @@ def markdown(explained: list[dict], heading: str = "## How each version scored")
         lines += [f"### {e['name']}: {e['total']} out of 100", "",
                   f"*For {e['customer']}. {e['form'].capitalize()}.*", ""]
         for f in e["factors"]:
-            lines.append(f"- **{f['name']}: {f['points']} of {f['max']} points.** {f['why']}")
+            src = ""
+            if f.get("sources"):
+                from urllib.parse import urlparse
+                src = " Sources: " + ", ".join(f"[{urlparse(u).netloc.removeprefix('www.') or u}]({u})"
+                                              for u in f["sources"]) + "."
+            lines.append(f"- **{f['name']}: {f['points']} of {f['max']} points.** {f['why']}{src}")
         lines += ["", f"**Verdict:** {e['verdict']}", ""]
     return lines

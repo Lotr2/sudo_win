@@ -58,7 +58,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Cost per run
 
-**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). The token count of the committed demo run is filled in from `decision_log.json` after the demo run.
+**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). The committed demo run (`decision_log.json`) used about 28,000 tokens for Stage 1 of the main idea and about 3,900 tokens for the weak idea, all on GPT-OSS-20B locally: $0.00.
 
 ## Demo video
 
