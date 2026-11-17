@@ -82,5 +82,46 @@ class EnvTest(unittest.TestCase):
             self.assertEqual(os.environ["WF_TEST_B"], "quoted")
 
 
+class ResetTest(unittest.TestCase):
+    def setUp(self):
+        self.root = Path(tempfile.mkdtemp())
+        (self.root / "outputs").mkdir()
+        (self.root / "outputs" / "phase1_step3_handoff.json").write_text("{}")
+        (self.root / "runtime").mkdir()
+        (self.root / "runtime" / "store.db").write_text("x")
+        (self.root / "decision_log.json").write_text("[]")
+        for name, value in {"ROOT": self.root, "OUT": self.root / "outputs", "LOG": self.root / "decision_log.json",
+                            "ARCHIVE": self.root / "runs"}.items():
+            patcher = mock.patch.object(workflow, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        env = mock.patch.dict("os.environ", {"RUNTIME_DIR": ""})
+        env.start()
+        self.addCleanup(env.stop)
+
+    def reset(self, answer):
+        with redirect_stdout(io.StringIO()):
+            workflow.reset(input_fn=lambda _: answer)
+
+    def test_cancel_changes_nothing(self):
+        self.reset("c")
+        self.assertTrue((self.root / "outputs" / "phase1_step3_handoff.json").exists())
+        self.assertTrue((self.root / "decision_log.json").exists())
+
+    def test_archive_moves_everything(self):
+        self.reset("a")
+        self.assertFalse((self.root / "outputs").exists())
+        self.assertFalse((self.root / "decision_log.json").exists())
+        (run,) = (self.root / "runs").iterdir()
+        self.assertTrue((run / "outputs" / "phase1_step3_handoff.json").exists())
+        self.assertTrue((run / "runtime" / "store.db").exists())
+        self.assertTrue((run / "decision_log.json").exists())
+
+    def test_delete_removes_everything(self):
+        self.reset("d")
+        for name in ("outputs", "runtime", "decision_log.json", "runs"):
+            self.assertFalse((self.root / name).exists(), name)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -3,6 +3,7 @@
   python workflow.py                 where you are, and the next command to run
   python workflow.py run             run the pipeline from where you are, one step after another
   python workflow.py <phase> [args]  run a phase's commands (args are passed through)
+  python workflow.py reset           clear the previous run (archive it to runs/ or delete it) to start over
   python workflow.py test            run every phase's smoke tests
   python workflow.py up              container start-up: show status, then stay running for `exec`
 
@@ -23,10 +24,13 @@ import signal
 import subprocess
 import sys
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "outputs"
+LOG = ROOT / "decision_log.json"
+ARCHIVE = ROOT / "runs"  # git-ignored
 MIN_NODE_MAJOR = 25  # Phase 3's sandbox needs Node's permission model to block network access
 
 PHASES = {
@@ -205,6 +209,45 @@ def run_all(input_fn=input, runner=run_phase) -> int:
             return code or 1
 
 
+def runtime_dir() -> Path:
+    path = Path(os.environ.get("RUNTIME_DIR") or "runtime")
+    return path if path.is_absolute() else ROOT / path
+
+
+def reset(input_fn=input) -> int:
+    """Clear the previous run so the next `run` starts at Phase 1. Asks first; archiving keeps everything."""
+    targets = [p for p in (OUT, runtime_dir(), LOG) if p.exists()]
+    if not targets:
+        print("Nothing to clear: no outputs/, runtime/ or decision_log.json. `python workflow.py run` starts at Phase 1.")
+        return 0
+    print("This clears the previous run:")
+    for p in targets:
+        count = sum(1 for f in p.rglob("*") if f.is_file()) if p.is_dir() else 1
+        print(f"  {p.relative_to(ROOT) if p.is_relative_to(ROOT) else p}  ({count} file{'s' if count != 1 else ''})")
+    print("runtime/ holds the waitlist sign-ups, the built product, the store database and support tickets.")
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    pick = ask_choice("\nWhat should happen to it?", {
+        "a": f"Archive it to runs/{stamp}/ (git-ignored, nothing lost)",
+        "d": "Delete it permanently",
+        "c": "Cancel",
+    }, input_fn)
+    if pick in {"c", "s"}:
+        print("Cancelled. Nothing was changed.")
+        return 0
+    if pick == "a":
+        dest = ARCHIVE / stamp
+        dest.mkdir(parents=True)
+        for p in targets:
+            shutil.move(str(p), str(dest / p.name))
+        print(f"Archived to {dest.relative_to(ROOT)}/.")
+    else:
+        for p in targets:
+            shutil.rmtree(p) if p.is_dir() else p.unlink()
+        print("Deleted.")
+    print("Start the new run with: python workflow.py run")
+    return 0
+
+
 def run_tests() -> int:
     return subprocess.call([sys.executable, "-m", "unittest", "discover", "-s", "tests"], cwd=ROOT)
 
@@ -219,6 +262,8 @@ def main(argv: list[str]) -> int:
         return run_phase(cmd, rest)
     if cmd == "run":
         return run_all()
+    if cmd == "reset":
+        return reset()
     if cmd == "test":
         return run_tests()
     if cmd == "up":

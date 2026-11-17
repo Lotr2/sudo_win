@@ -24,6 +24,7 @@ That runs the pipeline from wherever you are, one step after another. It asks be
 
 - `python workflow.py` shows where you are and the next command
 - `python workflow.py discover` (or any phase name) runs one phase by hand
+- `python workflow.py reset` clears the previous run (archives it to `runs/` or deletes it, after asking) so the next `run` starts at Phase 1
 - `python workflow.py test` runs every smoke test
 
 Pages served during a run:
