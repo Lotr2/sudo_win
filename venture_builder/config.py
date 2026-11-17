@@ -75,6 +75,11 @@ class Settings:
         return tomllib.loads((self.config_dir / "scoring.toml").read_text())
 
 
+def _under_root(path: str) -> Path:
+    p = Path(path)
+    return p if p.is_absolute() else ROOT / p
+
+
 def load_settings(env: dict[str, str] | None = None, dotenv: Path | None = ROOT / ".env") -> Settings:
     merged = read_dotenv(dotenv) if dotenv else {}
     merged.update({k: v for k, v in (env if env is not None else os.environ).items()})
@@ -98,5 +103,5 @@ def load_settings(env: dict[str, str] | None = None, dotenv: Path | None = ROOT 
         gemma_rpm=int(get("GEMMA_RPM", "30")),
         gemma_tpm=int(get("GEMMA_TPM", "15000")),
         gemma_rpd=int(get("GEMMA_RPD", "14400")),
-        runs_dir=Path(get("RUNS_DIR", str(ROOT / "runs"))),
+        runs_dir=_under_root(get("RUNS_DIR", "runs")),
     )

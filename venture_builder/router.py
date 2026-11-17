@@ -69,16 +69,20 @@ class ModelOutputError(RuntimeError):
 
 
 def extract_json(text: str) -> str:
+    """The first complete JSON object in a reply, ignoring code fences, thinking and trailing text."""
     text = text.strip()
     fence = re.search(r"```(?:json)?\s*(.*?)```", text, re.S)
-    if fence:
+    if fence and fence.group(1).strip().startswith(("{", "[")):
         text = fence.group(1).strip()
-    if not text.startswith(("{", "[")):
-        start = text.find("{")
-        end = text.rfind("}")
-        if start != -1 and end > start:
-            text = text[start:end + 1]
-    return text
+    starts = [i for i in (text.find("{"), text.find("[")) if i != -1]
+    if not starts:
+        return text
+    start = min(starts)
+    try:
+        _, end = json.JSONDecoder().raw_decode(text[start:])
+        return text[start:start + end]
+    except json.JSONDecodeError:
+        return text[start:]
 
 
 class Router:

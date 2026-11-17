@@ -74,20 +74,24 @@ flowchart LR
 
 ### Code map
 
-All code lives in the `venture_builder/` package; thresholds and scoring weights live in `config/` (TOML, read with the Python standard library).
+All code lives in the `venture_builder/` package; thresholds and scoring weights live in `config/` (TOML, read with the Python standard library). Entry points: `venture` (CLI, `cli.py`) and `venture serve` (web UI, `ui/server.py`).
 
 | Concern | Files |
 |---|---|
-| Orchestration | `orchestrator.py` (LangGraph state machine over phases and gates), `dossier.py` (Venture Dossier) |
-| Agents | `agents/<role>.py`, one per role; prompts in `prompts/<role>.md` |
-| Gates and approval | `gates.py`, `approval.py` |
-| Policy checks | `policy_guard.py` |
-| Founder conversation | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py` |
-| Evidence | `ledger.py`, `tools/search.py`, `tools/fetch.py` |
-| Model routing | `router.py` |
+| Orchestration | `orchestrator.py` (LangGraph state machine: one node per department step, one `founder` node that interrupts), `runtime.py` (drives a run for the CLI and the UI), `context.py`, `dossier.py` (Venture Dossier and the per-run store) |
+| Departments | `departments/discover.py`, `validate.py`, `build.py`, `commercial.py`, `launch.py`, `operate.py` (the steps of each phase), `departments/common.py` (gate presentation, STOP memos) |
+| Agents | `agents/<role>.py`, one per role; prompts in `prompts/<role>.md` plus shared rules in `prompts/_shared.md` |
+| Gates and approval | `gates.py`, `approval.py` (outbox, hash-bound approval records, gate decisions, MOCKED publish adapter) |
+| Scoring | `scoring.py` (Phase 1 weighted sum) |
+| Policy checks | `policy_guard.py` (rules, classifier, Compliance Linter) |
+| Founder conversation | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`; `runs/<id>/conversation.jsonl` |
+| Evidence | `ledger.py`, `tools/search.py`, `tools/fetch.py`, `tools/research.py` |
+| Model routing | `router.py` (routing table, rules, `venture doctor`), `llm_clients.py` (Ollama and Gemini clients), `rate_limit.py` (Gemini free tier) |
+| Product templates and QA | `templates/` (guide, template pack, web tool, each with `acceptance_<form>.py`), `qa.py` (sandboxed test runner) |
 | Logging | `decision_log.py` |
-| Payments and delivery (all MOCKED) | `payments.py`, `delivery.py`, `refunds.py`, `webhooks.py`, `reconcile.py` |
-| Interfaces | `ui/` (web UI), `cli.py` |
+| Payments and delivery (all MOCKED) | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `events.py` (append-only event store) |
+| Phase 6 | `metrics.py` |
+| Interfaces | `ui/server.py` + `ui/static/index.html` (web UI), `cli.py` |
 
 ## Phases
 
@@ -483,23 +487,24 @@ The executor recomputes the item's hash. If the item changed after approval, the
 
 ## Built vs. stubbed
 
-**Now** is what the code does today; **Target** is the status each part will have when it is built. A part moves to its target only when its code and tests are in the repository.
+Everything below is implemented and covered by the smoke tests in `tests/`, which run on a fake model client. The demo run in `outputs/` and `decision_log.json` is the real-model run.
 
-| Part | Now | Target | Files (in `venture_builder/`) |
-|---|---|---|---|
-| Orchestrator, dossier, decision log | **STUBBED** | Working | `orchestrator.py`, `dossier.py`, `decision_log.py` |
-| Phase 1 Discover (all steps, Gate 1) | **STUBBED** | Working | `agents/brief_parser.py`, `agents/opportunity_scout.py`, `agents/market_researcher.py`, `agents/competitor_analyst.py`, `agents/mom_test_writer.py` |
-| Phase 2 Validate (all steps, Gate 2) | **STUBBED** | Working; landing-page publishing **MOCKED**; sign-up counts founder-entered or **MOCKED** | `agents/canvas_builder.py`, `agents/skeptical_investor.py`, `agents/experiment_designer.py`, `agents/landing_copywriter.py` |
-| Phase 3 Build (all steps, Gate 3) | **STUBBED** | Working, for the supported product templates | `agents/product_manager.py`, `agents/builder.py`, `agents/docs_writer.py` |
-| Phase 4 Commercial setup | **STUBBED** | Working | `agents/pricing_analyst.py`, `agents/policy_drafter.py` |
-| Phase 5 Launch | **STUBBED** | Working; publishing **MOCKED** | `agents/launch_writers.py`, `approval.py` |
-| Sale to cash | **STUBBED** | Working; payment events **MOCKED** | `payments.py`, `delivery.py`, `refunds.py`, `webhooks.py`, `reconcile.py` |
-| Phase 6 Operate and learn | **STUBBED** | Working; event log **MOCKED** | `agents/support_agent.py`, `agents/pivot_memo_writer.py`, `agents/critic.py` |
-| Customer interviews | **STUBBED** | Script working; interviews are run by the founder; persona rehearsal **SIMULATED** | `agents/mom_test_writer.py` |
-| Gates, approval, policy guard, gate reporter | **STUBBED** | Working | `gates.py`, `approval.py`, `policy_guard.py`, `agents/gate_reporter.py` |
-| Founder conversation (intake, read-back, check-ins, clarifying questions, ask-anything) | **STUBBED** | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py` |
-| Evidence and search | **STUBBED** | Working (SearXNG, self-hosted) | `ledger.py`, `tools/search.py`, `tools/fetch.py` |
-| Web UI | **STUBBED** | Working | `ui/` |
+| Part | Status | Files (in `venture_builder/`) |
+|---|---|---|
+| Orchestrator (LangGraph), dossier, decision log, runtime | Working | `orchestrator.py`, `runtime.py`, `dossier.py`, `decision_log.py` |
+| Model router, Ollama + Gemini clients, free-tier rate limiter, `venture doctor` | Working | `router.py`, `llm_clients.py`, `rate_limit.py` |
+| Phase 1 Discover (all steps, Gate 1) | Working | `departments/discover.py`, `scoring.py`, `agents/brief_parser.py`, `agents/opportunity_scout.py`, `agents/market_researcher.py`, `agents/competitor_analyst.py`, `agents/mom_test_writer.py` |
+| Customer interviews | **STUBBED**: the script is generated; the founder runs real interviews and pastes notes; no simulated personas are offered | `agents/mom_test_writer.py` |
+| Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-up counts founder-entered, labelled **MOCKED** unless real | `departments/validate.py`, `agents/canvas_builder.py`, `agents/skeptical_investor.py`, `agents/experiment_designer.py`, `agents/landing_copywriter.py` |
+| Phase 3 Build (all steps, Gate 3) | Working for the three templates; web-tool browser behaviour **STUBBED** (structure and safety tested statically) | `departments/build.py`, `templates/`, `qa.py`, `agents/product_manager.py`, `agents/builder.py`, `agents/docs_writer.py` |
+| Phase 4 Commercial setup | Working; legal review **STUBBED** (drafts marked not legal advice) | `departments/commercial.py`, `agents/pricing_analyst.py`, `agents/policy_drafter.py`, `policy_guard.py` |
+| Phase 5 Launch | Working; publishing **MOCKED** | `departments/launch.py`, `agents/launch_writers.py`, `approval.py` |
+| Sale to cash | Working against **MOCKED** payment events | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `events.py` |
+| Phase 6 Operate and learn | Working; event log and reply sending **MOCKED** | `departments/operate.py`, `metrics.py`, `agents/support_agent.py`, `agents/pivot_memo_writer.py`, `agents/critic.py` |
+| Gates, approval, policy guard, gate reporter | Working | `gates.py`, `approval.py`, `policy_guard.py`, `agents/gate_reporter.py` |
+| Founder conversation (intake, read-back, kickoffs, clarifying questions, gate walk-through, ask-anything) | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`, `runtime.py` |
+| Evidence and search | Working (SearXNG, self-hosted) | `ledger.py`, `tools/` |
+| Web UI and CLI | Working | `ui/`, `cli.py` |
 
 ## Roadmap
 
@@ -584,7 +589,7 @@ Prompts that test these guardrails live in `tests/` and run with the smoke tests
 Each decision below gives the problem, what was chosen, what was rejected, and the cost of the choice.
 
 **D1. A deterministic orchestrator, not an LLM manager (workflow orchestration).**
-Problem: open-weight models of 20–31B lose track over long, multi-step tool use, and gate outcomes must be explainable. Chosen: a finite-state machine built with LangGraph (a `StateGraph` whose nodes are agents and code steps, with `interrupt` for every founder question, approval and gate decision, and a checkpointer so a run can pause and resume). Rejected: a supervisor agent that decides what runs next, and a hand-written state machine (it would need its own pause/resume and persistence). Cost: less flexibility, since new paths must be added in code; one pip dependency (LangGraph, pinned in `requirements.txt`).
+Problem: open-weight models of 20–31B lose track over long, multi-step tool use, and gate outcomes must be explainable. Chosen: a finite-state machine built with LangGraph (a `StateGraph` whose nodes are agents and code steps, with `interrupt` for every founder question, approval and gate decision, and a checkpointer so a run can pause and resume). Rejected: a supervisor agent that decides what runs next, and a hand-written state machine (it would need its own pause/resume and persistence). Cost: less flexibility, since new paths must be added in code; one pip dependency for orchestration (LangGraph, pinned in `requirements.txt`). Built this way: every department step is a node that returns the next node's name or a question; questions route to a single `founder` node that calls `interrupt()`, and the CLI or UI resumes it. Checkpoints live in SQLite (`runs/<id>/checkpoints.db`), so a run can wait days for interview notes.
 
 **D2. A different pattern for each department.**
 Problem: discovery, judging, building, drafting, sending and monitoring fail in different ways. Chosen: fan-out / fan-in for discovery, generator–critic debate for validation, a build–test loop for building, pipes and filters for commercial setup, a transactional outbox for launch, and a monitor loop with a critic for operations. Rejected: one uniform "crew" topology. Cost: six graph shapes to maintain, all inside one framework.
