@@ -244,6 +244,8 @@ class Runtime:
             raise ValueError("no gate decision is waiting")
         if decision not in {"go", "repeat", "pivot", "stop"}:
             raise ValueError("decision must be go, repeat, pivot or stop")
+        if p.get("allowed") and decision not in p["allowed"]:
+            raise ValueError(f"this check only offers: {', '.join(p['allowed'])}")
         crit = [a.field for a in self.ctx.assumptions.critical_unconfirmed(f"gate{p['gate']}")]
         if decision == "go" and crit:
             raise BlockedDecision("This GO rests on decision-critical assumptions you haven't confirmed: "

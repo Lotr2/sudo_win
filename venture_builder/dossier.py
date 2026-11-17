@@ -71,6 +71,7 @@ class Dossier(BaseModel):
     shortlist: dict = {}           # Stage 1 idea shortlist: kept and dropped versions with their pre-screen signal               # founder's brand for the landing page: name, color (#hex), logo (data URI)     # plain-words score breakdown and other directions shown at Gate 1
     thresholds: dict = {}          # config/thresholds.toml as it was when the run started (see Context.t)
     thresholds_hash: str | None = None
+    failed_step: str | None = None   # a step whose model output couldn't be used, waiting to be repeated
     counters: dict[str, int] = {}
     asked: list[str] = []
     history: list[dict] = []

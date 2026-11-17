@@ -356,6 +356,12 @@ GATE_REASONS = {
         f"visitors ({_amount(f | {'rate': True}, f['target'])} for {f['metric']}). Comparing a count with a share would "
         "give a meaningless answer, so please enter how many people visited and how many signed up or bought, and "
         "the team will work out the share."),
+    "agent_output_invalid": lambda f: (
+        f"The step \u201c{f['step']}\u201d didn't produce a usable answer from the AI model "
+        + ("(even after one automatic retry), so nothing was decided from it. Trying the step again usually works."
+           if f["failures"] < 2 else
+           f"({f['failures']} times now), so nothing was decided from it. The team recommends stopping here for now; "
+           "you can start again later or with another model.")),
     "no_visitors": lambda f: (
         "No visitors were entered, so there is no share to compare with the target yet. Enter how many people visited "
         "and how many signed up or bought."),

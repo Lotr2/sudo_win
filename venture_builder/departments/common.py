@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 
 from .. import labels
-from ..context import END, Ask, Context
+from ..context import END, Ask, Context, Next
 from ..schemas import GateResult
 
 
@@ -84,12 +84,13 @@ def kickoff(ctx: Context, what: str, assumptions: list[str]) -> None:
     ctx.say(founder_liaison.message(ctx, "phase_kickoff", phase=what, assumptions=assumptions), kind="kickoff")
 
 
-def walkthrough(ctx: Context, result: GateResult, explain: dict | None = None) -> None:
-    """Gate walk-through by the Founder Liaison: explains the memo; it cannot change the outcome."""
+def walkthrough(ctx: Context, result: GateResult, explain: dict | None = None, plain: bool = False) -> None:
+    """Gate walk-through by the Founder Liaison: explains the memo; it cannot change the outcome. `plain` skips the
+    model (used when a model step just failed)."""
     from ..agents import founder_liaison
     base = (f"Stage {result.gate} check: the team recommends \"{labels.outcome_name(result.label, result.gate)}\". "
             f"{result.reasons[0]}")
-    if ctx.demo:
+    if ctx.demo or plain:
         ctx.say(base, kind="gate")
         return
     status = {"assumed": "a guess, not confirmed", "confirmed": "confirmed by the founder",
@@ -107,7 +108,7 @@ def walkthrough(ctx: Context, result: GateResult, explain: dict | None = None) -
 
 
 def present_gate(ctx: Context, result: GateResult, markdown: str, resume_to: str, extra: dict | None = None,
-                 explain: dict | None = None) -> Ask:
+                 explain: dict | None = None, plain: bool = False) -> Ask:
     d = ctx.dossier
     n = result.gate
     attempt = d.bump(f"gate{n}_attempt")
@@ -116,7 +117,7 @@ def present_gate(ctx: Context, result: GateResult, markdown: str, resume_to: str
     result.critical_unconfirmed = crit
     result.rests_on = [a.id for a in ctx.assumptions.rests_on(f"gate{n}")]
     ctx.store.write_output(f"phase{n}_gate_decision.md", markdown)
-    walkthrough(ctx, result, explain)
+    walkthrough(ctx, result, explain, plain=plain)
     return Ask("gate", {"gate": n, "attempt": attempt, "recommended": result.outcome, "label": result.label,
                         "reasons": result.reasons, "memo_file": f"phase{n}_gate_decision.md",
                         "critical_unconfirmed": crit, "code": ctx.outbox.issue_gate_code(n, attempt), **(extra or {})},
@@ -143,6 +144,34 @@ def stop_run(ctx: Context, gate: int, reason: str) -> str:
             "evidence is a good outcome: it saves you time and money. You can start a new project any time, for "
             "example with a narrower customer group or a different version of the idea.", kind="stop")
     return END
+
+
+def agent_failed(ctx: Context, node: str, exc: Exception) -> Ask:
+    """A step whose model output couldn't be used (after the router's one retry) or whose model was unreachable.
+    The run doesn't crash: the failure is logged and the founder gets a stage check that recommends repeating the
+    step (or stopping, if it already failed before). Go isn't offered, because the step produced nothing. No model
+    is called here."""
+    from ..decision_log import log_action
+    d = ctx.dossier
+    failures = d.bump(f"failed:{node}")
+    d.failed_step = node
+    log_action("orchestrator", "step_failed", node=node, failures=failures, error=f"{type(exc).__name__}: {exc}"[:300])
+    outcome = "repeat" if failures < 2 else "stop"
+    facts = {"step": labels.STEPS.get(node, node.replace("_", " ")), "failures": failures}
+    res = GateResult(gate=d.phase, outcome=outcome, codes=["agent_output_invalid"],
+                     reasons=[labels.gate_reason("agent_output_invalid", facts)], details={"failed_step": node})
+    md = gate_markdown(ctx, res, None, "A step needs to be tried again", f"gate{d.phase}")
+    return present_gate(ctx, res, md, "step_failed_decided", {"allowed": ["repeat", "stop"], "failed_step": node},
+                        plain=True)
+
+
+def step_failed_decided(ctx: Context, answer) -> str | Next:
+    d = ctx.dossier
+    rec = decision(ctx, d.phase)
+    if rec["decision"] == "stop":
+        return stop_run(ctx, d.phase, "; ".join(d.gates[str(d.phase)].reasons))
+    node, d.failed_step = d.failed_step, None
+    return Next(node)
 
 
 def items_payload(ctx: Context, ids: list[str]) -> dict:

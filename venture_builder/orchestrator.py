@@ -20,11 +20,14 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import interrupt
 
 from .context import END as END_NODE, Ask, Context, Next
-from .departments import build, commercial, discover, launch, operate, validate
+from .departments import build, commercial, common, discover, launch, operate, validate
+from .llm_clients import ModelUnavailable
+from .router import ModelOutputError
 
 NODES: dict = {}
 for _mod in (discover, validate, build, commercial, launch, operate):
     NODES.update(_mod.NODES)
+NODES["step_failed_decided"] = common.step_failed_decided
 
 FIRST_NODE = "p1_parse"
 NO_ANSWER = {"no_answer": True}  # LangGraph cannot resume with None
@@ -47,7 +50,11 @@ def _wrap(ctx: Context, name: str, fn):
             return {"pending": None, "next": answer["rerun"], "answer": None}
         with ctx.bound():
             ctx.store.progress(f"step {name}", kind="step", node=name)
-            result = fn(ctx, state.get("answer"))
+            try:
+                result = fn(ctx, state.get("answer"))
+            except (ModelOutputError, ModelUnavailable) as exc:
+                # Never crash the run on a model failure: log it and let the founder repeat the step or stop.
+                result = common.agent_failed(ctx, name, exc)
             ctx.dossier.history.append({"node": name})
             ctx.save()
         if isinstance(result, Ask):

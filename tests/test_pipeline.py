@@ -259,3 +259,39 @@ def test_older_run_logs_are_migrated(tmp_path):
     log.append("b", "y")
     assert [e["id"] for e in log.entries] == ["log_1", "log_2"]
     assert len((tmp_path / "decision_log.jsonl").read_text().splitlines()) == 2
+
+
+# ---- an agent that keeps returning unusable output never crashes the run ----
+
+def test_repeated_invalid_agent_output_pauses_the_run_instead_of_crashing(make_runtime, models):
+    """Regression: the Product Manager returned an invalid spec twice in a row (router: one retry, then
+    ModelOutputError), and the whole run crashed at the start of Stage 3."""
+    from conftest import drive
+    good = models.product_manager
+    models.product_manager = lambda p: {"title": "x"}            # never a valid spec
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=3)
+    assert p["kind"] == "gate" and p["gate"] == 3
+    assert p["recommended"] == "repeat" and p["allowed"] == ["repeat", "stop"]
+    assert "Writing the product plan" in p["reasons"][0] or "p3_spec" not in p["reasons"][0]
+    assert any(e["action"] == "step_failed" and e["node"] == "p3_spec" for e in rt.ctx.store.log.entries)
+    import pytest
+    from conftest import confirm_gate
+    with pytest.raises(ValueError):                                # go isn't offered: the step produced nothing
+        rt.decide_gate("go", confirm_gate(p))
+    models.product_manager = good                                  # the model recovers: repeat re-runs the step
+    rt.decide_gate("repeat", confirm_gate(p))
+    p = drive(rt, stop_at_gate=3)
+    assert p["gate"] == 3 and p.get("allowed") is None and rt.dossier.spec is not None
+
+
+def test_a_step_that_keeps_failing_recommends_stop(make_runtime, models):
+    from conftest import confirm_gate, drive
+    models.product_manager = lambda p: {"title": "x"}
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=3)
+    rt.decide_gate("repeat", confirm_gate(p))
+    p = rt.pending()
+    assert p["kind"] == "gate" and p["recommended"] == "stop"
+    rt.decide_gate("stop", confirm_gate(p))
+    assert rt.dossier.status == "stopped"

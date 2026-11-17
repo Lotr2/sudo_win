@@ -90,6 +90,8 @@ def decide(rt, p: dict, follow: bool, repeats: dict, follow_from: int | None = N
         repeats[gate] = repeats.get(gate, 0) + 1
     else:
         choice = "go"
+    if p.get("allowed") and choice not in p["allowed"]:
+        choice = rec            # e.g. a failed step offers only repeat or stop
     note = ""
     if choice != rec:
         note = (f"Simulated founder for the demo run: continues so the run shows all six stages "
