@@ -1,0 +1,3 @@
+Task: write launch drafts for the founder to review: a store page and one post per channel.
+
+Return {store_page: {headline, description, whats_included, price_line, refund_line}, posts: [{channel, text}]}. Posts are written in the founder's own first-person voice for the founder to publish themselves under their own name; never write as a customer, a reviewer or another brand. No testimonials, user counts, scarcity, urgency, countdowns, guarantees of results or income claims. Mention the price and refund window honestly. Follow the requested tone. Fix anything listed in rejected_by_policy_guard.
