@@ -1,141 +1,108 @@
 # Stage 1: Versions of your idea and what the research found
 
-*Your idea:* a kit that helps freelance designers get paid on time with proposal and invoice templates, polite late-payment reminder emails, and a short guide
+*Your idea:* A digital kit of proposal and invoice templates, polite late‑payment reminder emails, and a short guide to help freelance designers get paid on time.
 
 The team turned your idea into a few small, sellable versions, then searched the web for real people describing the problem, existing competitors, and places where these customers gather. Anything without a source is marked as a guess (ASSUMPTION).
 
-## 1. Proposal & Invoice Pack (40 out of 100)
+## 1. Polite Reminder Email Pack (55 out of 100)
 
-- **Who it's for:** freelance designers in their first three years
-- **Their problem:** I struggle to create professional proposals and invoices that get paid on time.
+- **Who it's for:** freelance designers in their first 3 years
+- **Their problem:** they struggle to send polite reminders without sounding pushy
 - **What you'd make:** a pack of ready-to-use templates
-- **Effort:** about 20 hours of work and $0
+- **Effort:** about 6 hours of work and $0
 
 ### What the research found
 
-**Existing options:**
-- BetterProposals offers a freelance design proposal template that includes work showcase and pricing details ([betterproposals.io](https://betterproposals.io/proposal-templates/freelance-design-proposal-template))
-- Bookipi provides downloadable free business proposal templates in multiple file formats ([bookipi.com](https://bookipi.com/proposal-template/))
-- PandaDoc supplies business proposal templates and examples to help stand out ([pandadoc.com](https://www.pandadoc.com/business-proposal-templates/))
-- Canva offers templates for research and business proposals with prescribed formats ([canva.com](https://www.canva.com/proposals/templates/))
-- Template.net hosts customizable freelancer proposal templates in Google Docs that are free to download ([template.net](https://www.template.net/proposals/freelancer/google-docs))
-- There are free proposal and invoice template packs available on sites like The Freelancer Kit, Canva, Invoice Ninja, and InvoiceTo.me. ([invoiceninja.com](https://invoiceninja.com/), [thefreelancerkit.com](https://thefreelancerkit.com/), [canva.com](https://www.canva.com/invoice/))
-- The Freelancer Kit offers a free 15‑template pack that includes proposals, contracts, and invoices for freelancers. ([thefreelancerkit.com](https://thefreelancerkit.com/))
-- Template.net provides professionally designed free proposal templates that can be customized and printed. ([template.net](https://www.template.net/proposals))
-
-### Score
-
-- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for graphic design, writing, figma and google docs; it needs about 20 hours (you have about 24 a month) and about $0 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 10 existing options but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.
-
-## 2. Polite Reminder Kit (40 out of 100)
-
-- **Who it's for:** freelance designers in their first three years
-- **Their problem:** I send reminders but they feel pushy and I lose clients.
-- **What you'd make:** a pack of ready-to-use templates
-- **Effort:** about 15 hours of work and $0
-
-### What the research found
-
-**Existing options:**
-- Saleshandy offers gentle reminder email templates for polite reminders ([saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/))
-- Sender.net provides free reminder email templates with friendly examples ([sender.net](https://www.sender.net/blog/reminder-email/))
-- TemplateLab supplies polite reminder email samples with friendly tone ([templatelab.com](https://templatelab.com/reminder-email/))
-- Keap offers free reminder email templates and an advanced guide ([keap.com](https://keap.com/email-templates/reminder))
-- HelloBonsai provides 12 gentle reminder email examples for clients ([hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example))
-- Saleshandy offers a collection of polite reminder email templates for freelancers and agencies. ([saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/))
-- Sender.net provides friendly reminder email templates with subject lines and copy‑paste examples. ([sender.net](https://www.sender.net/blog/reminder-email/))
-- Cobroclaro offers a payment reminder template that includes invoice details and a polite tone. ([cobroclaro.netlify.app](https://cobroclaro.netlify.app/en.html))
-- WeAreIndy shares payment reminder email templates and tips to avoid missed payments, noting that 29% of freelancer invoices are paid late. ([weareindy.com](https://weareindy.com/blog/how-to-politely-ask-for-payment))
-- Docstoc provides a free freelancer overdue template for 30 days, designed for solo consultants. ([docstoc.io](https://docstoc.io/free-templates/freelancer-30-days-overdue-reminder))
-- Sparkle.io supplies gentle reminder email templates for payments, meetings, and approvals, explaining how to keep follow‑ups polite. ([sparkle.io](https://sparkle.io/blog/gentle-reminder-email/))
-- Textmagic offers reminder email samples that emphasize nudging rather than pressuring the recipient. ([textmagic.com](https://www.textmagic.com/blog/reminder-email-best-practices/))
-
-### Score
-
-- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and google docs; it needs about 15 hours (you have about 24 a month) and about $0 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 10 existing options but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.
-
-## 3. All-in-One Payment Toolkit (50 out of 100)
-
-- **Who it's for:** freelance designers in their first three years
-- **Their problem:** I need a single place to manage proposals, invoices, and reminders without juggling multiple tools.
-- **What you'd make:** a small web tool (like a calculator or planner)
-- **Effort:** about 60 hours of work and $100
-
-### What the research found
-
-**People with the problem:**
-- Freelance designers spend over 6 hours a week on admin tasks like proposals and invoicing. ([plutio.com](https://www.plutio.com/freelancer-magazine/how-to-automate-freelance-business))
 **Signs people want a solution:**
-- Freelancers look for free invoicing software ([invoiceninja.com](https://invoiceninja.com/))
-- Designers want a single platform that automates intake, proposals, invoicing, and follow‑ups. ([plutio.com](https://www.plutio.com/freelancer-magazine/how-to-automate-freelance-business))
-**Where these customers gather:**
-- Freelance designers gather on Upwork ([upwork.com](https://www.upwork.com/hire/graphic-designers/))
-- The community of designers often uses platforms that combine proposals, contracts, invoices, and client management in one place. ([oto.work](https://oto.work/))
+- Freelancers are looking for polite reminder email templates to avoid sounding pushy. ([hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example))
+- People ask how to politely remind someone via email, indicating a need for guidance on tone. ([hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example))
+- There are many ready‑made polite reminder email templates available online for freelancers. ([pumble.com](https://pumble.com/blog/friendly-reminder-email/), [tickoffhq.com](https://tickoffhq.com/), [flowlu.com](https://www.flowlu.com/blog/productivity/gentle-reminder-email/))
 **Existing options:**
-- Fugoya is a tool that helps freelancers manage proposals, invoices, and time tracking in one place. ([fugoya.com](https://fugoya.com/))
-- Invoice Ninja offers free invoicing software for freelancers, allowing you to send invoices and quotes and track time and expenses. ([invoiceninja.com](https://invoiceninja.com/))
-- Flame Apps Development provides AI‑driven proposals, reminders, and client emails that can be created by voice or text. ([flameappsdevelopment.com](https://www.flameappsdevelopment.com/voice-to-text/ai-for-freelancers))
-- Canva offers free invoice templates that freelancers can personalize to show unit price, quantity, discounts, and total amount. ([canva.com](https://www.canva.com/invoice/templates/freelance/))
-- FreshBooks provides downloadable freelance graphic design invoice templates and also lets you schedule invoices, automate payment reminders, and add late fees. ([freshbooks.com](https://www.freshbooks.com/invoice-templates/freelance-design))
-- Invoice Ninja offers free invoicing software with customizable templates for freelancers. ([invoiceninja.com](https://invoiceninja.com/))
-- Finviva provides instant AI invoicing, expense tracking, and tax prep for freelancers. ([finvivaapp.com](https://finvivaapp.com/quickbooks-alternative-for-freelancers))
-- Wave offers free invoicing templates and tools for freelance designers. ([waveapps.com](https://www.waveapps.com/invoice-templates/freelance-design))
-- hiredto.work replaces multiple tools with a single platform for portfolio, payments, and projects. ([hiredto.work](https://hiredto.work/))
-- Contra lets freelancers manage contracts and invoicing in one place on a commission‑free platform. ([hostinger.com](https://www.hostinger.com/tutorials/best-freelance-websites/))
-- 99designs is a freelance marketplace that helps designers build portfolios and manage client workflow. ([hostinger.com](https://www.hostinger.com/tutorials/best-freelance-websites/))
-**What existing options cost:**
-- Invoice Ninja is free to start and does not require a credit card. ([invoiceninja.com](https://invoiceninja.com/))
+- Respona offers free reminder email templates that can help freelancers send polite follow‑ups when pitching to websites. ([respona.com](https://respona.com/blog/reminder-email/))
+- GetJobber provides appointment reminder email templates that are popular among service providers for easy automation. ([getjobber.com](https://www.getjobber.com/academy/appointment-reminder-templates/))
+- Unlayer supplies responsive reminder email templates that can be customized with a drag‑and‑drop editor without coding skills. ([unlayer.com](https://unlayer.com/email-templates/reminder))
+- SalesHandy offers 19 ready‑to‑copy gentle reminder email templates for quick use. ([saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/))
+- Pinterest hosts free printable reminder email templates in PDF format for events, meetings, and deadlines. ([pinterest.com](https://www.pinterest.com/ideas/reminder-email-sample/899876213352/))
+- There are several existing template packs that offer polite reminder emails, such as the ones found on saleshandy.com, sender.net, hellobonsai.com, salesmate.io, and respona.com. ([respona.com](https://respona.com/blog/reminder-email/), [hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example), [saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/))
 
 ### Score
 
-- **Evidence that people have this problem: 12 of 30 points.** Found 2 real examples of people describing this problem or looking for help with it, on invoiceninja.com and plutio.com. Full marks need 5. For example: “Freelancers look for free invoicing software” / “Freelance designers spend over 6 hours a week on admin tasks like proposals and invoicing”. Sources: [invoiceninja.com](https://invoiceninja.com/), [plutio.com](https://www.plutio.com/freelancer-magazine/how-to-automate-freelance-business).
-- **Fit with your skills, budget and time: 17 of 25 points.** You already have what it takes for figma and google docs; you'd need help with no-code platform; it needs about 60 hours (you have about 24 a month) and about $100 (your budget is $150).
-- **Places to reach these customers: 13 of 20 points.** These customers can be found on oto.work and upwork.com.
-- **Can be built as a first version: 8 of 15 points.** It's a small web tool (like a calculator or planner), which the team can build, but at about 60 hours it's more than a month of your time.
+- **Evidence that people have this problem: 15 of 30 points.** Found 5 real examples of people describing this problem or looking for help with it, on flowlu.com, hellobonsai.com, pumble.com and saleshandy.com and 1 more. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 4 are articles or other pages (these count a little less); 0 of 5 are about your market (the others count less). For example: “Freelancers are looking for polite reminder email templates to avoid sounding pushy” / “People ask how to politely remind someone via email, indicating a need for guidance on tone”. Sources: [pumble.com](https://pumble.com/blog/friendly-reminder-email/), [tickoffhq.com](https://tickoffhq.com/), [flowlu.com](https://www.flowlu.com/blog/productivity/gentle-reminder-email/).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for graphic design and writing; it needs about 6 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
+- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 0 of 10 points.** Found 8 existing options but no complaints about them. Complaints show where you could do better.
+
+**Verdict:** Held back because it scores 55 out of 100; 60 is needed.
+
+## 2. Invoice Template Pack (59 out of 100)
+
+- **Who it's for:** freelance designers in their first 3 years
+- **Their problem:** they need professional invoices that look good
+- **What you'd make:** a pack of ready-to-use templates
+- **Effort:** about 5 hours of work and $0
+
+### What the research found
+
+**Signs people want a solution:**
+- Freelance designers are looking for ready‑made invoice templates to save time and look professional. ([billed.app](https://billed.app/invoice-templates/freelance-designer/), [invoicemaker.com](https://invoicemaker.com/templates/freelance/designer/), [freshbooks.com](https://www.freshbooks.com/invoice-templates/freelance-design))
+**Where these customers gather:**
+- Pinterest is a place where freelance designers share and discover invoice templates. ([pinterest.com](https://www.pinterest.com/ideas/freelance-invoice-template/944099864122/))
+**Existing options:**
+- Canva offers a free Invoice Maker with customizable templates that can be sent as PDFs or via email. ([canva.com](https://www.canva.com/invoice/))
+- Invoice Ninja provides free invoicing software with 11 customizable template designs for freelancers and small businesses. ([invoiceninja.com](https://invoiceninja.com/))
+- InvoiceMaker.com offers a free online tool with over 500 professionally designed invoice templates for various industries. ([invoicemaker.com](https://invoicemaker.com/))
+- InvoiceTo.me supplies a simple free online invoice template that automatically calculates taxes and totals. ([invoiceto.me](https://www.invoiceto.me/))
+- InvoiceHome provides more than 100 free invoice templates created by professional graphic designers. ([invoicehome.com](https://invoicehome.com/))
+- Invoice Generator offers a free online tool to create and download professional PDF invoices with customizable templates. ([invoice-generator.com](https://invoice-generator.com/))
+- Invoice Ninja provides free invoicing software for freelancers and small businesses, allowing users to send invoices, quotes, and track payments online. ([invoiceninja.com](https://invoiceninja.com/))
+- InvoiceHome lets users create and send PDF invoices using over 100 professional templates, with options to email directly and receive payments. ([invoicehome.com](https://invoicehome.com/?msockid=3b7024d6d9996b7e17e73cc2d8596acf))
+- Canva’s free Invoice Maker gives freelancers access to 100% customizable invoice templates that can be sent as PDFs or via email. ([canva.com](https://www.canva.com/invoice/), [canva.com](https://www.canva.com/invoice/templates/freelance/))
+- InvoiceSimple offers a powerful invoice generator template designed to streamline billing, producing professional-looking invoices. ([invoicesimple.com](https://www.invoicesimple.com/invoice-generator))
+
+### Score
+
+- **Evidence that people have this problem: 19 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on billed.app, freshbooks.com, invoicemaker.com and pinterest.com. Full marks need 5. Of these, 4 are articles or other pages (these count a little less); 4 of 4 are about your market. For example: “Freelance designers are looking for ready‑made invoice templates to save time and look professional”. Sources: [billed.app](https://billed.app/invoice-templates/freelance-designer/), [invoicemaker.com](https://invoicemaker.com/templates/freelance/designer/), [freshbooks.com](https://www.freshbooks.com/invoice-templates/freelance-design).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for graphic design and writing; it needs about 5 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
+- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
 - **Room next to existing options: 0 of 10 points.** Found 9 existing options but no complaints about them. Complaints show where you could do better.
 
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 2); it needs about 60 hours, more than a month of your time (24 hours); it scores 50 out of 100; 60 is needed.
+**Verdict:** Held back because it scores 59 out of 100; 60 is needed.
 
-## 4. Payment Checklist Guide (67 out of 100)
+## 3. Proposal & Invoice Guide (60 out of 100)
 
-- **Who it's for:** freelance designers in their first three years
-- **Their problem:** I don't know what steps to take to ensure timely payment from clients.
+- **Who it's for:** freelance designers in their first 3 years
+- **Their problem:** they find it hard to write clear proposals and invoices
 - **What you'd make:** a written guide (an e-book or PDF)
 - **Effort:** about 10 hours of work and $0
 
 ### What the research found
 
 **People with the problem:**
-- Freelance designers struggle with late payments ([reallygooddesigns.com](https://reallygooddesigns.com/how-get-clients-pay/))
+- Freelance graphic designers find writing proposals daunting when they have never done it before. ([dribbble.com](https://dribbble.com/resources/freelance/design-proposal))
 **Signs people want a solution:**
-- Freelance designers look for tools to streamline payment processes ([winvesta.in](https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them))
+- Designers want software that assists with proposal creation and client approval. ([dribbble.com](https://dribbble.com/resources/freelance/design-proposal))
 **Where these customers gather:**
-- Freelance designers can find job postings on websites like ryrob.com to get paid fast. ([ryrob.com](https://www.ryrob.com/freelance-jobs/))
-- Freelance designers can post or browse projects on Upwork to connect with clients and receive payments. ([upwork.com](https://www.upwork.com/hire/web-designers/))
-- Freelance designers gather on Upwork to find jobs ([upwork.com](https://www.upwork.com/hire/web-designers/))
+- Freelance designers gather on platforms like Upwork to find work and access guides for freelancing. ([upwork.com](https://www.upwork.com/freelancers/~0114fc75229dbf28b6))
 **Existing options:**
-- Upwork is a platform where clients post freelance jobs and you can hire top freelancers. ([upwork.com](https://www.upwork.com/hire/))
-- Ryrob lists freelance job websites where clients post remote freelance jobs to get paid fast. ([ryrob.com](https://www.ryrob.com/freelance-jobs/))
-- Hostinger offers gig-based pricing and built-in order management for freelancing in web development, content writing, graphic design, social media, and voice-overs. ([hostinger.com](https://www.hostinger.com/tutorials/best-freelance-websites/))
+- Canva offers proposal templates that can help freelance designers start writing proposals quickly. ([canva.com](https://www.canva.com/proposals/templates/))
+- Template.net provides free, customizable one‑page proposal templates suitable for designers. ([template.net](https://www.template.net/proposals/one-page))
+- Aiproposer offers a free freelance proposal template with fill‑in‑the‑blank examples for designers and other freelancers. ([aiproposer.com](https://aiproposer.com/guides/upwork-proposals/freelance-proposal-template))
+- Pinterest hosts free Canva proposal templates that can be used by designers to look professional. ([pinterest.com](https://www.pinterest.com/ideas/canva-free-proposal-template/898604145179/))
+- Freepik supplies free graphic resources such as vectors and PSD files that can be used to design proposal templates for freelancers. ([freepik.com](https://www.freepik.com/free-photos-vectors/proposal-design-freelancers/2))
+- Freelance designers can use auto‑calculating business invoice templates that are ready to brand and upload to their billing system. ([linkedin.com](https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC))
+- Online invoicing services let designers track invoice status on the go and manage payments efficiently. ([linkedin.com](https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c))
+**Complaints about existing options:**
+- Designers often struggle to find free invoice templates and end up piecing together terms from multiple sites. ([linkedin.com](https://www.linkedin.com/pulse/easiest-way-start-offering-invoicing-onboarding-kelly-pennington-ndacf))
+- Many freelancers feel uncertain about whether their clients will accept informal or unbranded invoices. ([linkedin.com](https://www.linkedin.com/pulse/easiest-way-start-offering-invoicing-onboarding-kelly-pennington-ndacf))
 
 ### Score
 
-- **Evidence that people have this problem: 12 of 30 points.** Found 2 real examples of people describing this problem or looking for help with it, on reallygooddesigns.com and winvesta.in. Full marks need 5. For example: “Freelance designers struggle with late payments” / “Freelance designers look for tools to streamline payment processes”. Sources: [reallygooddesigns.com](https://reallygooddesigns.com/how-get-clients-pay/), [winvesta.in](https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and google docs; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).
-- **Places to reach these customers: 13 of 20 points.** These customers can be found on ryrob.com and upwork.com.
+- **Evidence that people have this problem: 5 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on dribbble.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 1 of 1 is about your market. For example: “Freelance graphic designers find writing proposals daunting when they have never done it before”. Sources: [dribbble.com](https://dribbble.com/resources/freelance/design-proposal).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and graphic design; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 13 of 20 points.** These customers can be found on linkedin.com and upwork.com.
 - **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 2 of 10 points.** Found 3 existing options but no complaints about them. Complaints show where you could do better.
+- **Room next to existing options: 2 of 10 points.** Found 7 existing options and 1 complaint about them. Complaints show where you could do better.
 
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 2).
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1).

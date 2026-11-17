@@ -2,7 +2,7 @@
 
 All payment events are **MOCKED**: no provider, no keys, no card data, no real money.
 
-Run: `20261117-152632-056f`
+Run: `20261117-164836-6f7a`
 
 1. Checkout ord_001 ($27) → payment.succeeded evt_0002 → webhook: **delivered**
 2. Same event replayed → webhook: **duplicate**; deliveries for ord_001: 1

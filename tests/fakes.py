@@ -28,6 +28,9 @@ class FakeModels:
         self.variants = None
         self.cite_unknown = False
         self.calls: list[str] = []
+        self.fact_check = None          # set to a FactCheck dict to simulate a failed fact-check
+        self.product_review = None      # set to a callable returning a ProductReview dict
+        self.reviews = 0
 
     def __call__(self, *, role, model, system, user, schema):
         self.calls.append(role)
@@ -75,23 +78,27 @@ class FakeModels:
              "product_form": "web_tool", "skills_needed": ["javascript"], "est_build_hours": 60, "budget_needed_usd": 500}]}
 
     def _plan(self, p):
+        if p["task"] == "refine":
+            return {"queries": [f"{p['variant']['name']} problem forum {len(p['already_tried'])}"]}
         return {"queries": [f"{p['variant']['name']} problem"]}
 
     def _findings(self, p, kinds):
         ids = [e["id"] for e in p["evidence"]]
         if self.cite_unknown:
-            return {"findings": [{"kind": kinds[0], "claim": "made up", "evidence_ids": ["ev_999"]}]}
+            return {"findings": [{"kind": kinds[0], "claim": "made up", "evidence_ids": ["ev_999"],
+                                  "source_type": "other", "about_market": True}]}
         out = []
         for i, eid in enumerate(ids):
             quote = next(e["quote"] for e in p["evidence"] if e["id"] == eid)
-            out.append({"kind": kinds[i % len(kinds)], "claim": quote[:120], "evidence_ids": [eid]})
+            out.append({"kind": kinds[i % len(kinds)], "claim": quote[:120], "evidence_ids": [eid],
+                        "source_type": "first_hand", "about_market": True})
         return {"findings": out}
 
     def market_researcher(self, p):
-        return self._plan(p) if p["task"] == "plan" else self._findings(p, ["pain", "pain", "pain", "channel"])
+        return self._plan(p) if p["task"] in {"plan", "refine"} else self._findings(p, ["pain", "pain", "pain", "channel"])
 
     def competitor_analyst(self, p):
-        return self._plan(p) if p["task"] == "plan" else self._findings(p, ["complaint", "price", "alternative"])
+        return self._plan(p) if p["task"] in {"plan", "refine"} else self._findings(p, ["complaint", "price", "alternative"])
 
     def mom_test_writer(self, p):
         return {"intro": "I'm learning how freelancers handle invoices.", "questions": ["Tell me about the last late payment."],
@@ -194,6 +201,13 @@ class FakeModels:
         keys = [k for k in p["metrics"] if k in ("conversion", "refund_rate")]
         return {"recommendation": "persevere", "body": "MOCKED data: conversion meets the target.",
                 "claims": [{"text": "Conversion meets the target", "metric_keys": keys[:1]}]}
+
+    def fact_checker(self, p):
+        return dict(self.fact_check) if self.fact_check else {"ok": True, "problems": [], "revised": ""}
+
+    def product_reviewer(self, p):
+        self.reviews += 1
+        return self.product_review(p) if callable(self.product_review) else {"score": 5, "issues": []}
 
     def critic(self, p):
         return {"checks": [{"claim_index": i, "matches_data": True, "comment": "ok"} for i, _ in enumerate(p["memo"]["claims"])],

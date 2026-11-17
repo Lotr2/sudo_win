@@ -138,3 +138,44 @@ def test_breakdown_flags_evidence_that_does_not_mention_the_market():
     assert "don't mention your market" in why or "none of these examples mention your market" in why
     s.inputs["problem_claims"] = ["Drivers in Cairo say mechanics overcharge."]
     assert "mention your market" not in explain_version(v, s, w, g1, {"market": "people in Cairo"})["factors"][0]["why"]
+
+
+def test_fact_checker_replaces_overstated_explanations(make_runtime, models):
+    models.fact_check = {"ok": False, "problems": ["'posts from people in Cairo' overstates general articles"],
+                         "revised": "The team found general articles about this problem."}
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=1)
+    report = (rt.ctx.store.outputs / p["memo_file"]).read_text()
+    assert "The team found general articles about this problem." in report
+    walk = [t["text"] for t in rt.ctx.store.conversation() if t.get("kind") == "gate"][-1]
+    assert "The team found general articles about this problem." in walk
+    assert "fact_checker" in models.calls
+
+
+def test_scout_generates_many_versions_and_keeps_a_varied_shortlist(make_runtime, models):
+    forms = ["guide", "guide", "guide", "template_pack", "web_tool", "guide"]
+    models.variants = [{"id": f"v{i}", "name": f"Idea {i}", "target_customer": "freelance designers",
+                        "problem": "clients pay invoices late", "product_form": forms[i - 1], "skills_needed": ["writing"],
+                        "est_build_hours": 10, "budget_needed_usd": 0} for i in range(1, 7)]
+    rt = make_runtime()
+    drive(rt, stop_at_gate=1)
+    d = rt.dossier
+    assert len(d.shortlist["considered"]) == 6 and len(d.variants) == 4
+    assert [v.id for v in d.variants] == ["v1", "v2", "v3", "v4"]
+    assert sum(1 for v in d.variants if v.product_form == "guide") <= 2          # variety in the shortlist
+    log = rt.ctx.store.path("decision_log.json").read_text()
+    assert '"shortlist_versions"' in log
+
+
+def test_shortlist_ranks_and_keeps_variety():
+    from venture_builder.departments.discover import shortlist
+    rows = [{"id": "a", "form": "guide", "rank": .9}, {"id": "b", "form": "guide", "rank": .8},
+            {"id": "c", "form": "guide", "rank": .7}, {"id": "d", "form": "web_tool", "rank": .2}]
+    assert shortlist(rows, 3) == ["a", "b", "d"]
+
+
+def test_fact_check_without_a_stated_problem_keeps_the_original(make_runtime, models):
+    models.fact_check = {"ok": False, "problems": [], "revised": "Something else entirely."}
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=1)
+    assert "Something else entirely." not in (rt.ctx.store.outputs / p["memo_file"]).read_text()

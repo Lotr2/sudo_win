@@ -65,8 +65,26 @@ def explain_version(v: Variant, s: VariantScore, weights: dict, g1: dict, profil
         terms = market_terms((profile or {}).get("market")) | market_terms(v.target_customer)
         local = not terms or any(t in c.lower() for c in claims for t in terms) or \
             any(t in site for site in sites for t in terms)
+        grades = i.get("problem_grades") or {}
+        firsthand = grades.get("first_hand", 0) + grades.get("question", 0)
+        other = s.pain_signals - firsthand
+        on_market = i.get("problem_on_market")
+        grade_txt = ""
+        if grades:
+            parts = []
+            if firsthand:
+                parts.append(f"{firsthand} {'is a person' if firsthand == 1 else 'are people'} describing it first-hand "
+                             "or asking for help")
+            if other:
+                parts.append(f"{other} {'is an article or other page' if other == 1 else 'are articles or other pages'} "
+                             "(these count a little less)")
+            if on_market is not None:
+                parts.append(f"{on_market} of {s.pain_signals} {'is' if on_market == 1 else 'are'} about your market"
+                             + (" (the others count less)" if on_market < s.pain_signals else ""))
+            grade_txt = " Of these, " + "; ".join(parts) + "."
         why = (f"Found {labels.plural(s.pain_signals, 'real example')} of people describing this problem or "
                "looking for help with it" + (f", on {_sites(sites)}" if sites else "") + f". Full marks need {cap}."
+               + grade_txt
                + (" For example: " + " / ".join(_quote(c) for c in claims[:2]) + "." if claims else "")
                + ("" if local else " Note: none of these examples mention your market specifically, so they show the "
                   "problem exists in general, not yet that it exists where your customers are."))

@@ -6,39 +6,42 @@ These are drafts for this product, generated from templates and checked by code.
 
 DRAFT: not legal advice
 
-**Licence**
-You may download and use the Payment Checklist for Freelance Designers guide for your own personal use. You may not copy, modify, distribute, or sell the guide without written permission.
+## Licence to Use
+You may download and use the "Proposal & Invoice Guide for Freelance Designers" for your own personal or business use. You may not copy, sell, or distribute the guide or any part of it without written permission.
 
-**Refunds**
-For a refund, see the Refund Policy below.
+## Refunds
+For refund details, see the Refund Policy linked below.
 
-**Contact**
-If you have questions, email support@paymentchecklist.com.
+## Contact
+If you have questions, email support@example.com.
+
+## Links
+- Refund Policy: [Refund Policy](#refund-policy)
 
 
 ## Privacy policy
 
 DRAFT: not legal advice
 
-**What we collect**
-We collect your name and email address when you purchase the guide. Payment details are processed by the payment gateway and are not stored by us. We never collect or store passwords or card numbers.
+## What We Collect
+We collect your email address and the payment information needed to process your purchase. We do not collect or store passwords or card numbers.
 
-**How we use the information**
-We use your contact details to deliver the guide, send occasional updates, and provide support.
+## How We Use the Information
+Your email is used to send you the guide and any support you may need. Payment details are used only to complete the transaction and are not retained.
 
-**Contact**
-For privacy questions, email privacy@paymentchecklist.com.
+## Contact
+If you have privacy questions, email privacy@example.com.
 
 
 ## Refund policy
 
 DRAFT: not legal advice
 
-**Refund window**
+## Refund Window
 You may request a refund within 14 days of purchase.
 
-**How to request a refund**
-Email support@paymentchecklist.com with your order number and a brief reason for the refund. We will process your request promptly.
+## How to Request a Refund
+Send an email to refund@example.com with your order details and a brief reason for the refund. We will review your request and respond within a few business days.
 
 
 ## Compliance Linter

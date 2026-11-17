@@ -1,14 +1,11 @@
-# Payment Checklist for Freelance Designers
+# Proposal & Invoice Guide for Freelance Designers
 
-A quick, clear guide that walks designers through every step they need to take to get paid on time, from contracts to follow‑ups.
+A concise guide that gives ready‑to‑use templates and step‑by‑step instructions for proposals and invoices.
 
 ## What's included
 
-- Full guide PDF
-- Contract templates
-- Invoicing steps
-- Follow‑up tactics
-- One‑page cheat sheet
+- Core guide
+- All standard templates
 
 **$27.00**
 

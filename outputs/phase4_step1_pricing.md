@@ -4,11 +4,13 @@
 
 | Option | Price | What's included |
 |---|---|---|
-| Standard | $27 | Full guide PDF; Contract templates; Invoicing steps; Follow‑up tactics; One‑page cheat sheet |
+| Basic | $27 | Core guide; All standard templates |
+| Pro | $47 | Core guide; All standard templates; Premium template bundle |
+| Premium | $67 | Core guide; All standard templates; Premium template bundle; Bonus resources |
 
 ## Why this price
 
-Typical digital guides for freelancers are priced around $30. Setting the launch price at $27 keeps it affordable for new freelancers while covering production costs. The single tier keeps the offering simple and transparent.
+Many free proposal and invoice templates are available, so a low price makes the guide accessible for new freelancers.  Digital guides for similar audiences typically sell between $30 and $50, so $27 is competitive while still covering production costs.  The basic tier includes the core guide and all templates, ensuring the main value is not hidden behind an upsell.  The higher tiers add extra premium templates and bonus resources for those who want more variety.
 
 Sources: a reasoned guess (ASSUMPTION): no sourced prices back it yet
 

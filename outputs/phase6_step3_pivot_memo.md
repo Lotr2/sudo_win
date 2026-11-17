@@ -2,15 +2,15 @@
 
 **The review recommends: Keep going**
 
-These are practice numbers (MOCKED), not real sales. You had 400 visitors and 14 orders, giving a conversion rate of 3.5%. The refund rate was 7%, below the 10% target. Support tickets were only two, about 0.14 per order. All key targets are met, so you can keep going. Next, try extending the free preview to see if conversion rises, and add a clear download FAQ to reduce confusion.
+The conversion rate is 3.5%, which is above the target of 2%. The refund rate is 7.1%, which is below the target of 10%. Support tickets are low, with only 2 tickets for 14 orders. Tickets per order is 0.14, indicating a small support burden. These numbers are practice data (MOCKED), not real sales. Next, run an A/B test on the checkout page to see if a simpler layout increases conversion, and add a FAQ section about downloading templates to reduce support tickets.
 
 ## Fact-check
 
 A second model checked every statement against the numbers and the goals:
 
-- Checks out: These are practice numbers (MOCKED), not real sales.
-- Checks out: You had 400 visitors and 14 orders, giving a conversion rate of 3.5%.
-- Checks out: The refund rate was 7%, below the 10% target.
-- Checks out: Support tickets were only two, about 0.14 per order.
+- Checks out: The conversion rate is 3.5%, which is above the target of 2%.
+- Checks out: The refund rate is 7.1%, which is below the target of 10%.
+- Checks out: Support tickets are low, with only 2 tickets for 14 orders.
+- Checks out: Tickets per order is 0.14, indicating a small support burden.
 
 Fact-check score: 5 out of 5. The review passes.

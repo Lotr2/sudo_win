@@ -17,6 +17,7 @@ from ..agents import (brief_parser, competitor_analyst, founder_liaison, gate_re
 from ..clarifier import blocking_questions, contradiction_question, contradicts
 from .. import labels
 from ..context import END, Ask, Context, Next
+from ..decision_log import log_action
 from ..schemas import DraftProfile
 from ..scoring import DEFAULTS, score_all
 from ..tools.research import SearchUnavailable, research
@@ -176,33 +177,196 @@ def p1_policy(ctx: Context, answer) -> Next:
 
 # ---------------- research ----------------
 
+def _prescreen(ctx: Context, variants: list) -> list[dict]:
+    """A cheap signal per candidate: one search for its problem and customer (relevant results found), plus its fit
+    with the founder's skills, budget and time. Nothing here is evidence; it only decides what gets full research."""
+    import re
+    from ..scoring import skill_coverage
+    p = ctx.dossier.profile.model_dump()
+    hours = float(p.get("hours_per_week") or DEFAULTS["hours_per_week"]) * 4
+    budget = float(p.get("budget_usd") if p.get("budget_usd") is not None else DEFAULTS["budget_usd"])
+
+    def one(v):
+        words = re.findall(r"[^\W\d_]{3,}", f"{v.problem} {v.target_customer}")[:10]
+        signal = None
+        try:
+            results = ctx.search(" ".join(words), limit=8)
+            terms = {w.lower() for w in words if len(w) > 3}
+            signal = sum(1 for r in results
+                         if len(terms & set(re.findall(r"[a-z]{4,}", f"{r.get('title', '')} {r.get('content', '')}".lower()))) >= 2)
+        except SearchUnavailable:
+            pass
+        fit = (min(1.0, skill_coverage(v.skills_needed, p.get("skills") or []) * 1.5)
+               + (1.0 if v.budget_needed_usd <= budget else 0.0) + (1.0 if v.est_build_hours <= hours else 0.4)) / 3
+        rank = 0.6 * (min(signal, 6) / 6 if signal is not None else 0.5) + 0.4 * fit
+        return {"id": v.id, "name": v.name, "form": v.product_form, "signal": signal, "fit": round(fit, 2),
+                "rank": round(rank, 3)}
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        return list(pool.map(lambda v: contextvars.copy_context().run(one, v), variants))
+
+
+def shortlist(rows: list[dict], k: int) -> list[str]:
+    """Best `k` by rank, with variety: at most two of the same product form while others remain."""
+    chosen: list[dict] = []
+    for r in sorted(rows, key=lambda r: -r["rank"]):
+        if len(chosen) >= k:
+            break
+        if sum(1 for c in chosen if c["form"] == r["form"]) >= 2 and \
+                any(x["form"] != r["form"] for x in rows if x not in chosen and x is not r):
+            continue
+        chosen.append(r)
+    for r in sorted(rows, key=lambda r: -r["rank"]):          # fill up if variety left gaps
+        if len(chosen) < k and r not in chosen:
+            chosen.append(r)
+    return [c["id"] for c in chosen]
+
+
 def p1_scout(ctx: Context, answer) -> Next:
     d = ctx.dossier
-    out = opportunity_scout.run(ctx, d.profile.model_dump(), d.lessons, templates.FORMS)
-    d.variants = out.variants
+    count = int(ctx.skill("scout_candidates") or 4)
+    keep = int(ctx.skill("scout_shortlist") or 4)
+    lessons = list(d.lessons)
+    empty = [f"{k.split(':')[0]}" for k, v in d.research_log.items() if v.get("empty") and not v.get("useful")]
+    if empty and d.variants:
+        names = {v.id: v.name for v in d.variants}
+        lessons.append("No evidence was found for: " + ", ".join(sorted({names.get(i, i) for i in empty})))
+    out = opportunity_scout.run(ctx, d.profile.model_dump(), lessons, templates.FORMS, count)
+    candidates = out.variants
+    if len(candidates) > keep:
+        rows = _prescreen(ctx, candidates)
+        kept_ids = shortlist(rows, keep)
+        kept = [v for v in candidates if v.id in kept_ids]
+        kept.sort(key=lambda v: kept_ids.index(v.id))
+        d.shortlist = {"considered": rows, "kept": [v.name for v in kept]}
+        log_action("opportunity_scout", "shortlist_versions", considered=len(rows),
+                   kept=[v.name for v in kept], dropped=[r["name"] for r in rows if r["id"] not in kept_ids],
+                   prescreen={r["name"]: {"signal": r["signal"], "fit": r["fit"]} for r in rows})
+        candidates = [v.model_copy(update={"id": f"v{i}"}) for i, v in enumerate(kept, 1)]
+        ctx.note(f"The team considered {len(rows)} versions of the idea and kept the {len(candidates)} most promising "
+                 "for full research.")
+    d.variants = candidates
+    d.research_log = {}
     ctx.note(f"Opportunity Scout proposed {len(d.variants)} variants: " + "; ".join(v.name for v in d.variants))
     return Next("p1_research")
 
 
+def agree(runs: list[list], need: int) -> list:
+    """Keep the findings that at least `need` of the independent readings agree on: same kind of finding,
+    citing at least one of the same evidence items. The first reading's wording is kept, citing only the
+    evidence the agreeing readings share (or all of its own if they share none)."""
+    if len(runs) <= 1:
+        return list(runs[0]) if runs else []
+    kept = []
+    for f in runs[0]:
+        ids = set(f.evidence_ids)
+        support, shared = 1, set(ids)
+        for other in runs[1:]:
+            match = next((g for g in other if g.kind == f.kind and ids & set(g.evidence_ids)), None)
+            if match:
+                support += 1
+                shared &= set(match.evidence_ids) or shared
+        if support >= need:
+            kept.append(f.model_copy(update={"evidence_ids": sorted(shared) if shared else f.evidence_ids}))
+    return kept
+
+
+REQUIRED_GAP = "(needed for the Stage 1 bar) "
+
+
+def _research_gaps(role: str, found: list[dict], ctx: Context) -> list[str]:
+    """What the evidence still lacks, in plain words. Gaps marked REQUIRED_GAP keep the research loop going; the
+    others only steer the next queries."""
+    g1 = ctx.t["gate1"]
+    sourced = [f for f in found if f["label"] == "SOURCED"]
+    if role == "market_researcher":
+        pain = [f for f in sourced if f["kind"] in {"pain", "demand"} and f.get("source_type") != "listing"]
+        urls = {u for f in pain for u in f["sources"]}
+        domains = {u.split("/")[2] for u in urls if "//" in u}
+        gaps = []
+        if len(urls) < g1["min_pain_signals"]:
+            gaps.append(REQUIRED_GAP + f"{g1['min_pain_signals'] - len(urls)} more real examples of people having this "
+                        "problem or asking for help with it (forums, Q&A sites, groups, reviews of current solutions)")
+        elif len(domains) < g1["min_source_domains"]:
+            gaps.append(REQUIRED_GAP + "examples from other websites than the ones already found")
+        if not any(f.get("about_market") for f in pain):
+            gaps.append("evidence from the founder's own market (place or customer group), "
+                        "including searches in the local language if it isn't English")
+        if not any(f["kind"] == "channel" for f in sourced):
+            gaps.append("places where these customers gather online (communities, groups, forums)")
+        return gaps
+    gaps = []
+    if not any(f["kind"] == "alternative" for f in sourced):
+        gaps.append(REQUIRED_GAP.replace("Stage 1 bar", "competition score") + "existing products or free alternatives")
+    if not any(f["kind"] == "price" for f in sourced):
+        gaps.append("prices of existing options")
+    if not any(f["kind"] == "complaint" for f in sourced):
+        gaps.append("complaints about existing options")
+    return gaps
+
+
 def _research_variant(ctx: Context, variant, agent_mod, n_queries: int, max_sources: int) -> list[dict]:
+    """Agentic research for one version: plan -> search and read -> extract (several readings, keep what they
+    agree on) -> check the gaps against the Stage 1 bar -> refine the queries, until the bar is met or the rounds
+    run out. The research log (tried, useful and empty queries) carries over to a retry."""
+    from .. import research_memory
+    role = agent_mod.__name__.rsplit(".", 1)[-1]
     vd = variant.model_dump()
-    plan = agent_mod.plan(ctx, vd, n_queries)
-    ids: list[str] = []
-    for q in plan.queries[:n_queries]:
-        ids += research(q, ledger=ctx.ledger, search=ctx.search, fetch=ctx.fetch, max_sources=max_sources,
-                        agent=agent_mod.__name__.rsplit(".", 1)[-1])
+    d = ctx.dossier
+    key = f"{variant.id}:{role}"
+    log = d.research_log.setdefault(key, {"tried": [], "useful": [], "empty": []})
+    rounds = max(1, int(ctx.skill("research_rounds") or 1))
+    votes = max(1, int(ctx.skill("extraction_votes") or 1))
+    fetch_pages = int(ctx.skill("fetch_pages") or 2)
+    found: list[dict] = []
+    seen: set[str] = set()
+    for rnd in range(1, rounds + 1):
+        gaps = _research_gaps(role, found, ctx) if rnd > 1 or log["tried"] else []
+        if rnd > 1 and not any(g.startswith("(needed") for g in gaps):
+            break
+        memory = None
+        if log["tried"]:
+            memory = {"already_tried": log["tried"][-12:], "found_evidence_with": log["useful"][-6:],
+                      "found_nothing_with": log["empty"][-8:],
+                      "still_missing": [g.split(") ", 1)[-1] if g.startswith("(needed") else g for g in gaps]
+                      or ["more and better evidence"],
+                      "sites_that_worked_before": research_memory.hints(ctx.settings.runs_dir)}
+        plan = agent_mod.plan(ctx, vd, n_queries, memory)
+        tried = {q.lower().strip() for q in log["tried"]}
+        queries = [q for q in plan.queries if q.lower().strip() not in tried][:n_queries]
+        if not queries:
+            break
+        ids: list[str] = []
+        for q in queries:
+            ids += research(q, ledger=ctx.ledger, search=ctx.search, fetch=ctx.fetch, max_sources=max_sources,
+                            fetch_pages=fetch_pages, agent=role)
+            log["tried"].append(q)
+            if ctx.over_budget(ctx.t["demo"].get("node_budget_seconds", 240)):
+                break
+        new_ids = [i for i in dict.fromkeys(ids) if i not in seen][: max_sources * len(queries)]
+        seen.update(new_ids)
+        if new_ids:
+            listing = ctx.ledger.listing(new_ids)
+            readings = [agent_mod.findings(ctx, vd, listing).findings for _ in range(votes)]
+            need = votes // 2 + 1 if votes > 1 else 1
+            for f in agree(readings, need):
+                claim = ctx.ledger.check_claim(f.claim, f.evidence_ids)
+                found.append({"kind": f.kind, "claim": f.claim, "evidence_ids": f.evidence_ids, "label": claim.label,
+                              "sources": claim.sources, "source_type": f.source_type, "about_market": f.about_market})
+        useful_q = {ctx.ledger.get(i).query for f in found if f["label"] == "SOURCED" for i in f["evidence_ids"]
+                    if ctx.ledger.get(i)}
+        for q in queries:
+            (log["useful"] if q in useful_q else log["empty"]).append(q)
+        log_action(role, "research_round", round=rnd, queries=queries, new_evidence=len(new_ids),
+                   findings=len(found), readings=votes, gaps=_research_gaps(role, found, ctx))
         if ctx.over_budget(ctx.t["demo"].get("node_budget_seconds", 240)):
             break
-    ids = list(dict.fromkeys(ids))[: max_sources * n_queries]
-    if not ids:
-        return []
-    out = agent_mod.findings(ctx, vd, ctx.ledger.listing(ids))
-    labelled = []
-    for f in out.findings:
-        claim = ctx.ledger.check_claim(f.claim, f.evidence_ids)
-        labelled.append({"kind": f.kind, "claim": f.claim, "evidence_ids": f.evidence_ids, "label": claim.label,
-                         "sources": claim.sources})
-    return labelled
+    # Remember only sites that showed real people with the problem, or places where customers gather.
+    research_memory.record(ctx.settings.runs_dir, sorted({
+        u.split("/")[2].removeprefix("www.") for f in found
+        if f["label"] == "SOURCED" and f.get("source_type") != "listing"
+        and (f["kind"] in {"pain", "demand", "channel", "complaint"}) for u in f["sources"] if "//" in u}))
+    return found
 
 
 def p1_research(ctx: Context, answer) -> Next:

@@ -1,18 +1,109 @@
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Get Paid on Time, Every Time</title>
-<style>body{font-family:system-ui,sans-serif;max-width:40rem;margin:3rem auto;padding:0 1rem;color:#1b1b1b}
-h1{font-size:2rem} li{margin:.4rem 0} form{margin-top:2rem} input,button{font-size:1rem;padding:.5rem}</style>
+<title>Clear Proposals and Invoices Made Easy</title>
+<!-- Waitlist page: copy and design choices by the Landing Copywriter, rendered by code. Publishing is MOCKED: the
+     founder hosts the page and connects the form. The page has no slots for social proof, counts or timers. -->
+<style>
+:root{--accent:#2f5d8a;--deep:#224363;--on:#ffffff;--ta:#2f5d8a;--tint:#eaeff3;--bg:#fff;--ink:#16181d;--muted:#5b616e;
+  --line:#e6e8ee;--card:#fff;--hf:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--bf:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{--accent:#7896b3;--deep:#7896b3;--on:#111318;--ta:#7896b3;
+  --tint:#131c25;--bg:#0f1115;--ink:#eceef3;--muted:#a3a9b6;--line:#2a2e37;--card:#171a20}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:17px/1.6 var(--bf);color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}.narrow{max-width:760px}
+h1,h2,h3{font-family:var(--hf);line-height:1.15;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(2.2rem,5.2vw,3.6rem);font-weight:800}h2{font-size:clamp(1.6rem,3.2vw,2.2rem);margin-bottom:28px}
+h3{font-size:1.1rem}.center{text-align:center}p{margin:0}
+nav.top{padding:16px 0;border-bottom:1px solid var(--line);background:var(--bg)}
+nav.top .wrap{display:flex;align-items:center;gap:12px;font-family:var(--hf);font-weight:700;font-size:1.05rem}
+.logo{height:34px;width:auto;max-width:160px;object-fit:contain;border-radius:6px}
+.eyebrow{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ta);
+  background:color-mix(in srgb,var(--accent) 12%,transparent);padding:6px 12px;border-radius:99px;margin-bottom:18px}
+.sub{font-size:1.2rem;color:var(--muted);margin:18px 0 28px;max-width:34rem}
+.hero{padding:72px 0 80px;overflow:hidden}
+.hero.split{background:radial-gradient(1200px 500px at 85% -10%,var(--tint),transparent 60%),linear-gradient(180deg,var(--tint),var(--bg))}
+.hero.split .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+@media (max-width:860px){.hero.split .wrap{grid-template-columns:1fr}.mock{max-width:300px;margin:0 auto}}
+.hero.centered{text-align:center;background:linear-gradient(180deg,var(--tint),var(--bg) 85%)}
+.hero.centered .sub,.hero.minimal .sub{margin-left:auto;margin-right:auto}.hero.centered .signup,.hero.minimal .signup{margin:0 auto}
+.quotes-title{font-weight:700;color:var(--ta);margin:6px 0 10px}
+.quotes{list-style:none;padding:0;margin:0 auto 30px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:46rem}
+.quotes li{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:8px 16px;font-size:.95rem;
+  box-shadow:0 4px 14px rgba(0,0,0,.05)}.quotes li::before{content:"\201C";color:var(--ta);font-weight:800;margin-right:2px}
+.quotes li::after{content:"\201D";color:var(--ta);font-weight:800;margin-left:2px}
+.hero.minimal{text-align:center;padding:96px 0 64px;border-bottom:1px solid var(--line)}
+.hero.minimal h1{font-size:clamp(2rem,4.6vw,3.1rem)}
+.signup{display:flex;gap:10px;flex-wrap:wrap;max-width:30rem}
+.signup input{flex:1 1 220px;font:inherit;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink)}
+.signup input:focus{outline:3px solid color-mix(in srgb,var(--accent) 35%,transparent);border-color:var(--accent)}
+.signup button{font:inherit;font-weight:700;padding:14px 22px;border:0;border-radius:12px;color:var(--on);cursor:pointer;
+  background:var(--accent);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 30%,transparent)}
+.signup button:hover{filter:brightness(1.07)}.signup output{flex-basis:100%;color:var(--ta);font-weight:600}
+.fine{font-size:.85rem;color:var(--muted);margin-top:10px}.sr{position:absolute;left:-9999px}
+section{padding:80px 0}.tinted{background:var(--tint)}
+.pains{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.pains li{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:16px 18px;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;
+  box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);transition:transform .2s}
+.card:hover{transform:translateY(-3px)}.card p{color:var(--muted);margin-top:8px;font-size:.98rem}
+.icon{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;margin-bottom:14px;flex:none;
+  color:var(--ta);background:color-mix(in srgb,var(--accent) 12%,transparent)}.icon svg{width:24px;height:24px}
+.minimal-page .grid{grid-template-columns:1fr 1fr;gap:28px 40px}@media (max-width:700px){.minimal-page .grid{grid-template-columns:1fr}}
+.minimal-page .card{display:flex;gap:16px;border:0;box-shadow:none;padding:0;background:none}.minimal-page .card:hover{transform:none}
+.minimal-page section{padding:64px 0;border-bottom:1px solid var(--line)}
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--card);border-radius:16px;padding:22px;border:1px solid var(--line)}
+.steps .n{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:var(--on);
+  background:var(--accent)}.steps p{color:var(--muted);margin-top:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}@media (max-width:760px){.two{grid-template-columns:1fr}}
+.lead{color:var(--muted);font-size:1.08rem;margin-top:-12px}
+.inside{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.inside li{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.inside svg{flex:none;width:22px;height:22px;color:var(--ta);margin-top:2px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";color:var(--ta);font-size:1.3rem;line-height:1}.faq details[open] summary::after{content:"\2212"}
+.faq p{color:var(--muted);margin-top:10px}
+.closing{text-align:center;padding:88px 0;background:linear-gradient(135deg,var(--accent),var(--deep));color:var(--on)}
+.closing h2{color:inherit;margin-bottom:12px}.closing p.sub{color:inherit;opacity:.88;margin:0 auto 28px}
+.closing .signup{margin:0 auto}.closing .signup input{border-color:transparent}
+.closing .signup button{background:var(--bg);color:var(--ink);box-shadow:none}.closing .fine,.closing output{color:inherit!important;opacity:.85}
+.minimal-page .closing{background:none;color:var(--ink);border-top:0}
+.minimal-page .closing .signup button{background:var(--accent);color:var(--on)}
+.minimal-page .closing .signup input{border-color:var(--line)}
+footer{padding:28px 0;color:var(--muted);font-size:.85rem;text-align:center}
+.mock{position:relative;width:100%;max-width:360px;justify-self:center;aspect-ratio:4/5}
+.book .cover{position:absolute;inset:0 0 0 14px;border-radius:6px 16px 16px 6px;padding:30px 26px;color:var(--on);
+  display:flex;flex-direction:column;justify-content:center;
+  background:linear-gradient(150deg,var(--accent),var(--deep));box-shadow:0 30px 60px -20px rgba(0,0,0,.45);transform:rotate(-3deg)}
+.book .spine{position:absolute;left:0;top:10px;bottom:-6px;width:28px;border-radius:6px;background:var(--deep);transform:rotate(-3deg)}
+.book small{text-transform:uppercase;letter-spacing:.14em;opacity:.8;font-weight:700}
+.book b{display:block;font-family:var(--hf);font-size:1.6rem;line-height:1.15;margin:12px 0 22px}
+.book ol{margin:0;padding-left:20px;opacity:.92;font-size:.92rem;display:grid;gap:8px}
+.pack .sheet{position:absolute;inset:8% 6%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;
+  box-shadow:0 24px 50px -24px rgba(0,0,0,.35)}.pack .s0{transform:rotate(-7deg) translate(-6%,4%)}
+.pack .s1{transform:rotate(4deg) translate(5%,-2%)}.pack .s2{transform:rotate(-1deg)}
+.pack b{display:block;font-size:1.05rem;margin-bottom:16px;color:var(--ta)}
+.pack i{display:block;height:10px;border-radius:6px;background:var(--line);margin:10px 0}.pack i.short{width:60%}
+.tool{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;aspect-ratio:auto;
+  box-shadow:0 30px 60px -24px rgba(0,0,0,.35)}.tool .bar{display:flex;gap:6px;margin-bottom:16px}
+.tool .bar span{width:10px;height:10px;border-radius:50%;background:var(--line)}.tool b{display:block;margin-bottom:14px}
+.tool .field{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:10px 0;font-size:.9rem;color:var(--muted)}
+.tool .field i{width:42%;height:30px;border:1px solid var(--line);border-radius:8px}
+.tool .go{margin-top:16px;text-align:center;font-weight:700;color:var(--on);padding:10px;border-radius:10px;background:var(--accent)}
+@media (prefers-reduced-motion:reduce){.card{transition:none}html{scroll-behavior:auto}}
+</style>
 </head>
-<body>
-<!-- Waitlist page drafted by the Landing Copywriter. Publishing is MOCKED: the founder hosts it. -->
-<h1>Get Paid on Time, Every Time</h1>
-<p>A simple guide for new freelance designers to secure timely payments</p>
-<ul><li>Use ready contract templates that protect you</li><li>Follow clear invoicing steps that clients love</li><li>Learn how to follow up without sounding pushy</li><li>Save hours on payment management</li><li>Feel confident when you start your freelance career</li></ul>
-<p>This downloadable PDF guide is made for freelance designers who are just starting out. It shows you exactly what to do to get paid on time, from choosing the right contract to sending invoices and following up. With plain language instructions and ready‑to‑use templates, you can avoid late payments and keep your cash flow steady. Sign up now to be the first to receive the guide when it launches.</p>
-<form onsubmit="return false"><label for="email">Email</label> <input id="email" type="email" required>
-<button type="submit">Join the waitlist</button></form>
-<p><small>We only use your email to tell you when this is ready. No spam, unsubscribe any time.</small></p>
+<body class="story-page">
+
+<header class="hero centered"><div class="wrap narrow"><span class="eyebrow">For new freelance designers</span><h1>Clear Proposals and Invoices Made Easy</h1><p class="sub">A ready‑to‑use guide for new freelance designers.</p><p class="quotes-title">Struggling to Write Proposals?</p><ul class="quotes"><li>I can’t get clients to understand my scope.</li><li>I spend too much time formatting invoices.</li><li>I worry about missing payment details.</li></ul><form class="signup" onsubmit="this.querySelector('output').textContent='Thanks! This is a preview: the form is not connected yet.';return false"><label class="sr" for="email1">Email address</label><input id="email1" type="email" placeholder="you@example.com" required autocomplete="email"><button type="submit">Join the waitlist</button><output aria-live="polite"></output></form><p class="fine">We only email you when it's ready. No spam, unsubscribe any time.</p></div></header>
+<section class="sec-features"><div class="wrap"><h2 class="center">What you get</h2><div class="grid"><div class="card"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></span><div><h3>Template Library</h3><p>Access a collection of proposal and invoice templates ready to copy and paste.</p></div></div><div class="card"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg></span><div><h3>Step‑by‑Step Instructions</h3><p>Follow clear guidance to build professional documents in minutes.</p></div></div><div class="card"><span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><div><h3>Quick Copy‑Paste Sections</h3><p>Use pre‑written sections that fit any project and client.</p></div></div></div></div></section>
+<section class="sec-steps tinted"><div class="wrap"><h2 class="center">How it works</h2><ol class="steps"><li><span class="n">1</span><div><h3>Join the Waitlist</h3><p>Enter your email to receive the guide when it’s ready.</p></div></li><li><span class="n">2</span><div><h3>Receive the Guide</h3><p>We’ll email you a downloadable PDF with all templates.</p></div></li><li><span class="n">3</span><div><h3>Start Creating</h3><p>Copy the templates and tailor them to your projects.</p></div></li></ol></div></section>
+<section class="sec-inside"><div class="wrap two"><div><h2>What's inside</h2><p class="lead">This downloadable guide gives you ready‑to‑use templates and clear instructions so you can write professional proposals and invoices quickly. It’s tailored for designers who are just starting out and need a simple, step‑by‑step approach.</p><ul class="inside"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><span>Proposal template with clear sections</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><span>Invoice template with payment terms</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><span>Checklist for proposal clarity</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><span>Sample email for sending proposals</span></li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg><span>Tips for pricing and scope</span></li></ul></div><div class="mock book" aria-hidden="true"><div class="spine"></div><div class="cover"><small>Guide</small><b>Proposal &amp; Invoice Guide</b><ol><li>Proposal template with clear sections</li><li>Invoice template with payment terms</li><li>Checklist for proposal clarity</li><li>Sample email for sending proposals</li></ol></div></div></div></section>
+<section class="sec-faq tinted"><div class="wrap narrow"><h2 class="center">Questions</h2><div class="faq"><details><summary>What format is the guide?</summary><p>It’s a PDF you can download and print.</p></details><details><summary>When will it be ready?</summary><p>We’ll email you when the guide is available.</p></details><details><summary>Who is it not for?</summary><p>It’s designed for designers new to freelancing; experienced freelancers may already have systems.</p></details><details><summary>What does joining the waitlist mean?</summary><p>Just an email sign‑up; no payment is required.</p></details></div></div></section>
+<section class="closing"><div class="wrap narrow"><h2>Proposal &amp; Invoice Guide</h2><p class="sub">Simplify your proposals—join the waitlist today.</p><form class="signup" onsubmit="this.querySelector('output').textContent='Thanks! This is a preview: the form is not connected yet.';return false"><label class="sr" for="email2">Email address</label><input id="email2" type="email" placeholder="you@example.com" required autocomplete="email"><button type="submit">Join the waitlist</button><output aria-live="polite"></output></form><p class="fine">We only email you when it's ready. No spam, unsubscribe any time.</p></div></section>
+<footer><div class="wrap">Proposal &amp; Invoice Guide. Coming soon.</div></footer>
 </body>
 </html>

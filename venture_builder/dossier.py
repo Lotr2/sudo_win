@@ -65,7 +65,9 @@ class Dossier(BaseModel):
     gate_attempts: dict[str, int] = {}
     lessons: list[str] = []
     gate1_explained: dict = {}
-    brand: dict = {}               # founder's brand for the landing page: name, color (#hex), logo (data URI)     # plain-words score breakdown and other directions shown at Gate 1
+    brand: dict = {}
+    research_log: dict = {}        # per version and researcher: queries tried, those that found evidence, dead ends
+    shortlist: dict = {}           # Stage 1 idea shortlist: kept and dropped versions with their pre-screen signal               # founder's brand for the landing page: name, color (#hex), logo (data URI)     # plain-words score breakdown and other directions shown at Gate 1
     counters: dict[str, int] = {}
     asked: list[str] = []
     history: list[dict] = []

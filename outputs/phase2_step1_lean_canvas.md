@@ -1,56 +1,56 @@
-# Phase 2 · Step 1: Lean Canvas (Payment Checklist Guide)
+# Phase 2 · Step 1: Lean Canvas (Proposal & Invoice Guide)
 
 ## Problem
 
-Freelance designers early in their careers often don't know how to secure timely payments from clients, causing cash flow uncertainty.
+Freelance designers in their first three years find it hard to write clear proposals and invoices.
 
-Source: ASSUMPTION
+Source: https://dribbble.com/resources/freelance/design-proposal
 
 ## Customer Segments
 
-Freelance designers in their first three years of independent work.
+Freelance designers who are new to the industry and looking for guidance.
 
 Source: ASSUMPTION
 
 ## Unique Value
 
-A concise, step‑by‑step guide that shows designers exactly what to do to get paid on time, reducing late payments.
+A concise guide that gives ready‑to‑use templates and step‑by‑step instructions for proposals and invoices.
 
-Source: ASSUMPTION
+Source: https://aiproposer.com/guides/upwork-proposals/freelance-proposal-template, https://www.canva.com/proposals/templates/, https://www.freepik.com/free-photos-vectors/proposal-design-freelancers/2, https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC, https://www.linkedin.com/pulse/easiest-way-start-offering-invoicing-onboarding-kelly-pennington-ndacf, https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c, https://www.pinterest.com/ideas/canva-free-proposal-template/898604145179/, https://www.template.net/proposals/one-page
 
 ## Solution
 
-A downloadable PDF guide written in plain language, covering contract templates, invoicing best practices, and payment follow‑up tactics.
+A downloadable guide with templates and best‑practice tips.
 
-Source: ASSUMPTION
+Source: https://aiproposer.com/guides/upwork-proposals/freelance-proposal-template, https://www.canva.com/proposals/templates/, https://www.freepik.com/free-photos-vectors/proposal-design-freelancers/2, https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC, https://www.linkedin.com/pulse/easiest-way-start-offering-invoicing-onboarding-kelly-pennington-ndacf, https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c, https://www.pinterest.com/ideas/canva-free-proposal-template/898604145179/, https://www.template.net/proposals/one-page
 
 ## Channels
 
-Promote the guide on freelance marketplaces like Upwork, Fiverr, and design forums, and share via social media groups for designers.
+Online design communities, freelance platforms, and social media groups.
 
-Source: https://www.hostinger.com/tutorials/best-freelance-websites/, https://www.upwork.com/hire/, https://www.upwork.com/hire/web-designers/, https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them
+Source: https://dribbble.com/resources/freelance/design-proposal, https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC, https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c, https://www.upwork.com/freelancers/~0114fc75229dbf28b6
 
 ## Revenue
 
-Sell the guide for a one‑time fee of $19.
+The guide will be offered for free, with optional paid add‑ons or a subscription for updated content.
 
 Source: ASSUMPTION
 
 ## Costs
 
-10 hours of the founder's time to write the guide, no monetary cost.
+Minimal development time (10 hours) and no upfront budget.
 
 Source: ASSUMPTION
 
 ## Key Metrics
 
-Number of downloads, conversion rate from free preview, and repeat customers.
+Number of guide downloads, user feedback, and repeat usage.
 
 Source: ASSUMPTION
 
 ## Unfair Advantage
 
-The founder's expertise in writing clear, actionable content and knowledge of freelance payment challenges.
+First mover in providing a focused, designer‑centric proposal and invoice guide.
 
 Source: ASSUMPTION
 
@@ -58,21 +58,20 @@ Source: ASSUMPTION
 
 | Box | Score | Comment |
 |---|---|---|
-| problem | 2 | No evidence provided. |
-| customer_segments | 2 | No evidence provided. |
-| unique_value | 2 | No evidence provided. |
-| solution | 2 | No evidence provided. |
-| channels | 4 | Evidence supports Upwork and freelancing categories, but not all listed channels. |
-| revenue | 2 | No evidence provided. |
-| costs | 2 | No evidence provided. |
-| key_metrics | 2 | No evidence provided. |
-| unfair_advantage | 2 | No evidence provided. |
+| problem | 5 | Well supported by evidence. |
+| customer_segments | 2 | Assumption, no evidence. |
+| unique_value | 5 | Well supported by evidence. |
+| solution | 5 | Well supported by evidence. |
+| channels | 5 | Well supported by evidence. |
+| revenue | 2 | Assumption, no evidence. |
+| costs | 2 | Assumption, no evidence. |
+| key_metrics | 2 | Assumption, no evidence. |
+| unfair_advantage | 2 | Assumption, no evidence. |
 
 ### Riskiest assumptions
 
-- Freelance designers early in their careers often don't know how to secure timely payments from clients, causing cash flow uncertainty. (risk 5 of 5; could sink the business if wrong)
-- The guide will be sold for a one‑time fee of $19. (risk 5 of 5; could sink the business if wrong)
-- The guide will effectively reduce late payments. (risk 5 of 5; could sink the business if wrong)
+- Revenue model (risk 5 of 5; could sink the business if wrong)
+- Target customer segment (risk 5 of 5; could sink the business if wrong)
 
 ### Your answers to the reviewer's questions
 

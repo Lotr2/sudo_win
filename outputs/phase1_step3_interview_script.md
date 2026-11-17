@@ -1,26 +1,28 @@
-# Customer interview script: Payment Checklist Guide
+# Customer interview script: Proposal & Invoice Guide
 
-I'm looking into how freelance designers handle getting paid on time. Could I ask you about the last time you had to chase a payment?
+I'm looking into how people handle writing proposals and invoices. Could I ask you about the last time you had to create one?
 
 ## Questions (about past behaviour)
 
-1. Can you walk me through the last time you had to wait for a client payment?
-2. What steps did you take to try to get paid on time?
-3. Did you use any tools or templates to remind clients?
-4. How long did it take from sending the invoice to receiving the payment?
+1. Tell me about the last time you had to write a proposal or invoice.
+2. What steps did you follow to get it done?
+3. How long did it take you to finish it?
+4. Did you use any templates or tools? If so, which ones?
 5. What was the biggest challenge you faced during that process?
-6. Did you have to adjust your workflow because of the payment delay?
-7. What would have made the process easier for you?
+6. How did you feel after you finished it?
+7. If you had to do it again, what would you do differently?
+8. Did you ever need to explain or justify the proposal/invoice to a client? How did that go?
 
 ## Notes template
 
-Tip: Talk to 3-5 people and listen more than you talk.
+Tip: talk to 3-5 people and listen more than you talk.
 
-Date:
-Who:
-Problem (in their words):
-What they tried:
-What it cost (time, money, frustration):
-Memorable quotes:
+---
+**Date:**
+**Interviewee:**
+**Problem (in their words):**
+**What they tried:**
+**Cost (time or money):**
+**Memorable quotes:**
 
 Interviews are run by the founder with real people. Simulated persona interviews, if any, are labelled SIMULATED and count for nothing at any gate.

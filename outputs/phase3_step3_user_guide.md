@@ -1,29 +1,92 @@
-# Phase 3 · Step 3: User guide: Payment Checklist for Freelance Designers
+# Phase 3 · Step 3: User guide: Proposal & Invoice Guide for Freelance Designers
 
-## Introduction\n\nThe Payment Checklist for Freelance Designers is a concise, step‑by‑step guide that helps you secure timely payments. It covers everything from drafting solid contracts to sending invoices and following up with clients. The guide is written in plain language, so even if you’re new to freelancing, you can understand and apply each tip quickly.\n\n## Getting Started\n\nBefore you dive in, gather a few basic items: a laptop or tablet, a reliable internet connection, and a list of the clients you’ll be working with. Open the guide, read the overview, and then move to the first section. The guide is organized so you can jump straight to the part that matters most to you—whether that’s contracts, invoicing, or follow‑ups.\n\n## Contract Templates\n\nThe guide includes ready‑to‑use contract templates that protect your creative work. Each template explains key clauses—scope of work, payment terms, intellectual property, and dispute resolution—in simple language. You can copy the template into a document, fill in your details, and send it to the client. The guide also offers tips on how to customize the contract for different project types.\n\n## Invoicing Steps\n\nA clear invoicing process is essential for getting paid on time. The guide walks you through the steps: choose a format, list deliverables, set payment deadlines, and include your payment details. It also shows how to send invoices via email or a client portal, and how to follow up politely if payment is delayed. The steps are designed to be quick, so you can focus on designing rather than paperwork.\n\n## Follow‑up Tactics\n\nLate payments can stall your cash flow. The guide provides proven follow‑up tactics that clients appreciate. It covers timing—when to send a reminder, how many reminders to send, and what tone to use. It also suggests using friendly check‑ins and offering flexible payment options if a client is struggling. These tactics help you maintain a professional relationship while ensuring you get paid.\n\n## Cheat Sheet\n\nFor moments when you’re on the go, the one‑page cheat sheet is a handy reference. It summarizes the most important points from each section: contract key points, invoicing checklist, and follow‑up reminders. Print it out or keep it on your phone so you can quickly review before sending a contract or invoice.\n\n## PDF Download\n\nThe guide is available as a PDF that you can download, print, or store on your phone. The PDF version preserves the formatting and includes clickable links to each section. You can keep it in a folder on your computer or in a cloud service for easy access whenever you need a refresher.\n\n## Limitations\n\nWhile the guide covers the core steps for getting paid, it does not replace legal advice. If you have complex contractual needs or face legal disputes, consult a qualified attorney. The guide also assumes you have a basic understanding of invoicing software or email. It does not cover advanced accounting or tax compliance. Finally, the guide is designed for freelance designers; other professions may need additional customization.
+# Proposal & Invoice Guide for Freelance Designers
+
+## What it is
+This guide gives you ready‑to‑use templates and simple steps to write proposals and invoices that look professional and protect your time.
+
+## How to start
+1. Download the guide from the product page.
+2. Open it in any word processor or email client.
+3. Read the four main sections: Why Proposals Matter, Crafting a Winning Proposal, Invoice Essentials, Common Mistakes to Avoid.
+
+## How to use each part
+### Why Proposals Matter
+Read the short story that explains why a clear proposal helps you win work and keep projects on track.
+
+### Crafting a Winning Proposal
+1. Copy the proposal template.
+2. Replace the bracketed placeholders with your own details.
+3. Keep the formatting simple: use a clean font like Arial or Helvetica, 11‑12 pt, 1.15 line spacing.
+4. Save the finished proposal as a PDF if you want a final copy.
+
+### Invoice Essentials
+1. Copy the invoice template.
+2. Fill in your name, address, invoice number, dates, client details, and amounts.
+3. List each line item, subtotal, tax (if any), and total.
+4. Add your payment methods and terms.
+5. Send the invoice to the client.
+
+### Common Mistakes to Avoid
+Read the list of pitfalls that can delay payments or damage relationships. Use it as a quick checklist before sending any proposal or invoice.
+
+## Limits
+- The guide does not replace legal advice or a formal contract.
+- It does not cover tax calculations or local regulations.
+- It is meant for freelance designers; other professions may need different templates.
+- The templates are generic; adjust them to fit your specific workflow.
+
+---
+
+# FAQ
+
+**Q1: How do I access the guide?**
+A1: The guide is available for download on the product page. It comes as a PDF and a text version.
+
+**Q2: Can I use the templates for multiple clients?**
+A2: Yes. Copy the template, replace the placeholders, and send it to each client.
+
+**Q3: What if I need a different format?**
+A3: The templates are plain text, so you can paste them into any word processor and adjust fonts, colors, or layout as you like.
+
+**Q4: Are refunds available?**
+A4: Refunds are handled per the product's refund policy, which can be found in the product details.
+
+**Q5: Will the guide be updated?**
+A5: New versions may be released. Check the product page for updates and download the latest copy.
+
+**Q6: Does the guide include legal terms?**
+A6: No. The guide provides templates but does not replace a formal contract or legal advice. Consider consulting a lawyer for binding agreements.
+
+**Q7: What if I have a question after purchase?**
+A7: Contact support through the platform's help center or the support email listed in the product details.
 
 ## FAQ
 
-**How do I access the Payment Checklist for Freelance Designers?**
+**How do I access the guide?**
 
-After purchase, you will receive an email with a download link. You can also log into your account on our website and click the "Downloads" tab to retrieve the PDF.
+The guide is available for download on the product page. It comes as a PDF and a text version.
 
-**Can I download the PDF for offline use?**
+**Can I use the templates for multiple clients?**
 
-Yes, the guide is available as a PDF that you can download, print, or keep on your phone for offline reference.
+Yes. Copy the template, replace the placeholders, and send it to each client.
 
-**Is there a refund available?**
+**What if I need a different format?**
 
-For refund details, please see our refund policy. If you have any questions, contact support.
+The templates are plain text, so you can paste them into any word processor and adjust fonts, colors, or layout as you like.
 
-**How often is the guide updated?**
+**Are refunds available?**
 
-We review the guide annually and update it when necessary. You will receive a notification when a new version is available.
+Refunds are handled per the product's refund policy, which can be found in the product details.
 
-**Can I use the guide for other design disciplines?**
+**Will the guide be updated?**
 
-The guide is tailored for freelance designers, but the principles apply broadly. Feel free to adapt the templates to your specific workflow.
+New versions may be released. Check the product page for updates and download the latest copy.
 
-**What if I need help using the guide?**
+**Does the guide include legal terms?**
 
-If you encounter any issues, reach out to our support team via the contact form on our website. We’re happy to help you get the most out of the guide.
+No. The guide provides templates but does not replace a formal contract or legal advice. Consider consulting a lawyer for binding agreements.
+
+**What if I have a question after purchase?**
+
+Contact support through the platform's help center or the support email listed in the product details.

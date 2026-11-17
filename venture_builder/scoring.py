@@ -9,6 +9,29 @@ from .schemas import Variant, VariantScore
 DEFAULTS = {"hours_per_week": 5.0, "budget_usd": 100.0, "skills": [], "market": "general online buyers"}
 
 
+# Evidence grading: how much one source counts towards "people have this problem".
+TYPE_WEIGHT = {"first_hand": 1.0, "question": 1.0, "article": 0.8, "other": 0.8, "listing": 0.0}
+OFF_MARKET_WEIGHT = 0.6   # about the topic in general, not the founder's market
+
+
+def graded_problem_sources(findings: list[dict], ledger: EvidenceLedger) -> dict[str, dict]:
+    """url -> {weight, type, on_market, domain} for sourced web evidence of pain or demand (best grade per url)."""
+    out: dict[str, dict] = {}
+    for f in findings:
+        if f["kind"] not in {"pain", "demand"} or f.get("label") != "SOURCED":
+            continue
+        typ = f.get("source_type") or "other"
+        on_market = f.get("about_market", True)
+        w = TYPE_WEIGHT.get(typ, 0.8) * (1.0 if on_market else OFF_MARKET_WEIGHT)
+        for eid in f["evidence_ids"]:
+            it = ledger.get(eid)
+            if not it or it.type != "web" or ledger.gate_weight(eid) <= 0 or not it.url or w <= 0:
+                continue
+            if it.url not in out or w > out[it.url]["weight"]:
+                out[it.url] = {"weight": w, "type": typ, "on_market": bool(on_market), "domain": it.domain}
+    return out
+
+
 def _sourced_web(findings: list[dict], kinds: set[str], ledger: EvidenceLedger) -> list:
     items = []
     for f in findings:
@@ -93,11 +116,17 @@ def score_variant(v: Variant, findings: list[dict], profile: dict, ledger: Evide
     budget = float(profile.get("budget_usd") if profile.get("budget_usd") is not None else DEFAULTS["budget_usd"])
     skills = profile.get("skills") or []
 
-    pain_items = _sourced_web(findings, {"pain", "demand"}, ledger)
-    pain_claims = [f["claim"] for f in findings if f["kind"] in {"pain", "demand"} and f.get("label") == "SOURCED"]
-    urls = {i.url for i in pain_items}
-    domains = {i.domain for i in pain_items}
-    pain = min(len(urls), cap) / cap
+    pain_items = [i for i in _sourced_web(findings, {"pain", "demand"}, ledger)]
+    graded = graded_problem_sources(findings, ledger)
+    pain_items = [i for i in pain_items if i.url in graded]           # product listings are not evidence of a problem
+    pain_claims = [f["claim"] for f in findings if f["kind"] in {"pain", "demand"} and f.get("label") == "SOURCED"
+                   and f.get("source_type") != "listing"]
+    urls = set(graded)
+    domains = {g["domain"] for g in graded.values()}
+    pain = min(sum(g["weight"] for g in graded.values()), cap) / cap
+    grades = {}
+    for g in graded.values():
+        grades[g["type"]] = grades.get(g["type"], 0) + 1
 
     covered, learnable, missing = match_skills(v.skills_needed, skills)
     coverage = skill_coverage(v.skills_needed, skills)
@@ -139,7 +168,8 @@ def score_variant(v: Variant, findings: list[dict], profile: dict, ledger: Evide
                 "alternatives": alternatives, "channels": len(channels), "skills_covered": covered,
                 "skills_learnable": learnable, "skills_missing": missing, "help_affordable": help_affordable,
                 "budget_needed": v.budget_needed_usd, "month_hours": month_hours, "channel_sites": channel_domains,
-                "problem_sites": sorted(domains), "in_templates": in_templates, "problem_claims": pain_claims[:3],
+                "problem_sites": sorted(domains), "in_templates": in_templates, "problem_claims": pain_claims[:3], "problem_grades": grades,
+                "problem_on_market": sum(1 for g in graded.values() if g["on_market"]),
                 "problem_urls": sorted(urls)[:5]},
     )
 

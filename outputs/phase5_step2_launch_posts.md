@@ -2,12 +2,12 @@
 
 ## LinkedIn
 
-Hey designers, I’ve put together a Payment Checklist that covers contracts, invoicing, and follow‑ups. It’s a single PDF you can print or keep on your phone. It costs $27.00 and I offer a 14‑day money‑back guarantee if it doesn’t fit your workflow. Check it out and let me know what you think.
+Hey everyone, I’ve put together a quick guide to help freelance designers write proposals that win clients and create invoices that get paid on time. It’s just a few pages of clear steps and copy‑and‑paste templates. If you’re looking to streamline your workflow, it’s $27 with a 14‑day money‑back guarantee. Happy to chat if you have questions! 
 
 ## freelance designer groups I belong to
 
-Hi everyone, I just released a Payment Checklist for Freelance Designers. It’s a PDF with contract templates, invoicing steps, follow‑up tactics, and a one‑page cheat sheet. It’s $27.00 and comes with a 14‑day money‑back guarantee. Feel free to try it and share your thoughts.
+Hi all, I’ve launched a new guide for freelance designers that covers everything from proposal writing to invoicing. It includes ready‑to‑use templates and pricing tips. It’s $27 and comes with a 14‑day money‑back guarantee. Let me know if you’d like more details or a copy! 
 
 ## my email newsletter
 
-Dear subscribers, I’m excited to share my new Payment Checklist for Freelance Designers. It’s a concise guide that walks you through contracts, invoicing, and follow‑ups, plus a cheat sheet you can keep on hand. It’s available for $27.00 with a 14‑day money‑back guarantee. Let me know what you think.
+Hello readers, I’m excited to share a new resource I’ve created for freelance designers: a Proposal & Invoice Guide. It’s a short, practical guide with templates you can copy and paste, plus step‑by‑step instructions on pricing and payment terms. It’s available for $27 and comes with a 14‑day money‑back guarantee. Feel free to reach out if you’d like to learn more!

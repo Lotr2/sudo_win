@@ -13,6 +13,8 @@ from .search import SearchUnavailable
 
 def research(query: str, *, ledger: EvidenceLedger, search, fetch, max_sources: int = 5,
              fetch_pages: int = 2, agent: str = "research_tool") -> list[str]:
+    """Search, read the top `fetch_pages` pages in full (quoting the passages that match the query), and
+    write every quote to the ledger. Returns the evidence ids."""
     """Return evidence IDs for one query. Raises SearchUnavailable if search is down."""
     results = search(query, limit=max_sources + 3)
     ids: list[str] = []

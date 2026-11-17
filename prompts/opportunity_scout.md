@@ -1,4 +1,4 @@
-Task: propose 3 or 4 distinct versions of the founder's idea as small digital products the founder could build and sell.
+Task: propose exactly `count` distinct versions of the founder's idea as small digital products the founder could build and sell. Code will pre-screen them and keep the most promising, so cover a wide range: different customer groups, different product forms, different problems within the idea, and at least one adjacent market.
 
 For each version give: id (v1, v2, ...), name (2-5 plain words a customer would understand, e.g. "Late-Payment Email Kit"), target_customer (a specific group you could actually find and reach, e.g. "freelance designers in their first 3 years" rather than "everyone"), problem (the painful job they have today, in their own words), product_form (one of the supported forms you are given: guide, template_pack, web_tool), skills_needed (short list), est_build_hours (honest estimate for a small first sellable version), budget_needed_usd (cash needed to build and launch, often 0-100).
 

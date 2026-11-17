@@ -88,7 +88,15 @@ class Context:
             from .decision_log import _current
             _current.reset(token)
 
-    # ---- conversation helpers ----
+    # ---- agentic skill settings ----
+    def skill(self, name: str):
+        """A [skills] setting from config/thresholds.toml, using the *_demo value in demo mode."""
+        sk = self.t.get("skills", {})
+        if self.demo and f"{name}_demo" in sk:
+            return sk[f"{name}_demo"]
+        return sk.get(name)
+
+        # ---- conversation helpers ----
     def say(self, text: str, kind: str = "message") -> None:
         self.store.converse("liaison", text, phase=self.dossier.phase, kind=kind)
 

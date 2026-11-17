@@ -93,6 +93,7 @@ def as_dict() -> dict:
 
 _NOTES = [
     (r"^Phase (\d) · (.*) started(.*)$", lambda m: None),  # the stage's start step already says this
+    (r"^The team considered (\d+) versions.*$", lambda m: m.group(0)),
     (r"^Opportunity Scout proposed (\d+) variants: (.*)$", lambda m: f"The team came up with {m[1]} versions of the idea: {m[2]}"),
     (r"^Build loop (\d+): (\d+)/(\d+) acceptance tests pass.*$", lambda m: f"Build attempt {m[1]}: {m[2]} of {m[3]} quality checks pass"),
     (r"^Compliance Linter pass (\d+): (\d+) violation\(s\)$",

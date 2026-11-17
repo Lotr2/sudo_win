@@ -97,9 +97,12 @@ def walkthrough(ctx: Context, result: GateResult, explain: dict | None = None) -
               "corrected": "corrected by the founder"}
     rests = [f"Their {labels.field_name(a.field)}: {labels.field_value(a.field, a.value)} ({status[a.status]})"
              for a in ctx.assumptions.rests_on(f"gate{result.gate}")]
-    msg = founder_liaison.message(ctx, "gate_walkthrough", stage=result.gate, stage_name=labels.phase_name(result.gate),
-                                  recommendation=labels.outcome_name(result.label, result.gate),
-                                  reasons=result.reasons, based_on=rests, **(explain or {}))
+    facts = dict(stage=result.gate, stage_name=labels.phase_name(result.gate),
+                 recommendation=labels.outcome_name(result.label, result.gate),
+                 reasons=result.reasons, based_on=rests, **(explain or {}))
+    msg = founder_liaison.message(ctx, "gate_walkthrough", **facts)
+    from ..agents import fact_checker
+    msg = fact_checker.ground(ctx, msg, facts, "stage_walkthrough")
     ctx.say(f"Stage {result.gate} check: the team recommends \"{labels.outcome_name(result.label, result.gate)}\".\n\n{msg}",
            kind="gate")
 

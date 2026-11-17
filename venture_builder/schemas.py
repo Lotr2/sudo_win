@@ -112,6 +112,22 @@ class Finding(Strict):
     kind: Literal["pain", "demand", "channel", "alternative", "complaint", "price"]
     claim: str
     evidence_ids: list[str]
+    source_type: Literal["first_hand", "question", "article", "listing", "other"] = Field(
+        description="first_hand = a person describing their own experience; question = someone asking for help; "
+                    "article = a guide, report or blog post; listing = a product or service page; other")
+    about_market: bool = Field(description="True only if the quote is about the founder's market (place, "
+                                           "customer group) rather than the topic in general")
+
+
+class FactCheck(Strict):
+    ok: bool
+    problems: list[str] = Field(description="Each statement that the facts do not support, quoted, with why")
+    revised: str = Field(description="The text rewritten so every statement is supported; empty when ok")
+
+
+class ProductReview(Strict):
+    score: int = Field(ge=1, le=5)
+    issues: list[str] = Field(description="Specific, fixable problems, most important first; empty if none")
 
 
 class ResearchFindings(Strict):

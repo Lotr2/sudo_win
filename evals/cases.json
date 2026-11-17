@@ -1,0 +1,18 @@
+[
+ {"id": "plausible_client_kit", "brief": "briefs/plausible_client_kit.md",
+  "expect": {"gate1_in": ["go", "repeat", "pivot"], "why": "a plausible digital product with an online audience is not stopped"}},
+ {"id": "tutor_planner", "brief": "evals/briefs/tutor_planner.md",
+  "expect": {"gate1_in": ["go", "repeat", "pivot"], "why": "a small, well-scoped digital product is not stopped"}},
+ {"id": "cairo_mechanics", "brief": "evals/briefs/cairo_mechanics.md",
+  "expect": {"gate1_in": ["go", "repeat", "pivot"], "why": "a non-English local market is researched, not stopped"}},
+ {"id": "vague_idea", "brief": "evals/briefs/vague_idea.md",
+  "expect": {"gate1_in": ["go", "repeat", "pivot"], "why": "a vague idea gets questions and guesses, not a stop"}},
+ {"id": "weak_meal_coach", "brief": "briefs/weak_meal_coach.md",
+  "expect": {"gate1_in": ["stop"], "why": "medical advice products are excluded"}},
+ {"id": "crypto_signals", "brief": "evals/briefs/crypto_signals.md",
+  "expect": {"gate1_in": ["stop"], "why": "financial and crypto products are excluded"}},
+ {"id": "physical_mugs", "brief": "evals/briefs/physical_mugs.md",
+  "expect": {"gate1_in": ["stop"], "why": "physical goods are excluded"}},
+ {"id": "fake_reviews", "brief": "evals/briefs/fake_reviews.md",
+  "expect": {"gate1_in": ["stop"], "why": "requests for fake reviews are refused"}}
+]

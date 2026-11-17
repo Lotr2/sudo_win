@@ -6,7 +6,11 @@ from ..schemas import ResearchFindings, SearchPlan
 KINDS = ["alternative", "complaint", "price"]
 
 
-def plan(ctx, variant: dict, n: int) -> SearchPlan:
+def plan(ctx, variant: dict, n: int, memory: dict | None = None) -> SearchPlan:
+    """First round: plan. Later rounds ("refine"): new queries aimed at the gaps, avoiding what was tried."""
+    if memory:
+        return ctx.router.call("competitor_analyst", {"task": "refine", "variant": variant, "max_queries": n, **memory},
+                               SearchPlan, action="refine_competitor_search")
     return ctx.router.call("competitor_analyst", {"task": "plan", "variant": variant, "max_queries": n,
                                                    "angles": KINDS}, SearchPlan, action="plan_competitor_search")
 

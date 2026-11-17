@@ -118,3 +118,56 @@ def test_landing_copy_never_shows_internal_labels():
     import re
     visible = re.sub(r"<!--.*?-->", "", page, flags=re.S)
     assert "ASSUMPTION" not in visible and "MOCKED" not in visible and "Get paid on time" in visible
+
+
+def test_builder_revises_once_after_a_weak_quality_review(make_runtime, models):
+    from conftest import drive
+    models.product_review = lambda p: {"score": 2, "issues": ["Template 1 has no example email"]}
+    rt = make_runtime()
+    drive(rt)
+    review = rt.dossier.build["review"]
+    assert {k: review[k] for k in ("score", "issues", "revised")} == \
+        {"score": 2, "issues": ["Template 1 has no example email"], "revised": True}
+    assert review["final_score"] == 2                                             # the revision is re-scored
+    assert models.reviews == 2 and models.calls.count("builder") >= 2            # review, revision, re-review
+    report = (rt.ctx.store.outputs / "phase3_step2_test_report.md").read_text()
+    assert "2 out of 5" in report and "Template 1 has no example email" in report
+    assert rt.dossier.build["report"]["passed"] == rt.dossier.build["report"]["total"]
+
+
+def test_research_loop_stops_when_the_bar_is_met_and_remembers_queries(make_runtime, models):
+    from conftest import drive
+    rt = make_runtime()
+    drive(rt, stop_at_gate=1)
+    log = rt.dossier.research_log
+    assert log and all(entry["tried"] for entry in log.values())
+    rounds = [e for e in __import__("json").loads(rt.ctx.store.path("decision_log.json").read_text())
+              if e["action"] == "research_round"]
+    assert rounds and all(e["readings"] >= 1 for e in rounds)
+    # The fake evidence meets the bar in the first round, so the market research needs no second round.
+    market = [e for e in rounds if e["agent"] == "market_researcher"]
+    assert all(e["round"] == 1 for e in market) or any(not e["gaps"] for e in market)
+
+
+def test_agreement_keeps_only_findings_most_readings_share():
+    from venture_builder.departments.discover import agree
+    from venture_builder.schemas import Finding
+    F = lambda k, ids: Finding(kind=k, claim="c", evidence_ids=ids, source_type="first_hand", about_market=True)  # noqa: E731
+    runs = [[F("pain", ["ev_1"]), F("pain", ["ev_2"]), F("channel", ["ev_3"])],
+            [F("pain", ["ev_1", "ev_4"]), F("demand", ["ev_2"])],
+            [F("pain", ["ev_1"]), F("channel", ["ev_3"])]]
+    kept = agree(runs, 2)
+    assert [(f.kind, f.evidence_ids) for f in kept] == [("pain", ["ev_1"]), ("channel", ["ev_3"])]
+
+
+def test_spec_must_fill_its_own_form_and_only_that():
+    import pytest
+    from venture_builder.agents.product_manager import check, normalise
+    from venture_builder.schemas import Spec
+    mixed = Spec(title="Kit", summary="s", product_form="template_pack", features=["f"],
+                 sections=[{"heading": "Why", "purpose": "p"}] * 4, item_count=5, item_fields=[])
+    with pytest.raises(ValueError):
+        check(mixed)                                   # a template pack without template fields is rejected
+    good = mixed.model_copy(update={"item_fields": ["When to use", "Template", "Example"]})
+    check(good)
+    assert normalise(good).sections == [] and normalise(good).item_fields == ["When to use", "Template", "Example"]

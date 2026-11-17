@@ -511,9 +511,24 @@ Everything below is implemented and covered by the smoke tests in `tests/`, whic
 1. **Real channels behind approval.** Replace MOCKED publish adapters with real ones (email, social, store platforms) that still require an approval record per item.
 2. **Real payments behind approval.** A payment-provider adapter using the same idempotency, refund and reconciliation code, with keys held only by the founder.
 3. **More product templates** for Phase 3, contributed by the community, each with its own acceptance-test pack.
-4. **Better evidence.** More search back ends, source-quality scoring, and duplicate-source detection.
-5. **Evaluation suite.** A public set of founder briefs, including weak ideas that should be stopped, run in CI to track how often the system recommends STOP correctly.
+4. **Better evidence.** More search back ends and duplicate-source detection (source grading, a research loop and agreement between readings are built: see Agentic skills).
+5. **Evaluation suite in CI.** `evals/` holds briefs with expected outcomes and readability checks; next is running the real-model evals on every prompt change and publishing the pass rate.
 6. **Model packs.** Tested routing presets for other open-weight models and smaller hardware.
+
+## Agentic skills
+
+Each skill has its settings in `config/thresholds.toml` (`[skills]`, with smaller values in demo mode) and logs what it did.
+
+| Skill | Agent | What it does |
+|---|---|---|
+| Research loop | Market Researcher, Competitor Analyst | Plan, then search and read (top pages in full), extract findings, and compare them with the Stage 1 bar in code; while a required gap remains, write new queries aimed at it (narrower customers, local language, `site:` searches), up to `research_rounds` |
+| Evidence grading | both researchers, Scorer | Each finding says whether its source is first-hand, a question, an article or a listing, and whether it is about the founder's market; listings never count as evidence of a problem, articles count 0.8 and off-market sources 0.6 |
+| Agreement | both researchers | Findings are extracted `extraction_votes` times and kept only when most readings agree (same kind, shared evidence), which cuts run-to-run variance |
+| Idea shortlist | Opportunity Scout | Writes `scout_candidates` versions; code pre-screens each with one search and its fit, and keeps `scout_shortlist` with variety in product form |
+| Memory | researchers, scout | Per project: queries that found evidence and dead ends carry over to a retry; across projects: only the names of sites that yielded evidence (`runs/.research_sites.json`) |
+| Fact-check | Fact Checker | Before the founder reads a stage walk-through or report explanation, every factual statement is checked against the facts it came from and rewritten if unsupported; outcomes are never changed |
+| Self-review | Product Reviewer | Once the acceptance tests pass, the product is scored against a rubric; below `review_pass_score` the Builder revises it once, and the tests must pass again |
+| Evals | `evals/run_evals.py` | Eight briefs with expected Stage 1 outcomes (including excluded products and a fake-review request) plus readability checks; runs on the real models or, in the tests, on the fakes |
 
 ## Founder conversation
 

@@ -66,6 +66,9 @@ ROUTES: dict[str, Route] = {
     "policy_drafter": Route(GEMMA),
     "launch_writers": Route(GEMMA),
     "pivot_memo_writer": Route(GEMMA),
+    # Checkers for the agentic skills: they judge work written by another role.
+    "fact_checker": Route(OSS, "low", 12288, checks="gate_reporter"),
+    "product_reviewer": Route(GEMMA, checks="builder"),
     # The Policy Guard classifier runs on whichever model did NOT write the text it checks.
     "policy_classifier": Route(OSS, "low"),
 }

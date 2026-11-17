@@ -9,5 +9,9 @@ def run(ctx, gate: int, result: dict, context: dict) -> GateMemo:
         if gate == 1 and context.get("founder") and len(memo.other_directions) < 2:
             raise ValueError("other_directions needs 2-5 alternatives that grow out of the founder's original idea")
 
-    return ctx.router.call("gate_reporter", {"gate": gate, "result": result, "context": context}, GateMemo,
+    memo = ctx.router.call("gate_reporter", {"gate": gate, "result": result, "context": context}, GateMemo,
                            action=f"gate{gate}_memo", validate=check)
+    from . import fact_checker
+    explanation = fact_checker.ground(ctx, memo.explanation, {"result": result, "context": context},
+                                      f"stage{gate}_report")
+    return memo.model_copy(update={"explanation": explanation})

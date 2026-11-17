@@ -34,3 +34,19 @@ node_budget_seconds = 240  # time budget per step in demo mode
 # Locked and hashed at the start of Phase 6, before any (MOCKED) event is entered.
 min_conversion = 0.02      # orders / store visitors
 max_refund_rate = 0.10     # refunds / orders
+
+[skills]
+# Agentic skills: settings for each (smaller values apply in demo mode, the *_demo keys).
+research_rounds = 3          # search -> read -> reflect -> refine, per version and researcher; stops early once the bar is met
+research_rounds_demo = 2
+extraction_votes = 3         # independent readings of the evidence; a finding counts only if most of them agree
+extraction_votes_demo = 2
+fetch_pages = 3              # pages read in full per query (the rest are search snippets)
+fetch_pages_demo = 2
+scout_candidates = 10        # versions of the idea generated before the shortlist
+scout_candidates_demo = 6
+scout_shortlist = 4          # versions kept for full research
+scout_shortlist_demo = 3
+grounding_check = true       # fact-check founder-facing explanations against the facts before showing them
+builder_self_review = true   # review the product against a rubric once and revise if it falls short
+review_pass_score = 4        # 1-5

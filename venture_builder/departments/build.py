@@ -11,6 +11,7 @@ import re
 import json
 
 from .. import gates, qa, templates
+from ..agents import product_reviewer
 from ..agents import builder, docs_writer, founder_liaison, gate_reporter, product_manager
 from .. import labels
 from ..context import Ask, Context, Next
@@ -73,6 +74,7 @@ def p3_build(ctx: Context, answer) -> Next:
     previous = None
     report = {"total": 0, "passed": 0, "failures": []}
     loops = ctx.t["limits"]["build_loops"]
+    review: dict | None = None
     for loop in range(1, loops + 1):
         content = builder.run(ctx, form, spec, failures, previous)
         previous = content.model_dump()
@@ -81,6 +83,23 @@ def p3_build(ctx: Context, answer) -> Next:
         ctx.note(f"Build loop {loop}: {report['passed']}/{report['total']} acceptance tests pass "
                  f"({report['isolation']})")
         if report["total"] and report["passed"] == report["total"]:
+            if review is not None and review["revised"] and "final_score" not in review:
+                # Re-score the revision so the report says whether it actually got better (no further revision).
+                r2 = product_reviewer.run(ctx, form, spec, previous, {"features": d.spec.features,
+                                                                      "summary": d.spec.summary})
+                review.update({"final_score": r2.score, "final_issues": r2.issues})
+                ctx.note(f"Quality review after the revision: {r2.score} out of 5")
+            # Self-review once against a rubric; revise if it falls short and a build round is left.
+            if review is None and ctx.skill("builder_self_review"):
+                promise = {"features": d.spec.features, "summary": d.spec.summary}
+                r = product_reviewer.run(ctx, form, spec, previous, promise)
+                review = {"score": r.score, "issues": r.issues, "revised": False}
+                ctx.note(f"Quality review: {r.score} out of 5" + (f"; {len(r.issues)} thing(s) to improve" if r.issues else ""))
+                if r.score < int(ctx.skill("review_pass_score") or 4) and r.issues and loop < loops \
+                        and not ctx.over_budget(ctx.t["demo"].get("node_budget_seconds", 240)):
+                    failures = [f"Quality review: {i}" for i in r.issues]
+                    review["revised"] = True
+                    continue
             break
         failures = report["failures"] or [report["output"][-800:]]
         if ctx.over_budget(ctx.t["demo"].get("node_budget_seconds", 240)):
@@ -88,8 +107,10 @@ def p3_build(ctx: Context, answer) -> Next:
             break
         ctx.say(f"Build round {loop}: {report['total'] - report['passed']} quality check(s) still fail, so the team "
                 "is fixing them.", kind="progress")
+    if review is not None and review["revised"] and not (report["total"] and report["passed"] == report["total"]):
+        ctx.note("The revision after the quality review broke a quality check; the team keeps working on it.")
     d.build = {"dir": str(out), "form": form, "loops": loop, "report": {k: v for k, v in report.items() if k != "output"},
-               "content": previous}
+               "content": previous, "review": review}
     _write_test_report(ctx, report, loop)
     return Next("p3_docs")
 
@@ -161,6 +182,16 @@ def _write_test_report(ctx: Context, report: dict, loops: int) -> None:
           f"({report.get('isolation', 'isolated')}).", ""]
     if report.get("failures"):
         md += ["## Checks that still fail", ""] + [f"- {f}" for f in report["failures"]]
+    review = (ctx.dossier.build or {}).get("review")
+    if review:
+        md += ["## Quality review", "", f"A reviewer scored the first version **{review['score']} out of 5** against a "
+               "rubric (specific, practical, complete against the plan and the landing page, no filler)."
+               + (" The builder revised it once to address:" if review["revised"] else "")]
+        md += [f"- {i}" for i in review["issues"]] + [""]
+        if "final_score" in review:
+            md += [f"After the revision the reviewer scored it **{review['final_score']} out of 5**."
+                   + (" Still to improve:" if review.get("final_issues") else "")]
+            md += [f"- {i}" for i in review.get("final_issues") or []] + [""]
     names = re.findall(r"^(test_\w+) .*\.\.\. (ok|FAIL|ERROR)", report.get("output", ""), re.M)
     if names:
         md += ["## Each check", ""] + [f"- {'Passed' if r == 'ok' else 'Failed'}: {n.removeprefix('test_').replace('_', ' ')}"

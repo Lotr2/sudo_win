@@ -32,6 +32,7 @@ Open **http://localhost:8000**, describe your idea and press **Start my project*
 | All | Founder decisions in the committed demo run (`outputs/`, `decision_log.json`) | **MOCKED**: made by `scripts/simulate_founder.py` on a separate channel, each labelled `simulated_founder` in the log; the app itself only accepts a person's approvals in the UI or CLI |
 | All | Policy Guard (rules, then a classifier on the other model) on the brief, chat, outputs and outbox | Working |
 | 1 Discover | Brief parsing, Opportunity Scout, parallel research (SearXNG search, page fetch, Evidence Ledger), Scorer, Gate 1, interview script | Working |
+| All | Agentic skills: research loop (search, read, reflect, refine) until the evidence bar is met; graded evidence (first-hand, on-market); findings kept only when several readings agree; idea shortlist from 10 candidates; memory between retries; fact-check of every explanation; product self-review; `evals/` | Working |
 | 1 Discover | Customer interviews | **STUBBED**: the founder runs them and pastes notes; nothing is simulated |
 | 2 Validate | Lean Canvas debate, experiment design, threshold lock with hash, landing page, Gate 2 | Working |
 | 2 Validate | Publishing the landing page; sign-up counts | **MOCKED**: no hosting; the count is founder-entered and labelled MOCKED unless real |
@@ -59,7 +60,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Cost per run
 
-**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). The committed demo run (`decision_log.json`) took the main idea through all six stages with about 149,000 tokens and the weak idea to its STOP with about 6,300 tokens, all on GPT-OSS-20B locally: $0.00.
+**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). The committed demo run (`decision_log.json`) took the main idea through all six stages with about 237,000 tokens (the agentic skills read and check more) and the weak idea to its STOP with about 5,400 tokens, all on GPT-OSS-20B locally: $0.00.
 
 ## Demo video
 
