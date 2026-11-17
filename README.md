@@ -1,6 +1,6 @@
 # sudo_win: an open-source team of AI agents from idea to sellable product
 
-A founder brings a short brief: an idea plus skills, budget, time, target market and values. Six departments, one per phase, take it through **Discover → Validate → Build → Commercial setup → Launch → Operate and learn**. Plain code runs the pipeline, the gates, approvals and the money path; agents on two local open-weight models do the work inside each department, and a Founder Liaison talks with the founder throughout.
+A founder brings a short brief: an idea plus skills, budget, time, target market and values. Six departments, one per phase, take it through **Discover → Validate → Build → Commercial setup → Launch → Operate and learn**. Plain code runs the pipeline, the gates, approvals and the money path; agents on two open-weight models (GPT-OSS-20B locally, Gemma 4 31B on Google's free API tier) do the work inside each department, and a Founder Liaison talks with the founder throughout.
 
 - **Status: designed, not built yet.** Every part is **STUBBED**; see the table below.
 - **Every phase ends in a gate** decided by code against thresholds fixed in advance: go, repeat, pivot or **stop**.
@@ -13,7 +13,7 @@ A founder brings a short brief: an idea plus skills, budget, time, target market
 docker compose up
 ```
 
-The first start downloads GPT-OSS-20B and Qwen3-14B (about 22 GB of memory to run both; set `QWEN_ROLES_ON_OSS=1` in `.env` to use GPT-OSS-20B only). Then, in a second terminal:
+The first start downloads GPT-OSS-20B (about 13 GB). Gemma 4 31B needs a free Gemini API key: copy `.env.example` to `.env` and set `GEMINI_API_KEY`. Without a key every role runs on GPT-OSS-20B (single-model mode, announced at startup). Then, in a second terminal:
 
 ```
 docker compose exec app python -m venture_builder.cli
@@ -39,16 +39,16 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Models and free resources
 
-- **GPT-OSS-20B** (`gpt-oss:20b`, Apache-2.0): research, building and judging.
-- **Qwen3-14B** (`qwen3:14b`, Apache-2.0, thinking off): parsing, drafting, copy and the Founder Liaison.
-- Both run locally through **Ollama** in Docker: no API key, no paid service, no account. The model that checks a piece of work is never the one that wrote it; with `QWEN_ROLES_ON_OSS=1` everything runs on GPT-OSS-20B and same-model checks are flagged in the log.
+- **GPT-OSS-20B** (`gpt-oss:20b`, open-weight, Apache-2.0), served locally by **Ollama**: research, building and judging.
+- **Gemma 4 31B** (open-weight), called through **Google's Gemini API free tier**: parsing, drafting, copy and the Founder Liaison. The free key goes in `.env` as `GEMINI_API_KEY`; Gemma's prompts are sent to Google.
+- **No paid service is required.** Without a key, or with `GEMMA_ROLES_ON_OSS=1`, every role runs on GPT-OSS-20B locally and same-model checks are flagged in the log. The model that checks a piece of work is never the one that wrote it whenever both models are available.
 - **Already have Ollama?** Set `OLLAMA_HOST=http://host.docker.internal:11434` and `SKIP_MODEL_PULL=1` in `.env` to use it and skip the download.
 - **Search:** self-hosted SearXNG in Docker, free and keyless.
 - **Orchestration:** LangGraph (MIT), the only pip dependency, pinned in `requirements.txt`.
 
 ## Cost per run
 
-**About $0.00 per run** (both models local). Token counts will be logged per call in `decision_log.json`.
+**About $0.00 per run** (GPT-OSS-20B local, Gemma 4 31B on the Gemini API free tier). Token counts will be logged per call in `decision_log.json`.
 
 ## Demo video
 

@@ -1,17 +1,16 @@
 # One-command setup: `docker compose up`
-#   ollama   serves the open-weight models locally (no paid API, no key)
-#   models   pulls gpt-oss:20b and qwen3:14b once (qwen3 is skipped when QWEN_ROLES_ON_OSS=1), then exits
+#   ollama   serves GPT-OSS-20B locally (no paid API, no key)
+#   models   pulls gpt-oss:20b once, then exits
 #   searxng  self-hosted search for the research agents (free, no key)
 #   app      the venture builder; open it with `docker compose exec app python -m venture_builder.cli`
 # The repo is mounted into the app, so outputs/ and decision_log.json land in the repo.
-# Both models together need about 22 GB of memory; set QWEN_ROLES_ON_OSS=1 in .env to run on GPT-OSS-20B only.
+# Gemma 4 31B is called through Google's Gemini API: set GEMINI_API_KEY in .env (free tier).
+# Without a key every role runs on GPT-OSS-20B.
 # To use an Ollama already running on this machine: OLLAMA_HOST=http://host.docker.internal:11434 and SKIP_MODEL_PULL=1.
 
 services:
   ollama:
     image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
-    environment:
-      OLLAMA_MAX_LOADED_MODELS: ${OLLAMA_MAX_LOADED_MODELS:-2}
     volumes:
       - ollama:/root/.ollama
     healthcheck:
@@ -27,11 +26,9 @@ services:
         condition: service_healthy
     environment:
       OLLAMA_HOST: http://ollama:11434
-      MODEL_MAIN: ${MODEL_MAIN:-gpt-oss:20b}
-      MODEL_FAST: ${MODEL_FAST:-qwen3:14b}
-      QWEN_ROLES_ON_OSS: ${QWEN_ROLES_ON_OSS:-0}
+      MODEL_OSS: ${MODEL_OSS:-gpt-oss:20b}
       SKIP_MODEL_PULL: ${SKIP_MODEL_PULL:-0}
-    entrypoint: ["/bin/sh", "-c", "[ \"$$SKIP_MODEL_PULL\" = 1 ] && exit 0; ollama pull \"$$MODEL_MAIN\" && if [ \"$$QWEN_ROLES_ON_OSS\" != 1 ]; then ollama pull \"$$MODEL_FAST\"; fi"]
+    entrypoint: ["/bin/sh", "-c", "[ \"$$SKIP_MODEL_PULL\" = 1 ] && exit 0; ollama pull \"$$MODEL_OSS\""]
     restart: "no"
 
   searxng:

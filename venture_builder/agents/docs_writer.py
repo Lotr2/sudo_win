@@ -1,1 +1,1 @@
-"""Docs Writer (Qwen3-14B): writes the user guide and FAQ."""
+"""Docs Writer (Gemma 4 31B): writes the user guide and FAQ."""

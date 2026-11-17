@@ -1,1 +1,1 @@
-"""Landing Copywriter (Qwen3-14B): writes the waitlist landing page."""
+"""Landing Copywriter (Gemma 4 31B): writes the waitlist landing page."""

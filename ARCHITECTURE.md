@@ -1,6 +1,6 @@
 # Architecture
 
-An open-source team of AI agents that takes a founder's brief toward a validated, sellable digital product, and that recommends **STOP** when the evidence is weak. The system is organised like a small company: six departments, one per phase, each built on the agent design pattern that suits its kind of work. Plain code (not an LLM) controls the pipeline, the gates, approvals and the money path. Agents only do the work inside each department. A **Founder Liaison** agent keeps up a running conversation with the founder: it interviews them, reads its understanding back, checks in at every phase, asks when an answer would change a decision, and explains any result on request. Both models run locally, so a run costs $0.
+An open-source team of AI agents that takes a founder's brief toward a validated, sellable digital product, and that recommends **STOP** when the evidence is weak. The system is organised like a small company: six departments, one per phase, each built on the agent design pattern that suits its kind of work. Plain code (not an LLM) controls the pipeline, the gates, approvals and the money path. Agents only do the work inside each department. A **Founder Liaison** agent keeps up a running conversation with the founder: it interviews them, reads its understanding back, checks in at every phase, asks when an answer would change a decision, and explains any result on request. GPT-OSS-20B runs locally through Ollama and Gemma 4 31B is called through Google's Gemini API on its free tier; without a Gemini key every role runs on GPT-OSS-20B, so no paid service is ever required.
 
 ## Overview
 
@@ -16,7 +16,7 @@ flowchart LR
   G5 -->|go| P6["6 · Operate & learn<br/>monitor loop + critic"] --> G6{"Gate 6"}
   G6 -.->|pivot| P1
   G1 & G2 & G3 & G4 & G5 & G6 -.->|stop| X["STOP memo<br/>(honest no-launch)"]
-  F(["Founder"]) <-.->|"interview · check-ins · questions · why?"| FL["Founder Liaison<br/>(Qwen3-14B)"]
+  F(["Founder"]) <-.->|"interview · check-ins · questions · why?"| FL["Founder Liaison<br/>(Gemma 4 31B)"]
   FL <-.-> P1 & P2 & P3 & P4 & P5 & P6
 
   subgraph Spine["Spine: plain code, no LLM in control"]
@@ -93,7 +93,7 @@ All code lives in the `venture_builder/` package; thresholds and scoring weights
 
 How to read this section: each phase has **steps**, numbered as in the output file names (`outputs/phase<N>_step<M>_<name>`). For every step: what it means in plain words, which agents do it, which model each runs on, what it reads and writes, which tools it can use, and the method it follows. `[code]` marks steps with no LLM.
 
-Models: **GPT-OSS-20B** (local, default; reasoning effort set per role) and **Qwen3-14B q4** (local, thinking off). See [Model routing](#model-routing).
+Models: **GPT-OSS-20B** (local through Ollama, default; reasoning effort set per role) and **Gemma 4 31B** (Google Gemini API, free tier). See [Model routing](#model-routing).
 
 ### Phase 1 · Discover: "Is there a real problem worth solving for this founder?"
 
@@ -105,17 +105,17 @@ Models: **GPT-OSS-20B** (local, default; reasoning effort set per role) and **Qw
 
 ```mermaid
 flowchart LR
-  brief[/"Founder brief"/] -->|raw text| parser["Brief Parser · Qwen3-14B"]
-  parser -->|"draft profile + gaps"| liaison["Founder Liaison · Qwen3-14B<br/>intake interview + read-back"]
+  brief[/"Founder brief"/] -->|raw text| parser["Brief Parser · Gemma 4 31B"]
+  parser -->|"draft profile + gaps"| liaison["Founder Liaison · Gemma 4 31B<br/>intake interview + read-back"]
   liaison <-->|"questions / answers"| fdr(["Founder confirms<br/>or corrects"])
   liaison -->|confirmed profile.json| guard["Policy Guard [code]"]
   guard -->|allowed| scout["Opportunity Scout · GPT-OSS-20B"]
-  guard -->|blocked| rep["Gate Reporter · Qwen3-14B"]
+  guard -->|blocked| rep["Gate Reporter · Gemma 4 31B"]
   scout -->|variants| market["Market Researcher · GPT-OSS-20B"] & comp["Competitor Analyst · GPT-OSS-20B"]
   market & comp -->|search results| ledger[("Evidence Ledger [code]")]
   ledger -->|evidence IDs| scorer["Scorer [code]"] -->|ranked variants| g1{"Gate 1 [code]"}
   g1 -->|result + reasons| rep -->|memo| founder(["Founder picks a variant or accepts STOP"])
-  founder -->|chosen variant| mom["Mom Test Writer · Qwen3-14B"]
+  founder -->|chosen variant| mom["Mom Test Writer · Gemma 4 31B"]
   mom --> notes(["Founder pastes interview notes<br/>or resumes without them"])
 ```
 
@@ -125,9 +125,9 @@ What it means: understand the founder properly before doing anything, then turn 
 
 | Agent | Model | Reads | Writes | Tools |
 |---|---|---|---|---|
-| Brief Parser | Qwen3-14B | raw brief | draft `profile`: idea, skills, budget, hours/week, market, values, and the list of gaps | none |
-| Founder Liaison | Qwen3-14B | draft profile, gaps | intake questions, the read-back, the confirmed `profile`; each remaining gap as a labelled `ASSUMPTION` in the Assumption Ledger | `ask_founder`, `assumptions.add` |
-| Policy Guard | [code] + classifier (GPT-OSS-20B, because Qwen3-14B wrote the profile) | `profile` | `allowed` or `blocked` with the rule that matched | rules list, classifier |
+| Brief Parser | Gemma 4 31B | raw brief | draft `profile`: idea, skills, budget, hours/week, market, values, and the list of gaps | none |
+| Founder Liaison | Gemma 4 31B | draft profile, gaps | intake questions, the read-back, the confirmed `profile`; each remaining gap as a labelled `ASSUMPTION` in the Assumption Ledger | `ask_founder`, `assumptions.add` |
+| Policy Guard | [code] + classifier (GPT-OSS-20B, because Gemma 4 31B wrote the profile) | `profile` | `allowed` or `blocked` with the rule that matched | rules list, classifier |
 | Opportunity Scout | GPT-OSS-20B (medium) | `profile` | 3–4 `variants`: target customer, problem, digital product form | none |
 | Market Researcher | GPT-OSS-20B (low) | one variant | evidence items about pain, demand signals, where customers gather | `web_search`, `fetch_page`, `ledger.add` |
 | Competitor Analyst | GPT-OSS-20B (low) | one variant | evidence items about alternatives, their prices and complaints | `web_search`, `fetch_page`, `ledger.add` |
@@ -162,7 +162,7 @@ What it means: give the founder a Mom Test interview script (questions about pas
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Mom Test Writer | Qwen3-14B | chosen variant | interview script, notes template |
+| Mom Test Writer | Gemma 4 31B | chosen variant | interview script, notes template |
 
 Method: the system cannot interview real people. The founder runs the interviews and pastes notes back in; these are stored as `founder_reported` evidence. Simulated persona interviews may be offered for rehearsal only; they are labelled `SIMULATED` and count for nothing at any gate.
 
@@ -174,17 +174,17 @@ Method: the system cannot interview real people. The founder runs the interviews
 
 **Department:** Investment committee. **Pattern:** generator–critic (evaluator–optimizer) debate, then a pre-registered experiment. **Core step:** Design the business.
 
-**Why this pattern:** LLMs are too optimistic about ideas. A generator (Canvas Builder, Qwen3-14B) and a critic (Skeptical Investor, GPT-OSS-20B at high reasoning effort) argue for a fixed number of rounds; because they are different models, the critic does not simply agree with its own writing. Then the success target is pre-registered: fixed and locked before any result exists, so the outcome cannot be reframed.
+**Why this pattern:** LLMs are too optimistic about ideas. A generator (Canvas Builder, Gemma 4 31B) and a critic (Skeptical Investor, GPT-OSS-20B at high reasoning effort) argue for a fixed number of rounds; because they are different models, the critic does not simply agree with its own writing. Then the success target is pre-registered: fixed and locked before any result exists, so the outcome cannot be reframed.
 
 **Conversation:** a kickoff ("I'm about to stress-test the business. It rests on these 3 assumptions; anything I should know?"); the investor's toughest objections are put to the founder, who can answer them, and those answers go to the Canvas Builder as `founder_reported` input; the Liaison explains the proposed target and the floor before asking for approval; after the result, it asks what the founder heard from the people who signed up or didn't.
 
 ```mermaid
 flowchart LR
-  in2[/"From Phase 1"/] -->|dossier slice| canvas["Canvas Builder · Qwen3-14B"] -->|canvas v1| vc["Skeptical Investor · GPT-OSS-20B"]
+  in2[/"From Phase 1"/] -->|dossier slice| canvas["Canvas Builder · Gemma 4 31B"] -->|canvas v1| vc["Skeptical Investor · GPT-OSS-20B"]
   vc -.->|critique, max 2 rounds| canvas
   vc -->|canvas + risks| exp["Experiment Designer · GPT-OSS-20B"] -->|proposed targets| fa(["Founder approves targets"]) -->|approved| lock["Threshold Lock [code]"]
-  lock -->|locked targets| copy["Landing Copywriter · Qwen3-14B"] -->|draft| lint["Policy Guard [code]"] -->|clean copy| outbox["Approval Outbox [code]"]
-  outbox -->|sign-up count| g2{"Gate 2 ★ [code]"} -->|pass/fail + why| rep2["Gate Reporter · Qwen3-14B"]
+  lock -->|locked targets| copy["Landing Copywriter · Gemma 4 31B"] -->|draft| lint["Policy Guard [code]"] -->|clean copy| outbox["Approval Outbox [code]"]
+  outbox -->|sign-up count| g2{"Gate 2 ★ [code]"} -->|pass/fail + why| rep2["Gate Reporter · Gemma 4 31B"]
 ```
 
 **Step 1: Lean Canvas** → `phase2_step1_lean_canvas.md`
@@ -193,7 +193,7 @@ What it means: write the business on one page (problem, customer segments, uniqu
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Canvas Builder (generator) | Qwen3-14B | chosen variant, evidence, interview notes | Lean Canvas; every claim cites evidence IDs or is labelled `ASSUMPTION` |
+| Canvas Builder (generator) | Gemma 4 31B | chosen variant, evidence, interview notes | Lean Canvas; every claim cites evidence IDs or is labelled `ASSUMPTION` |
 | Skeptical Investor (critic) | GPT-OSS-20B (high) | canvas, evidence | rubric scores (1–5) per canvas box, ranked riskiest assumptions, a "fatal" flag where relevant |
 
 Method: at most 2 revision rounds. The investor scores a fixed rubric; the gate later reads the scores, never the investor's overall opinion.
@@ -216,7 +216,7 @@ What it means: write a waitlist page that states the value honestly, and queue i
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Landing Copywriter | Qwen3-14B | canvas, unique value | page copy and HTML |
+| Landing Copywriter | Gemma 4 31B | canvas, unique value | page copy and HTML |
 | Policy Guard | [code] + classifier (GPT-OSS-20B) | page | pass, or the violations found |
 | Approval Outbox | [code] | page | queued item; publishing is MOCKED |
 
@@ -238,7 +238,7 @@ Method: no fake urgency, countdown timers, testimonials, sign-up counts or incom
 flowchart LR
   in3[/"From Phase 2"/] --> pm["Product Manager · GPT-OSS-20B"] -->|spec + tests| tpl["Template Picker [code]"] -->|scaffold| build["Builder · GPT-OSS-20B"] -->|build| qa["QA Runner [code]"]
   qa -.->|failures, max 3 loops| build
-  qa -->|passing build| docs["Docs Writer · Qwen3-14B"] --> g3{"Gate 3 [code]"} -->|test report| rep3["Gate Reporter · Qwen3-14B"]
+  qa -->|passing build| docs["Docs Writer · Gemma 4 31B"] --> g3{"Gate 3 [code]"} -->|test report| rep3["Gate Reporter · Gemma 4 31B"]
 ```
 
 **Step 1: Spec** → `phase3_step1_spec.md`
@@ -265,7 +265,7 @@ Method: up to 3 build–test loops. After 3 failures the gate recommends repeat 
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Docs Writer | Qwen3-14B | spec, passing build | user guide and FAQ |
+| Docs Writer | Gemma 4 31B | spec, passing build | user guide and FAQ |
 
 **Gate 3** → `phase3_gate_decision.md`.
 
@@ -279,7 +279,7 @@ Method: up to 3 build–test loops. After 3 failures the gate recommends repeat 
 
 ```mermaid
 flowchart LR
-  in4[/"From Phase 3"/] --> price["Pricing Analyst · GPT-OSS-20B"] -->|price sheet| pol["Policy Drafter · Qwen3-14B"] -->|drafts| cl["Compliance Linter [code]"]
+  in4[/"From Phase 3"/] --> price["Pricing Analyst · GPT-OSS-20B"] -->|price sheet| pol["Policy Drafter · Gemma 4 31B"] -->|drafts| cl["Compliance Linter [code]"]
   cl -.->|violations| pol
   cl -->|lint report| g4{"Gate 4 [code]"} --> f4(["Founder signs off"])
 ```
@@ -300,7 +300,7 @@ What it means: draft the product's terms of service, privacy policy and refund p
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Policy Drafter | Qwen3-14B | product, price, delivery method | three policy drafts, each marked `DRAFT: not legal advice` |
+| Policy Drafter | Gemma 4 31B | product, price, delivery method | three policy drafts, each marked `DRAFT: not legal advice` |
 | Compliance Linter | [code] | drafts, pricing | violations: income promises, guarantees, refund terms that don't match delivery, missing sections |
 
 **Gate 4** → `phase4_gate_decision.md`.
@@ -315,7 +315,7 @@ What it means: draft the product's terms of service, privacy policy and refund p
 
 ```mermaid
 flowchart LR
-  in5[/"From Phase 4"/] --> lw["Launch Writers · Qwen3-14B"] -->|drafts| pg["Policy Guard [code]"] -->|clean items| ob["Approval Outbox [code]"] -->|review queue| f5(["Founder approves or rejects"])
+  in5[/"From Phase 4"/] --> lw["Launch Writers · Gemma 4 31B"] -->|drafts| pg["Policy Guard [code]"] -->|clean items| ob["Approval Outbox [code]"] -->|review queue| f5(["Founder approves or rejects"])
   f5 -.->|rejected + note| lw
   f5 -->|approval record| pub["Publish adapter [code, MOCKED]"]
   pub --> s2c["Sale to cash [code, MOCKED]"]
@@ -331,7 +331,7 @@ What it means: write one post per channel identified in Phase 1, for the founder
 
 | Agent | Model | Reads | Writes |
 |---|---|---|---|
-| Launch Writers | Qwen3-14B | product, price, policies, channels | store page, channel posts |
+| Launch Writers | Gemma 4 31B | product, price, policies, channels | store page, channel posts |
 | Policy Guard | [code] + classifier (GPT-OSS-20B) | each item | pass or violations (impersonation, fake reviews, fake urgency, income claims) |
 | Approval Outbox | [code] | clean items | review queue |
 | Publish adapter | [code, MOCKED] | item + approval record | publish log |
@@ -353,7 +353,7 @@ What it means: when a (mock) payment succeeds, the buyer gets access automatical
 ```mermaid
 flowchart LR
   ev[/"Event log (MOCKED)"/] --> met["Metrics Engine [code]"] & sup["Support Agent · GPT-OSS-20B"]
-  met -->|metrics| memo["Pivot Memo Writer · Qwen3-14B"]
+  met -->|metrics| memo["Pivot Memo Writer · Gemma 4 31B"]
   sup -->|ticket themes| memo
   memo -->|draft| crit["Critic · GPT-OSS-20B"]
   crit -.->|gaps| memo
@@ -364,13 +364,13 @@ flowchart LR
 
 **Step 2: Support** → `phase6_step2_support_log.md`. The Support Agent (GPT-OSS-20B) answers from the user docs only (retrieval-augmented generation) and drafts replies into the outbox. Refund requests always become outbox items for the founder.
 
-**Step 3: Persevere-or-pivot memo** → `phase6_step3_pivot_memo.md`. Analyse and plan: the Pivot Memo Writer (Qwen3-14B) cites metrics; the Critic (GPT-OSS-20B, high) scores whether each claim matches the data; the memo is revised at most twice.
+**Step 3: Persevere-or-pivot memo** → `phase6_step3_pivot_memo.md`. Analyse and plan: the Pivot Memo Writer (Gemma 4 31B) cites metrics; the Critic (GPT-OSS-20B, high) scores whether each claim matches the data; the memo is revised at most twice.
 
 **Gate 6:** the memo must pass the critic's rubric; then the founder chooses persevere, pivot (back to Phase 1 with what was learned) or stop.
 
 ## Gates
 
-A gate is a pure function in `gates.py`: it reads the dossier and the thresholds, returns an outcome with reasons, and writes a log entry. For Gates 1–3, the Gate Reporter (Qwen3-14B) turns that result into a readable memo; for Gates 4–6, code fills a memo template. Neither can change the outcome. The founder then decides. The founder can override the recommendation, and the log records it as an override against the recommendation.
+A gate is a pure function in `gates.py`: it reads the dossier and the thresholds, returns an outcome with reasons, and writes a log entry. For Gates 1–3, the Gate Reporter (Gemma 4 31B) turns that result into a readable memo; for Gates 4–6, code fills a memo template. Neither can change the outcome. The founder then decides. The founder can override the recommendation, and the log records it as an override against the recommendation.
 
 **Outcomes**
 - **go**: move to the next phase.
@@ -439,7 +439,7 @@ flowchart TB
   CL["Clarifier [code]"] -->|decision-critical questions| FL
   D --> CL
   O -->|dossier slice + task| A["Agent"]
-  A -->|request| R["Model Router"] --> M["GPT-OSS-20B / Qwen3-14B (local)"]
+  A -->|request| R["Model Router"] --> M["GPT-OSS-20B (local Ollama) / Gemma 4 31B (Gemini API)"]
   A -->|search, fetch| T["Tools"] -->|evidence items| L[("Evidence Ledger")]
   A -->|JSON output| V["Schema validation"] --> D[("Venture Dossier")]
   D --> GK["Gatekeeper"] -->|outcome| O
@@ -479,7 +479,7 @@ flowchart TB
 
 The executor recomputes the item's hash. If the item changed after approval, the approval is invalid.
 
-**What each agent sees.** The orchestrator passes each agent only the dossier fields its task needs, which keeps prompts short enough for local models and stops one agent's mistakes spreading into unrelated steps.
+**What each agent sees.** The orchestrator passes each agent only the dossier fields its task needs, which keeps prompts short enough for small models and the free API tier and stops one agent's mistakes spreading into unrelated steps.
 
 ## Built vs. stubbed
 
@@ -512,7 +512,7 @@ The executor recomputes the item's hash. If the item changed after approval, the
 
 ## Founder conversation
 
-The system talks with the founder throughout the run, like a co-founder who checks their understanding often. The **Founder Liaison** (Qwen3-14B) is the system's single voice in the chat beside the progress view, or inline in the CLI. It can ask, explain and suggest; it cannot change a decision, approve anything or skip a gate.
+The system talks with the founder throughout the run, like a co-founder who checks their understanding often. The **Founder Liaison** (Gemma 4 31B) is the system's single voice in the chat beside the progress view, or inline in the CLI. It can ask, explain and suggest; it cannot change a decision, approve anything or skip a gate.
 
 **Seven kinds of conversation**
 
@@ -541,23 +541,24 @@ At most 3 blocking questions are open at once, highest impact first.
 
 ## Model routing
 
-Both models run locally through Ollama. No API keys and no paid service are needed.
+GPT-OSS-20B (open-weight, Apache-2.0) runs locally through Ollama. Gemma 4 31B (open-weight) is called through Google's Gemini API on its free tier, because the two models do not fit on one machine. The Gemini API key is the only key the system uses; it lives in an untracked `.env`, and without it every role runs on GPT-OSS-20B.
 
 | Model | Runs on | Roles | Why |
 |---|---|---|---|
-| GPT-OSS-20B | Local, default | Opportunity Scout, Market Researcher, Competitor Analyst, Skeptical Investor, Experiment Designer, Product Manager, Builder, Pricing Analyst, Support Agent, Critic, Policy Guard classifier for Qwen's text | Best tool calling and reasoning of the two; adjustable reasoning effort |
-| Qwen3-14B q4 | Local, thinking off | Founder Liaison, Brief Parser, Mom Test Writer, Gate Reporter, Canvas Builder, Landing Copywriter, Docs Writer, Policy Drafter, Launch Writers, Pivot Memo Writer, Policy Guard classifier for all other text | Fast, steady JSON for parsing, drafting, short copy and quick conversational turns |
-| Single-model mode | `QWEN_ROLES_ON_OSS=1` | All roles on GPT-OSS-20B; same-model checks flagged in the log | For machines that can't hold both models |
+| GPT-OSS-20B | Local Ollama, default | Opportunity Scout, Market Researcher, Competitor Analyst, Skeptical Investor, Experiment Designer, Product Manager, Builder, Pricing Analyst, Support Agent, Critic, Policy Guard classifier for Gemma's text | Best tool calling and reasoning of the two; adjustable reasoning effort |
+| Gemma 4 31B | Google Gemini API (free tier) | Founder Liaison, Brief Parser, Mom Test Writer, Gate Reporter, Canvas Builder, Landing Copywriter, Docs Writer, Policy Drafter, Launch Writers, Pivot Memo Writer, Policy Guard classifier for all other text | Strong writer for parsing, drafting, copy and conversational turns, without using local memory |
+| Single-model mode | `GEMMA_ROLES_ON_OSS=1`, or no `GEMINI_API_KEY` | All roles on GPT-OSS-20B; same-model checks flagged in the log | Fully local and keyless; announced at startup and in `venture doctor`, never a silent fallback |
 
 Router rules:
-1. **The checker is never the maker.** A critic or classifier never runs on the model that wrote the work. Generators that a model critiques run on the other model: Qwen3-14B drafts the canvas and the pivot memo, GPT-OSS-20B judges them. In single-model mode this rule cannot hold, and each affected log entry carries `same_model_check: true`.
+1. **The checker is never the maker.** A critic or classifier never runs on the model that wrote the work. Generators that a model critiques run on the other model: Gemma 4 31B drafts the canvas and the pivot memo, GPT-OSS-20B judges them. In single-model mode this rule cannot hold, and each affected log entry carries `same_model_check: true`.
 2. **Reasoning effort per role.** GPT-OSS-20B runs at low effort for extraction and research notes, medium for building, high for judging (Skeptical Investor, Experiment Designer, Critic).
-3. **Structured output is enforced.** Every call asks for a JSON schema; the output is validated, retried once, and on a second failure the step fails visibly and is logged.
-4. **Memory.** GPT-OSS-20B (about 13 GB) and Qwen3-14B q4 (about 9 GB) are kept loaded together when memory allows (`OLLAMA_MAX_LOADED_MODELS=2`). Otherwise the orchestrator groups each phase's calls by model to limit swaps, or single-model mode is used.
+3. **Structured output is enforced.** Every call asks for a JSON schema (Ollama's `format` for GPT-OSS-20B; the API's JSON mode for Gemma where it is supported, otherwise the schema in the prompt); the output is validated, retried once, and on a second failure the step fails visibly and is logged.
+4. **Memory and rate limits.** Only GPT-OSS-20B (about 13 GB) needs local memory. Gemma calls respect the free tier's rate limits: the router spaces requests and retries with backoff on rate-limit and network errors only, never on invalid output.
+5. **What leaves the machine.** Prompts for Gemma's roles (the brief, the confirmed profile, drafts, gate results, chat turns) are sent to Google's API. The founder is told this at intake. No password, card number or key is ever placed in a prompt. `GEMMA_ROLES_ON_OSS=1` keeps everything local.
 
 **Run modes.** `RUN_MODE=full` runs every phase with the full conversation. `RUN_MODE=demo` sets a time budget per node, caps research at 5 sources per variant, streams progress to the UI, and keeps the conversation short: at most 3 intake questions, one read-back, at most 1 blocking question per phase, and a 30-second timeout after which an open question stays a labelled assumption. Phases 1–2 and their gates then finish within a few minutes on a laptop.
 
-**Cost per run.** $0.00: both models are local. Tokens are still logged for every call so the cost of other setups can be compared.
+**Cost per run.** $0.00: GPT-OSS-20B is local and Gemma 4 31B runs on the Gemini API free tier. Tokens are logged for every call, per model, so the cost of other setups can be compared.
 
 ## Safety and founder control
 
@@ -573,6 +574,7 @@ The Policy Guard (policy as code) runs at four points: on the brief, on every fo
 | Publishes, sends, spends or signs without approval | Agents have no executor tools; executors require a hash-bound approval record from the UI or CLI |
 | Treats a chat message as an approval or a decision | The Liaison has no approval or gate tools; "I approve" in chat gets a pointer to the approve action, and the attempt is logged |
 | Hides core features behind its own paywall | The whole system is open source under an OSI licence |
+| Sends secrets or payment data to a model API | No password, card number or key is ever put in a prompt; Gemma's prompts go to Google's API only for its roles, and `GEMMA_ROLES_ON_OSS=1` keeps every call local |
 | Helps with excluded products | Policy Guard on the brief returns STOP for physical goods; financial, investment or crypto products; health or legal advice products |
 
 Prompts that test these guardrails live in `tests/` and run with the smoke tests.
@@ -582,7 +584,7 @@ Prompts that test these guardrails live in `tests/` and run with the smoke tests
 Each decision below gives the problem, what was chosen, what was rejected, and the cost of the choice.
 
 **D1. A deterministic orchestrator, not an LLM manager (workflow orchestration).**
-Problem: local models of 14–20B lose track over long, multi-step tool use, and gate outcomes must be explainable. Chosen: a finite-state machine built with LangGraph (a `StateGraph` whose nodes are agents and code steps, with `interrupt` for every founder question, approval and gate decision, and a checkpointer so a run can pause and resume). Rejected: a supervisor agent that decides what runs next, and a hand-written state machine (it would need its own pause/resume and persistence). Cost: less flexibility, since new paths must be added in code; one pip dependency (LangGraph, pinned in `requirements.txt`).
+Problem: open-weight models of 20–31B lose track over long, multi-step tool use, and gate outcomes must be explainable. Chosen: a finite-state machine built with LangGraph (a `StateGraph` whose nodes are agents and code steps, with `interrupt` for every founder question, approval and gate decision, and a checkpointer so a run can pause and resume). Rejected: a supervisor agent that decides what runs next, and a hand-written state machine (it would need its own pause/resume and persistence). Cost: less flexibility, since new paths must be added in code; one pip dependency (LangGraph, pinned in `requirements.txt`).
 
 **D2. A different pattern for each department.**
 Problem: discovery, judging, building, drafting, sending and monitoring fail in different ways. Chosen: fan-out / fan-in for discovery, generator–critic debate for validation, a build–test loop for building, pipes and filters for commercial setup, a transactional outbox for launch, and a monitor loop with a critic for operations. Rejected: one uniform "crew" topology. Cost: six graph shapes to maintain, all inside one framework.
@@ -602,8 +604,8 @@ Problem: "nothing goes out without the founder" must hold even if a prompt claim
 **D7. No LLM in the money path.**
 Problem: an agent that can trigger delivery or refunds can be talked into it. Chosen: payments, delivery, refunds and reconciliation are event-driven plain code with tests; all events MOCKED. Rejected: an "operations agent" with payment tools. Cost: none of substance; this part needs no language understanding.
 
-**D8. Two local models, routed by role.**
-Problem: one model judging its own work agrees with itself, and the system must run free on a laptop. Chosen: GPT-OSS-20B for research, building and judging, with reasoning effort set per role; Qwen3-14B for parsing, drafting and copy; the checker is never the maker. Rejected: one model for everything, and hosted APIs. Cost: both models must fit in memory, or the system falls back to single-model mode and flags it.
+**D8. Two open-weight models, one local and one on a free API tier, routed by role.**
+Problem: one model judging its own work agrees with itself, the system must run without paying, and two models do not fit on one machine. Chosen: GPT-OSS-20B locally through Ollama for research, building and judging, with reasoning effort set per role; Gemma 4 31B through the Gemini API free tier for parsing, drafting, copy and the conversation; the checker is never the maker. Rejected: one model for everything (the critic would agree with itself), a second local model (does not fit in memory), and paid APIs. Cost: Gemma's prompts leave the machine and depend on Google's free tier and its rate limits; without a key, single-model mode runs everything locally and flags the same-model checks.
 
 **D9. Layered policy checks at four points.**
 Problem: a model's refusal alone is unreliable against crafted prompts. Chosen: rules first, then a classifier on the other model, on the brief, on every founder chat message, on outputs (Liaison replies included) and on the outbox. Rejected: relying on the system prompt. Cost: occasional false positives, which are logged and can be reviewed by the founder.
@@ -618,7 +620,7 @@ Problem: open-weight models cannot reliably build any app from scratch. Chosen: 
 Problem: persona interviews feel like validation but are the model talking to itself. Chosen: label them `SIMULATED`, allow them for rehearsal only, weight 0 at every gate. Rejected: counting them as weak evidence. Cost: early runs often end in repeat until the founder brings real interview notes, which is the honest outcome.
 
 **D13. One-command, free setup.**
-Problem: setup must be `docker compose up`, with no paid service. Chosen: compose runs the app, Ollama, a one-time model-pull job and SearXNG; `OLLAMA_HOST` can point to an Ollama already installed on the machine, and `SKIP_MODEL_PULL=1` skips the download. Rejected: hosted search or model APIs. Cost: the first start downloads both models.
+Problem: setup must be `docker compose up`, with no paid service. Chosen: compose runs the app, Ollama, a one-time model-pull job and SearXNG; `OLLAMA_HOST` can point to an Ollama already installed on the machine, and `SKIP_MODEL_PULL=1` skips the download. Gemma 4 31B needs only a free Gemini API key in `.env`. Rejected: hosted search, and paid model APIs. Cost: the first start downloads GPT-OSS-20B (about 13 GB).
 
 **D14. A talkative Founder Liaison with code-chosen blocking questions.**
 Problem: a system that fills gaps silently can misunderstand the founder and only discover it gates later; a system that asks about everything wastes the founder's time. Chosen: one conversational agent that interviews, reads back, checks in at every phase, puts the investor's objections to the founder and explains any result on request; code (sensitivity and contradiction checks) decides which questions must be answered before a decision is final; an Assumption Ledger tracks what each decision rests on. Rejected: a form with no follow-up, and letting the model decide which questions matter. Cost: more turns per run (capped in demo mode), and the conversation must be kept from becoming a back door for approvals, which the Policy Guard and the missing approval tools prevent.

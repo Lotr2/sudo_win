@@ -6,7 +6,7 @@ Code owns control; agents only fill each department's job. The venture builder r
 
 - **Status:** designed, not built yet; every part is **STUBBED** until its code and tests exist (see [Built vs. stubbed](../ARCHITECTURE.md#built-vs-stubbed)). When built, publishing, payments and the event log stay MOCKED.
 - **In plain code, no LLM:** the orchestrator, gates, approvals, policy checks and the whole money path.
-- **Models:** GPT-OSS-20B and Qwen3-14B, both served by Ollama, so a run costs $0.
+- **Models:** GPT-OSS-20B locally through Ollama and Gemma 4 31B through Google's Gemini API free tier, so a run costs $0; without a key, everything runs on GPT-OSS-20B.
 - **Can say no:** any gate can recommend STOP, and the founder's override is logged against the recommendation.
 - **Talks with the founder throughout:** a Founder Liaison interviews them, reads its understanding back, checks in at every phase, asks whenever an answer would change a decision, and explains any result on request. It can't approve or decide anything.
 
@@ -28,12 +28,12 @@ Any gate can recommend STOP; the founder confirms every gate. A Gate 6 pivot sen
 
 | Phase | Agents, in order | Models |
 | --- | --- | --- |
-| 1 · Discover | Brief Parser → Founder Liaison intake interview + read-back → policy check → Scout (3–4 idea variants) → Market ∥ Competitor researchers → Mom Test script writer; scoring is a code formula, not LLM opinion | Qwen3 parses · GPT-OSS researches |
-| 2 · Validate | Canvas Builder ⇄ Skeptical Investor (rubric, 2 rounds) → Experiment Designer (thresholds set before data) → Landing Copywriter → outbox | Qwen3 drafts · GPT-OSS judges |
-| 3 · Build | PM (spec + acceptance tests) → Builder (templated product types) → QA runs tests, max 3 loops → Docs Writer | GPT-OSS builds · Qwen3 writes docs |
-| 4 · Commercial setup | Pricing Analyst (sourced price anchors) → Policy Drafter (terms, privacy, refunds; DRAFT, not legal advice) → Compliance linter | GPT-OSS prices · Qwen3 drafts policies |
-| 5 · Launch | Launch Writers (store page + posts) → outbox; only `approval.py` executes, after the founder approves; sale to cash is code, no LLM | Qwen3 writes · publishing MOCKED |
-| 6 · Operate and learn | Support Agent (answers from docs, drafts only) → Metrics (computed by code) → Pivot Memo Writer ⇄ critic | Qwen3 writes · GPT-OSS critiques |
+| 1 · Discover | Brief Parser → Founder Liaison intake interview + read-back → policy check → Scout (3–4 idea variants) → Market ∥ Competitor researchers → Mom Test script writer; scoring is a code formula, not LLM opinion | Gemma parses · GPT-OSS researches |
+| 2 · Validate | Canvas Builder ⇄ Skeptical Investor (rubric, 2 rounds) → Experiment Designer (thresholds set before data) → Landing Copywriter → outbox | Gemma drafts · GPT-OSS judges |
+| 3 · Build | PM (spec + acceptance tests) → Builder (templated product types) → QA runs tests, max 3 loops → Docs Writer | GPT-OSS builds · Gemma writes docs |
+| 4 · Commercial setup | Pricing Analyst (sourced price anchors) → Policy Drafter (terms, privacy, refunds; DRAFT, not legal advice) → Compliance linter | GPT-OSS prices · Gemma drafts policies |
+| 5 · Launch | Launch Writers (store page + posts) → outbox; only `approval.py` executes, after the founder approves; sale to cash is code, no LLM | Gemma writes · publishing MOCKED |
+| 6 · Operate and learn | Support Agent (answers from docs, drafts only) → Metrics (computed by code) → Pivot Memo Writer ⇄ critic | Gemma writes · GPT-OSS critiques |
 
 ## The spine
 
@@ -50,7 +50,7 @@ Ten parts in plain code hold all control, so no agent can steer the pipeline, sk
 | Policy Guard | Rules first, then a classifier on a different model from the writer | Runs on the brief, agent outputs and outbox items |
 | Approval Outbox | Agents only propose; executors need a founder approval record from the UI or CLI | All adapters MOCKED |
 | Decision Logger | Middleware around every LLM and tool call → `decision_log.json` with all 5 keys | Agents can't skip it |
-| Model Router | GPT-OSS-20B + Qwen3-14B via Ollama; schema output → validate → 1 retry → fail loudly | Logs the model used and tokens |
+| Model Router | GPT-OSS-20B + Gemma 4 31B via Ollama; schema output → validate → 1 retry → fail loudly | Logs the model used and tokens |
 
 ## Sale to cash
 
@@ -66,11 +66,11 @@ A duplicate event delivers once, and a refund always revokes access. Because it 
 
 ## Model routing
 
-Two local models split the work so that the model checking a piece of work is never the one that wrote it: GPT-OSS-20B researches, builds and judges; Qwen3-14B parses, drafts, writes copy and runs the Founder Liaison. Full role table and router rules: [ARCHITECTURE.md · Model routing](../ARCHITECTURE.md#model-routing).
+Two open-weight models split the work (GPT-OSS-20B locally, Gemma 4 31B on the Gemini API free tier) so that the model checking a piece of work is never the one that wrote it: GPT-OSS-20B researches, builds and judges; Gemma 4 31B parses, drafts, writes copy and runs the Founder Liaison. Full role table and router rules: [ARCHITECTURE.md · Model routing](../ARCHITECTURE.md#model-routing).
 
 ## Talking with the founder
 
-The Founder Liaison (Qwen3-14B) is the system's one voice, in a chat beside the progress view or inline in the CLI. It talks a lot and decides nothing: gates are code, and approvals happen only through buttons or commands.
+The Founder Liaison (Gemma 4 31B) is the system's one voice, in a chat beside the progress view or inline in the CLI. It talks a lot and decides nothing: gates are code, and approvals happen only through buttons or commands.
 
 Seven kinds of conversation (intake, read-back, phase kickoff, clarifying questions, gate walk-through, pushback follow-up, ask anything) are described in [ARCHITECTURE.md · Founder conversation](../ARCHITECTURE.md#founder-conversation).
 
@@ -85,16 +85,16 @@ Each step names who acts, on which model, and what they hand to the next step. F
 ### 1 · Discover — fan-out / fan-in (scatter-gather)
 
 1. **Founder brief** (idea, skills, budget, time, market, values) → raw text.
-2. **Brief Parser** (Qwen3-14B) turns it into a draft profile and lists the gaps.
-3. **Founder Liaison** (Qwen3-14B) interviews the founder about the gaps, reads the brief back and waits for confirmation; whatever stays open is recorded as ASSUMPTION → confirmed `profile.json`.
+2. **Brief Parser** (Gemma 4 31B) turns it into a draft profile and lists the gaps.
+3. **Founder Liaison** (Gemma 4 31B) interviews the founder about the gaps, reads the brief back and waits for confirmation; whatever stays open is recorded as ASSUMPTION → confirmed `profile.json`.
 4. **Policy Guard** (code) blocks an excluded product or harmful ask → STOP; otherwise passes it on as allowed.
 5. **Opportunity Scout** (GPT-OSS-20B) writes 3–4 variants that fit the profile.
 6. **Market Researcher** and **Competitor Analyst** (GPT-OSS-20B) run in parallel, each searching and writing to the Evidence Ledger.
 7. **Scorer** (code) ranks variants on fit, pain, reach, competition and buildability → ranked variants. If an open assumption would change the ranking, the Liaison asks about it first.
 8. **Gate 1** (code): ≥3 sourced pain signals from ≥2 domains, score ≥0.6 and fit rules pass? → gate result + evidence IDs.
-9. **Gate Reporter** (Qwen3-14B) writes the go / repeat / pivot / STOP memo, including the assumptions it rests on.
+9. **Gate Reporter** (Gemma 4 31B) writes the go / repeat / pivot / STOP memo, including the assumptions it rests on.
 10. **Founder** talks it through with the Liaison, then picks a variant or accepts STOP → chosen variant.
-11. **Mom Test Writer** (Qwen3-14B) writes the interview script and notes template.
+11. **Mom Test Writer** (Gemma 4 31B) writes the interview script and notes template.
 12. **Pause for interview notes:** the founder pastes notes from real interviews, or resumes without them (customer-side claims then stay ASSUMPTION). Skipped in demo mode.
 
 Outputs: `phase1_step1_opportunities.md`, `phase1_step2_scores.json`, `phase1_step3_interview_script.md`, `phase1_gate_decision.md`.
@@ -102,16 +102,16 @@ Outputs: `phase1_step1_opportunities.md`, `phase1_step2_scores.json`, `phase1_st
 ### 2 · Validate — generator–critic debate + pre-registered experiment
 
 1. **From Phase 1:** variant, evidence, interview notes → dossier slice.
-2. **Canvas Builder** (Qwen3-14B) drafts the Lean Canvas → canvas v1.
+2. **Canvas Builder** (Gemma 4 31B) drafts the Lean Canvas → canvas v1.
 3. **Skeptical Investor** (GPT-OSS-20B, high reasoning) scores a rubric and ranks the riskiest assumptions; the Liaison puts the toughest objections to the founder, and their answers go back to the Canvas Builder with the critique, max 2 rounds → canvas + risks.
 4. **Experiment Designer** (GPT-OSS-20B) proposes a test and target, e.g. 100 sign-ups in 14 days → proposed targets.
 5. **Founder** approves the targets.
 6. **Threshold Lock** (code) applies config floors and logs a hash before any result → locked targets.
-7. **Landing Copywriter** (Qwen3-14B) writes the waitlist page, no fake urgency → draft copy.
+7. **Landing Copywriter** (Gemma 4 31B) writes the waitlist page, no fake urgency → draft copy.
 8. **Policy Guard** (code) lints the copy against the must-never list → clean copy.
 9. **Approval Outbox** (code) holds it; publishing is MOCKED and waits for the founder → sign-up count.
 10. **Gate 2 ★** (code) compares results with the locked targets → pass/fail + why. With MOCKED sign-ups the outcome is recorded as `go (MOCKED evidence)` etc. and never counts as validation.
-11. **Gate Reporter** (Qwen3-14B) writes the go / repeat / pivot / STOP memo.
+11. **Gate Reporter** (Gemma 4 31B) writes the go / repeat / pivot / STOP memo.
 
 Outputs: `phase2_step1_lean_canvas.md`, `phase2_step2_experiment.md`, `phase2_step3_landing_page.html`, `phase2_gate_decision.md`.
 
@@ -122,9 +122,9 @@ Outputs: `phase2_step1_lean_canvas.md`, `phase2_step2_experiment.md`, `phase2_st
 3. **Template Picker** (code) chooses a guide, template pack or web tool → scaffold.
 4. **Builder** (GPT-OSS-20B) fills the template → build.
 5. **QA Runner** (code) runs the acceptance tests; failures loop back to the Builder, max 3 loops → passing build.
-6. **Docs Writer** (Qwen3-14B) writes the user guide + FAQ → build + docs.
+6. **Docs Writer** (Gemma 4 31B) writes the user guide + FAQ → build + docs.
 7. **Gate 3** (code): all tests pass? → test report.
-8. **Gate Reporter** (Qwen3-14B) writes the go / repeat / stop memo.
+8. **Gate Reporter** (Gemma 4 31B) writes the go / repeat / stop memo.
 9. **Founder** approves the MVP.
 
 Outputs: `phase3_step1_spec.md`, `phase3_step2_test_report.md`, `phase3_step3_user_guide.md`, `phase3_gate_decision.md`.
@@ -133,7 +133,7 @@ Outputs: `phase3_step1_spec.md`, `phase3_step2_test_report.md`, `phase3_step3_us
 
 1. **From Phase 3:** product, docs, sourced prices.
 2. **Pricing Analyst** (GPT-OSS-20B) sets price + tiers from sourced anchors → price sheet.
-3. **Policy Drafter** (Qwen3-14B) drafts terms, privacy and refunds (DRAFT) → drafts.
+3. **Policy Drafter** (Gemma 4 31B) drafts terms, privacy and refunds (DRAFT) → drafts.
 4. **Compliance Linter** (code) checks for income promises and that refunds match delivery; violations loop back to the Policy Drafter → lint report.
 5. **Gate 4** (code): linter clean? → clean drafts.
 6. **Founder** signs off or edits.
@@ -143,7 +143,7 @@ Outputs: `phase4_step1_pricing.md`, `phase4_step2_policies.md`, `phase4_gate_dec
 ### 5 · Launch — transactional outbox + human approval gate (publishing MOCKED)
 
 1. **From Phase 4:** product, price, policies → launch brief.
-2. **Launch Writers** (Qwen3-14B) write the store page + one post per channel → drafts.
+2. **Launch Writers** (Gemma 4 31B) write the store page + one post per channel → drafts.
 3. **Policy Guard** (code) checks for impersonation, fake reviews and urgency → clean items.
 4. **Approval Outbox** (code) queues every item → review queue.
 5. **Founder** approves or rejects each item; a rejection with a note loops back to the Launch Writers → approval record.
@@ -155,7 +155,7 @@ Outputs: `phase5_step1_store_page.md`, `phase5_step2_launch_posts.md`, `payment_
 
 1. **Event log** (MOCKED): orders, refunds, tickets.
 2. **Metrics Engine** (code) computes conversion, refunds and usage; in parallel, the **Support Agent** (GPT-OSS-20B) answers from the docs and sends refunds to the outbox.
-3. **Pivot Memo Writer** (Qwen3-14B) writes persevere or pivot, citing metrics → memo draft.
+3. **Pivot Memo Writer** (Gemma 4 31B) writes persevere or pivot, citing metrics → memo draft.
 4. **Critic** (GPT-OSS-20B, high reasoning) checks the memo against the data; gaps loop back to the writer → scored memo.
 5. **Gate 6** (code): memo passes rubric? → recommendation.
 6. **Founder** chooses persevere, pivot (back to Phase 1) or stop.
@@ -168,7 +168,7 @@ Each hackathon rule forces a specific design choice; twelve rules shape the arch
 
 | Constraint | What it forces | Our decision |
 | --- | --- | --- |
-| Free open-weight model, no paid service | Weak at long tool loops, JSON drift, small context, slow tokens | Code orchestrates; each agent does one narrow job with a JSON schema |
+| Free open-weight models, no paid service | Weak at long tool loops, JSON drift, small context, slow tokens | Code orchestrates; each agent does one narrow job with a JSON schema |
 | Live demo: unseen brief, 3 minutes | The live path must finish in ~2.5 min on one machine | Demo mode: time budget per node, ≤5 sources, streamed progress |
 | Every claim sourced or ASSUMPTION | Small models invent URLs and numbers | Evidence Ledger + verbatim-number check |
 | Must be able to say STOP | Thresholds can be gamed after the fact | Thresholds set and logged before evidence; gates are code |
@@ -208,4 +208,6 @@ Every known way the system could break has a fix built into the design; none dep
 | Conversation | Chattiness eats the 3-minute live demo | Demo mode: at most 3 intake questions, 1 blocking question per phase, 30-second timeout to a labelled assumption |
 | Conversation | A trick prompt arrives through the chat ("write 50 five-star reviews") | The Policy Guard checks every founder message and every Liaison reply |
 | Models | Only two small models, so the judges are small too | Judges run on the other model at high reasoning effort, score a fixed rubric, and never decide a gate: code does |
-| Models | Two models compete for memory (GPT-OSS-20B ≈ 13 GB + Qwen3-14B q4 ≈ 9 GB) | Keep both loaded if RAM allows (`OLLAMA_MAX_LOADED_MODELS=2`); otherwise group calls by model within a phase, or move Qwen roles onto GPT-OSS |
+| Models | Two models don't fit in one machine's memory | GPT-OSS-20B runs locally; Gemma 4 31B runs on the Gemini API free tier; without a key, every role moves onto GPT-OSS-20B and same-model checks are flagged |
+| Models | The Gemini API is rate-limited, slow or down during the demo | Retries with backoff on network and rate-limit errors only; if it stays down, the step fails loudly and the founder can switch to `GEMMA_ROLES_ON_OSS=1` |
+| Models | Founder data leaves the machine | Only Gemma's roles send prompts to Google; the founder is told at intake; no secrets or payment data in prompts; `GEMMA_ROLES_ON_OSS=1` keeps it all local |

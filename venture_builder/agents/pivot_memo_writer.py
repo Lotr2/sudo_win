@@ -1,1 +1,1 @@
-"""Pivot Memo Writer (Qwen3-14B): writes the persevere-or-pivot memo, citing metrics."""
+"""Pivot Memo Writer (Gemma 4 31B): writes the persevere-or-pivot memo, citing metrics."""
