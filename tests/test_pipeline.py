@@ -295,3 +295,39 @@ def test_a_step_that_keeps_failing_recommends_stop(make_runtime, models):
     assert p["kind"] == "gate" and p["recommended"] == "stop"
     rt.decide_gate("stop", confirm_gate(p))
     assert rt.dossier.status == "stopped"
+
+
+# ---- the builder delivers the number of templates the spec asks for ----
+
+def test_template_pack_gets_every_template_even_when_the_model_returns_one_at_a_time(make_runtime, models,
+                                                                                   monkeypatch):
+    """Regression (real run 20261117-191413-5967): the spec asked for 4 templates, the model returned 1 in every
+    build round, and Gate 3 failed on "wrong number of templates: 1 != 4"."""
+    from conftest import drive
+    real_builder = models.builder
+
+    def lazy_builder(p):
+        out = real_builder(p)
+        if p["product_form"] == "template_pack":
+            out["items"] = out["items"][:1]
+        return out
+
+    models.builder = lazy_builder
+    real_pm = models.product_manager
+
+    def pack_pm(p):                                            # a valid template-pack spec (3-5 fields per template)
+        out = real_pm(p)
+        if p["product_form"] == "template_pack":
+            out["item_fields"] = ["When to use", "Template", "Tips"]
+        return out
+
+    models.product_manager = pack_pm
+    from venture_builder.departments import build
+    monkeypatch.setattr(build, "_variant",                       # build the template-pack version of the idea
+                        lambda ctx: next(v for v in ctx.dossier.variants if v.product_form == "template_pack"))
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=3)
+    assert rt.dossier.spec.product_form == "template_pack"
+    report = rt.dossier.build["report"]
+    assert p["recommended"] == "go", (p["reasons"], report.get("failures"))
+    assert len(list((rt.ctx.store.dir / "product" / "templates").glob("*.md"))) == rt.dossier.spec.item_count
