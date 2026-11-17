@@ -71,7 +71,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Demo video
 
-Not recorded yet.
+There is no demo video for this submission.
 
 ## What our system will NOT do
 

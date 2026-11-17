@@ -287,3 +287,26 @@ def test_breakdown_total_and_blocker_agree_with_the_gate():
     e = explain_version(v, s, w, {"min_pain_signals": 3, "min_source_domains": 2, "min_score": 0.6}, {})
     assert e["total"] == 59.7
     assert any("scores 59.7 out of 100; 60 is needed" in b for b in e["blockers"])
+
+
+# ---- a memo never claims demand from practice (MOCKED) numbers ----
+
+@pytest.mark.parametrize("mocked", [True, False])
+def test_gate_memo_never_claims_demand_from_mocked_numbers(make_runtime, models, mocked):
+    from venture_builder.agents import gate_reporter
+    rt = make_runtime()
+    models.gate_reporter = lambda p: {
+        "summary": "Go ahead – you hit the target of 50 sign-ups, showing demand.",
+        "explanation": "The waitlist got 50 sign-ups. This proves people want the kit. The numbers don’t prove real "
+                       "demand yet. Next, test pricing."}
+    with rt.ctx.bound():
+        memo = gate_reporter.run(rt.ctx, 2, {"gate": 2, "outcome": "go", "mocked_evidence": mocked}, {})
+    text = memo.summary + " " + memo.explanation
+    if mocked:
+        assert "showing demand" not in text and "proves people want" not in text
+        assert "practice numbers (MOCKED)" in memo.summary
+        assert "don’t prove real demand yet" in memo.explanation            # negated statements are kept
+        assert "Next, test pricing." in memo.explanation
+        assert any(e["action"] == "removed_mocked_demand_claim" for e in rt.ctx.store.log.entries)
+    else:
+        assert "showing demand" in memo.summary                            # real numbers: left as written

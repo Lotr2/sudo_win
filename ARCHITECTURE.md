@@ -92,7 +92,7 @@ One `###` per phase: its agents (and model), tools, method and outputs. The full
 - **Method:** pipes and filters with a linter loop until the drafts are clean. No payments of any kind.
 - **Outputs:** `phase4_step1_pricing.md`, `phase4_step2_policies.md`, `phase4_gate_decision.md`.
 
-### Phase 5 · Launch (core steps: open the store; deliver automatically)
+### Phase 5 · Sell, deliver, get paid (Launch; core steps: open the store; deliver automatically)
 - **Agents:** Launch Writers (Gemma 4 31B) draft the store page and one post per channel in the founder's own voice. Approval Outbox, publish adapter and the sale-to-cash modules are code; no LLM touches money.
 - **Tools:** the outbox (hash-bound founder approvals), `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py` (all events MOCKED).
 - **Method:** transactional outbox: every item runs only with its own founder approval; a MOCKED payment event delivers exactly once, an approved refund revokes access, reconciliation matches the books (see [Sale to cash](#sale-to-cash)).
