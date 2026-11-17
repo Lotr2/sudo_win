@@ -21,3 +21,13 @@ def test_readability_checker_catches_internal_codes():
     import run_evals
     assert run_evals.readability_problems("Top variant v1 scores 0.47 (as_2)", "x")
     assert not run_evals.readability_problems("The best version scores 47 out of 100.", "x")
+
+
+def test_classifier_eval_cases_are_all_missed_by_the_rules():
+    """The classifier eval only tests the classifier if the rules don't already catch its cases."""
+    import json
+    from pathlib import Path
+    from venture_builder.policy_guard import check_rules
+    cases = json.loads((Path(__file__).resolve().parent.parent / "evals" / "classifier_cases.json").read_text())
+    assert sum(c["expect"] == "block" for c in cases) >= 5
+    assert [c["id"] for c in cases if check_rules(c["text"], c["context"])] == []

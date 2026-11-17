@@ -78,3 +78,55 @@ def test_memo_critic_sees_the_targets_and_the_data_label(make_runtime):
     drive(rt)
     calls = [c for c in rt.ctx.router.clients["oss"].calls if c["role"] == "critic"]
     assert calls and '"targets"' in calls[-1]["user"] and "MOCKED" in calls[-1]["user"]
+
+
+# ---- legitimate requests and products must still pass the rules (no over-blocking) ----
+
+LEGIT = [
+    ("brief", "invoice templates and a late-payment guide for freelance designers"),
+    ("brief", "a budgeting spreadsheet template for families"),
+    ("brief", "a Notion template for wedding planners"),
+    ("brief", "an online course teaching Excel to small business owners"),
+    ("brief", "a Canva template pack for bakeries' social media posts"),
+    ("brief", "a checklist for landlords to document a flat's condition at move-in"),
+    ("brief", "a resume template pack for nurses"),
+    ("brief", "a meal-prep grocery list template for busy parents"),
+    ("brief", "a pomodoro timer web tool for students"),
+    ("brief", "I can invest 5 hours a week and $200 in a study planner for tutors"),
+    ("brief", "printable wall planners sold as PDF downloads"),
+    # Products FOR people or businesses near an excluded area are not excluded (b15684c's topic-word rules
+    # rejected these; the rules must not block on topic words alone).
+    ("brief", "Instagram caption templates for small clothing boutiques"),
+    ("brief", "a journaling template that helps freelancers handle work anxiety"),
+    ("brief", "a weekly meal planner template for families (not a diet plan)"),
+    ("brief", "a client-onboarding checklist for freelancers, including when to ask for an NDA"),
+    ("brief", "freelance contract templates for designers"),
+    ("brief", "a co-parenting calendar template for parents after a divorce"),
+    ("brief", "an explainer guide to how the stock market works, for teenagers, with no buy or sell advice"),
+    ("brief", "a staff rota template for small pharmacies that stock medicines"),
+    ("brief", "a social media content calendar for mental health charities"),
+    ("brief", "a lesson-plan template pack for yoga teachers"),
+    ("brief", "a pricing calculator spreadsheet for Etsy sellers of handmade jewelry"),
+    ("brief", "a Notion inventory tracker for soap and candle makers who sell online"),
+    ("brief", "a Canva template pack for dog groomers"),
+    ("chat", "send the invoice reminder now"),
+    ("chat", "can you make the headline shorter?"),
+    ("chat", "add a section that explains our 14-day refund policy"),
+    ("chat", "what did the research find about competitors?"),
+    ("chat", "we'll ask buyers for honest feedback after they have used it"),
+    ("chat", "post it on LinkedIn under my own name"),
+    ("outbox", "We never store passwords or card numbers."),
+    ("outbox", "This guide makes no promise of income or results."),
+]
+
+
+@pytest.mark.parametrize("ctx,text", LEGIT, ids=[t[:30] for _, t in LEGIT])
+def test_legitimate_text_passes_the_rules(ctx, text):
+    res = PolicyGuard(router=None).check(text, context=ctx, use_classifier=False)
+    assert res.allowed, res.reason
+
+
+def test_every_excluded_area_has_a_plain_words_name():
+    from venture_builder import labels
+    from venture_builder.policy_guard import EXCLUDED_PRODUCT_RULES
+    assert all(r in labels.POLICY_AREAS for r in EXCLUDED_PRODUCT_RULES)

@@ -25,19 +25,49 @@ RULES: list[tuple[str, str, str]] = [
     ("R10", "impersonation", r"\b(post|publish|send|reply|write)\b[^.]{0,30}\bas (the |a )?(founder|customer|user|buyer|ceo)\b|\bpretend(ing)? to be\b|\bpose as\b|\bon behalf of the founder\b|\bsign (it )?as (me|the founder)\b"),
     ("R11", "excluded_product", r"\b(crypto(currency)?|bitcoin|ethereum|nft|token sale|defi|forex|day[- ]trading|trading (bot|signals?)|stock (picks?|tips?)|investment advice|investing advice|loans?|lending|credit repair)\b"),
     ("R12", "excluded_product", r"\b(medical|diagnos\w*|symptom checker|therapy|therapist|mental health treatment|prescription|dosage|supplements?|diet plan for (diabetes|disease)|meal coach for (diabetes|disease)|weight[- ]loss (program|plan)|legal advice|lawyer|attorney|contract review service|immigration advice)\b"),
-    ("R13", "excluded_product", r"\b(physical (product|goods)|t-?shirts?|mugs?|merch(andise)?|dropshipping|ship(ping)? (boxes|products)|inventory|handmade (goods|jewelry))\b"),
+    ("R13", "excluded_product", r"\b(physical (product|goods)|t-?shirts?|mugs?|merch(andise)?|dropshipping|ship(ping)? (boxes|products))\b"),   # selling handmade items: R26
     ("R14", "money_movement", r"\brefund (the |this |that )?(customer|buyer|order|payment)\b[^.]{0,20}\b(now|immediately|right away)\b|\b(send|transfer|wire|move) (money|funds|\$\d)\b|\bcharge (the |their )?card\b"),
     ("R15", "credentials", r"\b(password|passcode|card number|credit card number|cvv|cvc|security code)s?\b[^.]{0,30}\b(store|save|collect|ask|enter|send|share|give)\b|\b(store|save|collect|ask for|enter|send|share|give)\b[^.]{0,30}\b(password|card number|cvv)s?\b"),
     ("R16", "credentials", r"\bcreate (an |a new )?accounts? (for|on behalf)\b"),
+    # Paraphrases of the same requests (tests/trick_prompts.json holds one case per pattern family).
+    ("R17", "fake_social_proof", r"\b(draft|make up|invent|fabricate|compose|come up with)\b[^.]{0,40}\b(reviews?|testimonials?|ratings?|"
+                                 r"quotes? from (happy |satisfied )?(customers?|users?|clients?|buyers?))\b"),
+    ("R18", "fake_social_proof", r"\b\d[\d,]*\+?\s+(happy\s+|satisfied\s+)?(users|customers|founders|people|members|designers|"
+                                 r"freelancers|buyers|clients|students)\s+(already\s+)?(use|love|trust|bought|joined|rely on)\b"),
+    ("R19", "fake_urgency", r"\b(offer|sale|deal|discount|price)\s+(ends|expires|ending)\b|\blimited[- ]time\b|"
+                            r"\b(sale|discount|% off|offer)\b[^.]{0,30}\btimer\b|\btimer\b[^.]{0,30}\b(sale|discount|% off|offer)\b"),
+    ("R20", "income_promise", r"\b(will|they'?ll|you'?ll|guaranteed to)\s+(earn|make)\s+(back|more|money|\$)|\bearn (it |the price )?back\b|"
+                              r"\b(double|triple|10x|2x|3x)\s+(their|your|the)\s+(revenue|income|sales|profits?|clients|business)\b|"
+                              r"\bpromise\b[^.]{0,40}\b(revenue|income|profits?|sales|results|clients|money)\b"),
+    ("R21", "impersonation", r"\bas (if|though)\b[^.]{0,30}\b(came|comes|written|wrote|posted|sent|from)\b[^.]{0,25}\b(customer|user|"
+                             r"buyer|client|someone else)\b|\bso (that )?it looks? (official|authentic|like it'?s from|like it came from)\b|"
+                             r"\bfrom (a|an) (happy|satisfied|real) (customer|user|buyer|client)\b"),
+    ("R22", "credentials", r"\b(store|save|keep|collect|ask|request|remember)\b[^.]{0,40}\b(passwords?|card (details|numbers?|"
+                           r"info(rmation)?)|credit cards?|cvv|login details)\b"),
+    # Excluded products, narrowly: the product itself gives the advice or ships the goods. A product FOR people or
+    # businesses in these areas (captions for a clothing shop, a pharmacy rota) is not excluded, so topic words
+    # alone never block here; anything less clear-cut is left to the classifier.
+    ("R23", "excluded_product", r"\bhow to invest\b|\binvest(ing|ment) (advice|tips|signals|picks)\b|"
+                                r"\b(which|what) (stocks?|shares?|coins?|crypto(currency|currencies)?) to (buy|sell)\b"),
+    ("R24", "excluded_product", r"\b(which|what) (medications?|medicines?|pills?|drugs?)\b[^.]{0,20}\bto (take|give)\b|"
+                                r"\b(medication|medicine|drug) (doses?|dosage|dosing)\b|\bhow much (medication|medicine) to (take|give)\b|"
+                                r"\b(without|instead of) (a |seeing a |going to a )?doctor\b|\blose \d+\s?(kg|kilos?|lbs?|pounds)\b|"
+                                r"\bweight[- ]loss (plan|program|programme|e-?book|course)\b"),
+    ("R25", "excluded_product", r"\b(drafts?|writes?|generates?|reviews?) [^.]{0,30}\b(contracts?|agreements?|settlements?|wills|ndas?)\b|"
+                                r"\b(rental|lease|tenancy|prenup(tial)?|divorce|custody) (agreements?|contracts?|settlements?|papers)\b"),
+    ("R26", "excluded_product", r"\bprint[- ]on[- ]demand\b|\bship(ped|ping)? (it |them )?to (customers|buyers)\b|"
+                                r"\b(sell|selling|make|making) handmade\b|\bhandmade (candles|soaps?|crafts|goods|jewel(le)?ry) (to sell|for sale|shop|store)\b"),
 ]
 _COMPILED = [(rid, cat, re.compile(p, re.I)) for rid, cat, p in RULES]
 
 # Rules that apply to a founder's brief or chat; product copy also gets the copy-only rules (R4, R8).
+EXCLUDED_PRODUCT_RULES = {"R11", "R12", "R13", "R23", "R24", "R25", "R26"}
+REQUEST_RULES = {"R17", "R18", "R19", "R20", "R21", "R22"}
 CONTEXT_RULES = {
-    "brief": {"R1", "R2", "R3", "R5", "R6", "R7", "R10", "R11", "R12", "R13", "R14", "R15", "R16"},
-    "chat": {"R1", "R2", "R3", "R5", "R7", "R10", "R11", "R12", "R13", "R14", "R15", "R16"},
-    "output": {r[0] for r in RULES} - {"R11", "R12", "R13"},
-    "outbox": {r[0] for r in RULES} - {"R11", "R12", "R13"},
+    "brief": {"R1", "R2", "R3", "R5", "R6", "R7", "R10", "R14", "R15", "R16"} | REQUEST_RULES | EXCLUDED_PRODUCT_RULES,
+    "chat": {"R1", "R2", "R3", "R5", "R7", "R10", "R14", "R15", "R16"} | REQUEST_RULES | EXCLUDED_PRODUCT_RULES,
+    "output": {r[0] for r in RULES} - EXCLUDED_PRODUCT_RULES,
+    "outbox": {r[0] for r in RULES} - EXCLUDED_PRODUCT_RULES,
 }
 
 
@@ -53,7 +83,7 @@ class GuardResult:
 # A promise rule must not fire on the disclaimer that denies the promise ("We make no guarantees of results").
 NEGATION = re.compile(r"\b(no|not|never|without|none|cannot|can't|can not|don't|do not|doesn't|does not|won't|"
                       r"will not|make no|makes no|nor)\b[^.!?\n]{0,25}$", re.I)
-NEGATABLE = {"income_promise"}
+NEGATABLE = {"income_promise", "credentials"}   # "we never store card numbers" is the opposite of the risk
 
 
 def check_rules(text: str, context: str) -> GuardResult | None:
