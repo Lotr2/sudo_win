@@ -1,0 +1,48 @@
+# One-command setup: docker compose up  ->  open http://localhost:8501
+# Needs an NVIDIA GPU with ~16 GB VRAM and the NVIDIA Container Toolkit (qwen3:8b + gemma3:4b stay loaded together).
+services:
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama:/root/.ollama
+    environment:
+      - OLLAMA_MAX_LOADED_MODELS=2
+      - OLLAMA_KEEP_ALIVE=30m
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  model-pull:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${MODEL_DEFAULT:-qwen3:8b} && ollama pull ${MODEL_VERIFIER:-gemma3:4b}"]
+    restart: "no"
+
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - ARCH_VARIANT=${ARCH_VARIANT:-_template}
+    volumes:
+      - ./runs:/app/runs
+    depends_on:
+      model-pull:
+        condition: service_completed_successfully
+
+volumes:
+  ollama:

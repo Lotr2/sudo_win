@@ -1,0 +1,22 @@
+# Planning notes stay out of the submission, except the team coordination files.
+.planning/*
+!.planning/TEAM.md
+!.planning/PROGRESS.md
+!.planning/COMPARISON.md
+
+# Secrets and local environments
+.env
+.venv/
+venv/
+
+# Run artifacts (only the committed demo run goes in outputs/ and decision_log.json)
+runs/
+outbox/
+
+# Python build/cache
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/

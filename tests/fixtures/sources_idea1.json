@@ -1,0 +1,4 @@
+[
+  {"url": "https://example.org/fixture/idea1/thread-1", "title": "Fixture: generic motivation content discussion", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/idea1/thread-2", "title": "Fixture: quote collections are freely available", "snippet": "Test fixture for offline fake-LLM runs only."}
+]

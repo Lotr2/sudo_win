@@ -1,0 +1,14 @@
+# Free to vary: models per role, retries, verifier usage, context and sampling. Keep every key.
+models:
+  default: qwen3:8b        # workers
+  verifier: gemma3:4b      # different model family from the workers
+  roles: {}                # per-role override, e.g. builder: qwen3:8b
+retries: 1                 # extra attempts when a step returns invalid JSON
+verifier:
+  enabled: true
+  points: [request, claims, outward]   # any of: request, claims, outward
+num_ctx: 8192
+temperature: 0
+seed: 42
+digest_chars: 1500         # characters of each earlier output passed to the next step
+max_phase_repeats: 1       # how often a phase may be re-run after a "repeat" decision

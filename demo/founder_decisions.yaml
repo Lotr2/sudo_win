@@ -1,0 +1,23 @@
+# Founder decisions for the demo run. Written and owned by the founder; every entry is logged as
+# founder input (input_source: decisions_file). Keys are gate or action ids, never content: the system
+# still lints each text and blocks it before asking. A missing key pauses the run (no auto-approve).
+# Gate values: accept (follow the recommendation) | go | repeat | pivot | stop. Actions: approve | reject.
+idea1:
+  phase1.step5.send_outreach: approve
+  phase1.gate: accept
+  phase2.step2.publish_landing_page: approve
+  phase2.gate: pivot
+  pivot_to: demo/founder_brief_idea2.md
+idea2:
+  phase1.step5.send_outreach: approve
+  phase1.gate: accept
+  phase2.step2.publish_landing_page: approve
+  phase2.gate: accept
+  phase3.gate: accept
+  phase4.gate: accept
+  phase5.step1.open_store: approve
+  phase5.step2.publish_posts: approve
+  phase5.step4.refund: approve
+  phase5.gate: accept
+  phase6.step1.send_support_replies: approve
+  phase6.gate: accept

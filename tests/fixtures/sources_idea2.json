@@ -1,0 +1,7 @@
+[
+  {"url": "https://example.org/fixture/idea2/thread-1", "title": "Fixture: tutors spend hours on lesson prep", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/idea2/thread-2", "title": "Fixture: tutors ask for reusable lesson templates", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/idea2/thread-3", "title": "Fixture: existing template packs and their prices", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/idea2/thread-4", "title": "Fixture: online tutoring market overview", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/idea2/thread-5", "title": "Fixture: tutor community discussion on planning tools", "snippet": "Test fixture for offline fake-LLM runs only."}
+]

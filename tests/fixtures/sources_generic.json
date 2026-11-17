@@ -1,0 +1,5 @@
+[
+  {"url": "https://example.org/fixture/generic/1", "title": "Fixture: generic source 1", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/generic/2", "title": "Fixture: generic source 2", "snippet": "Test fixture for offline fake-LLM runs only."},
+  {"url": "https://example.org/fixture/generic/3", "title": "Fixture: generic source 3", "snippet": "Test fixture for offline fake-LLM runs only."}
+]
