@@ -56,6 +56,13 @@ class Handle:
 
 class BriefIn(BaseModel):
     brief: str
+    brand: dict | None = None
+
+
+class BrandIn(BaseModel):
+    name: str = ""
+    color: str = ""
+    logo: str = ""
 
 
 class TextIn(BaseModel):
@@ -144,7 +151,14 @@ def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | Non
     def create(body: BriefIn):
         if len(body.brief.strip()) < 20:
             raise HTTPException(400, "Please describe your idea in a sentence or two, so the team has something to work with.")
+        from ..landing import clean_brand
+        try:
+            brand = clean_brand(body.brand) if body.brand else {}
+        except ValueError as exc:
+            raise HTTPException(400, str(exc)) from None
         rt = new_runtime(body.brief)
+        if brand:
+            rt.set_brand(brand)
         h = handles[rt.run_id] = Handle(rt)
         h.run(rt.advance)
         return {"run_id": rt.run_id}
@@ -228,6 +242,15 @@ def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | Non
         conf = FounderConfirmation(channel="ui", item_ref=f"gate{p['gate']}-{p['attempt']}", typed_hash_prefix=body.code)
         h.run(h.rt.decide_gate, body.decision, conf, variant_id=body.variant_id, note=body.note)
         return {"ok": True}
+
+    @app.post("/api/runs/{run_id}/brand")
+    def brand(run_id: str, body: BrandIn):
+        """Set or change the brand; it is used the next time the landing page is written."""
+        h = handle(run_id)
+        try:
+            return {"brand": {k: (v if k != "logo" else True) for k, v in h.rt.set_brand(body.model_dump()).items()}}
+        except ValueError as exc:
+            raise HTTPException(400, str(exc)) from None
 
     @app.post("/api/runs/{run_id}/skip")
     def skip(run_id: str):

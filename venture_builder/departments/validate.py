@@ -11,6 +11,7 @@ from __future__ import annotations
 import html
 import re
 
+from .. import landing
 from .. import gates
 from ..agents import (canvas_builder, experiment_designer, founder_liaison, gate_reporter, landing_copywriter,
                       skeptical_investor)
@@ -147,33 +148,15 @@ def p2_lock(ctx: Context, answer) -> Next:
     return Next("p2_landing")
 
 
-LANDING_TEMPLATE = """<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{headline}</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:40rem;margin:3rem auto;padding:0 1rem;color:#1b1b1b}}
-h1{{font-size:2rem}} li{{margin:.4rem 0}} form{{margin-top:2rem}} input,button{{font-size:1rem;padding:.5rem}}</style>
-</head>
-<body>
-<!-- Waitlist page drafted by the Landing Copywriter. Publishing is MOCKED: the founder hosts it. -->
-<h1>{headline}</h1>
-<p>{subheadline}</p>
-<ul>{benefits}</ul>
-<p>{body}</p>
-<form onsubmit="return false"><label for="email">Email</label> <input id="email" type="email" required>
-<button type="submit">{cta}</button></form>
-<p><small>We only use your email to tell you when this is ready. No spam, unsubscribe any time.</small></p>
-</body>
-</html>
-"""
-
-
 def p2_landing(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     feedback = next((h["landing_feedback"] for h in reversed(d.history) if "landing_feedback" in h), "")
     for attempt in (1, 2):
-        copy = landing_copywriter.run(ctx, d.canvas.model_dump(), _variant(ctx).model_dump(), feedback)
-        text = " ".join([copy.headline, copy.subheadline, copy.body, copy.cta_text, *copy.benefits])
+        copy = landing_copywriter.run(ctx, d.canvas.model_dump(), _variant(ctx).model_dump(), feedback, d.brand)
+        text = " ".join([copy.headline, copy.subheadline, copy.body, copy.cta_text, copy.eyebrow, copy.problem_title,
+                         copy.closing, *copy.benefits, *copy.problems, *copy.inside,
+                         *(f"{f.title} {f.text}" for f in copy.features), *(f"{s.title} {s.text}" for s in copy.steps),
+                         *(f"{q.q} {q.a}" for q in copy.faq)])
         hit = ctx.guard.check(text, context="outbox", author_family=ctx.author_family("landing_copywriter"),
                               subject="landing_page")
         if hit.allowed:
@@ -181,9 +164,8 @@ def p2_landing(ctx: Context, answer) -> Ask:
         feedback = f"Rejected by the Policy Guard: {hit.reason}. Remove it."
     else:
         raise RuntimeError("landing copy failed the Policy Guard twice")
-    page = LANDING_TEMPLATE.format(headline=html.escape(copy.headline), subheadline=html.escape(copy.subheadline),
-                                   benefits="".join(f"<li>{html.escape(b)}</li>" for b in copy.benefits),
-                                   body=html.escape(copy.body), cta=html.escape(copy.cta_text))
+    v = _variant(ctx)
+    page = landing.render(copy, product_name=v.name, product_form=v.product_form, brand=d.brand)
     ctx.store.write_output("phase2_step3_landing_page.html", page)
     item = ctx.outbox.propose(kind="landing_page", action="publish", title="Your waitlist page (publishing MOCKED)",
                               content={"html": page}, phase=2)

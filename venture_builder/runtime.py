@@ -80,6 +80,17 @@ class Runtime:
             self.graph.invoke(Command(resume=NO_ANSWER if resume is None else resume), self.config)
         return self.pending()
 
+    def set_brand(self, brand: dict) -> dict:
+        """The founder's brand for the landing page (name, colour, logo). Validated; the logo is never logged."""
+        from .landing import clean_brand
+        clean = clean_brand(brand)
+        with self.ctx.bound():
+            self.dossier.brand = clean
+            self.ctx.save()
+            log_action("founder", "set_brand", name=clean.get("name"), color=clean.get("color"),
+                       logo=bool(clean.get("logo")))
+        return clean
+
     def interrupted(self) -> bool:
         """Started, not finished, and not waiting for the founder: a step was cut off (e.g. the app restarted)."""
         return self.started() and not self.finished() and self.pending() is None

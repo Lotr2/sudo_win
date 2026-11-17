@@ -544,6 +544,9 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("run", help="start a new project: from a brief file, --idea TEXT, or by typing it")
     r.add_argument("brief", nargs="?", help="path to a brief file (Markdown or text)")
     r.add_argument("--idea", help="your idea as text instead of a file")
+    r.add_argument("--brand-name", help="your brand name, shown on the landing page")
+    r.add_argument("--brand-color", help="your brand colour as #rrggbb")
+    r.add_argument("--logo", help="your logo: a PNG, JPEG or WebP file under 100 KB")
     r.add_argument("--demo", action="store_true", help="quick demo mode (time limits, fewer sources)")
     r.add_argument("--once", action="store_true", help="stop at the first question instead of continuing")
     r2 = sub.add_parser("resume", help="continue a project where it left off")
@@ -612,7 +615,26 @@ def main(argv: list[str] | None = None) -> int:
         if not brief:
             _print(yellow("  No idea given, so nothing was started."))
             return 1
+        brand = {}
+        if args.brand_name or args.brand_color or args.logo:
+            from .landing import clean_brand
+            raw = {"name": args.brand_name or "", "color": args.brand_color or ""}
+            if args.logo:
+                import base64
+                lp = Path(args.logo)
+                kind = {".png": "png", ".jpg": "jpeg", ".jpeg": "jpeg", ".webp": "webp"}.get(lp.suffix.lower())
+                if not kind or not lp.is_file():
+                    _print(yellow("  The logo must be an existing .png, .jpg or .webp file."))
+                    return 1
+                raw["logo"] = f"data:image/{kind};base64," + base64.b64encode(lp.read_bytes()).decode()
+            try:
+                brand = clean_brand(raw)
+            except ValueError as exc:
+                _print(yellow(f"  {exc}"))
+                return 1
         rt = Runtime.new(settings, brief)
+        if brand:
+            rt.set_brand(brand)
         _print(green(f"\n  Project started.") + dim(f" Its ID is {rt.run_id}; continue it any time with: venture resume {rt.run_id}"))
         if args.once or not sys.stdin.isatty():
             render_pending(rt, work(rt, rt.advance))

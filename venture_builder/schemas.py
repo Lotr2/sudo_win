@@ -214,12 +214,44 @@ class ExperimentProposal(Strict):
     rationale: str
 
 
+class LandingFeature(Strict):
+    title: str = Field(description="2-5 words")
+    text: str = Field(description="One sentence: what it does for the buyer")
+    icon: Literal["clock", "shield", "check", "mail", "document", "chart", "spark", "calendar", "chat", "tools"] = "check"
+
+
+class LandingStep(Strict):
+    title: str
+    text: str
+
+
+class LandingFAQ(Strict):
+    q: str
+    a: str
+
+
 class LandingCopy(Strict):
     headline: str
     subheadline: str
-    benefits: list[str]
-    cta_text: str
+    eyebrow: str = Field(description="Who it's for, 2-6 words, e.g. 'For new freelance designers'")
+    problem_title: str
+    problems: list[str] = Field(min_length=2, max_length=3, description="Frustrations in the customer's own words")
+    features: list[LandingFeature] = Field(min_length=3, max_length=4)
+    steps: list[LandingStep] = Field(min_length=3, max_length=3, description="From joining the waitlist to using it")
+    inside: list[str] = Field(min_length=3, max_length=6, description="Concrete things the product contains")
     body: str
+    faq: list[LandingFAQ] = Field(min_length=3, max_length=4)
+    closing: str = Field(description="One sentence inviting people to join the waitlist")
+    cta_text: str
+    theme: Literal["trust", "warm", "fresh", "bold", "calm"]
+    layout: Literal["product", "story", "minimal"] = Field(
+        description="product = big product preview next to the headline; story = opens with the customer's "
+                    "frustrations; minimal = one calm column, few sections")
+    section_order: list[Literal["problems", "features", "steps", "inside", "faq"]] = Field(
+        min_length=3, max_length=5, description="Order of the sections below the top of the page")
+    font_style: Literal["modern", "classic", "friendly"] = Field(
+        description="modern = clean sans-serif; classic = serif headings; friendly = rounded")
+    benefits: list[str] = []
 
 
 # ---------- Phase 3 ----------

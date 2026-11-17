@@ -57,6 +57,10 @@
   @media (max-width:900px) { .home { grid-template-columns:1fr; } }
   .twocol { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
   @media (max-width:600px) { .twocol { grid-template-columns:1fr; } }
+  .brandbox { margin-top:16px; border:1px solid var(--line); border-radius:10px; padding:10px 14px; }
+  .brandbox summary { cursor:pointer; font-weight:600; }
+  .brandbox summary small { font-weight:400; color:var(--muted); }
+  #b-preview img { height:40px; margin-top:8px; border-radius:6px; }
   .how { counter-reset:s; list-style:none; padding:0; margin:0; }
   .how li { counter-increment:s; display:flex; gap:12px; padding:8px 0; border-bottom:1px solid var(--line); }
   .how li:last-child { border:0; }
@@ -198,6 +202,18 @@
       </div>
       <label for="f-values">What matters to you <small>(optional)</small></label>
       <input id="f-values" placeholder="e.g. honest pricing, no pushy marketing">
+      <details class="brandbox">
+        <summary>Your brand <small>(optional: used on your landing page)</small></summary>
+        <div class="twocol">
+          <div><label for="b-name">Brand name</label><input id="b-name" maxlength="60" placeholder="e.g. Studio Nour"></div>
+          <div><label for="b-color">Brand colour</label>
+            <div class="row" style="margin:0;flex-wrap:nowrap"><input id="b-color" type="color" value="#2f5d8a" style="width:56px;padding:4px;flex:none">
+            <label class="muted" style="margin:0;font-weight:400"><input type="checkbox" id="b-usecolor" style="width:auto"> Use this colour</label></div></div>
+        </div>
+        <label for="b-logo">Logo <small>(PNG, JPEG or WebP, under 100 KB)</small></label>
+        <input id="b-logo" type="file" accept="image/png,image/jpeg,image/webp">
+        <div id="b-preview" class="muted"></div>
+      </details>
       <div class="row">
         <button id="go">Start my project</button>
         <button class="ghost" id="example">Fill in an example</button>
@@ -327,10 +343,25 @@ function composeBrief() {
   return parts.filter(Boolean).join("\n");
 }
 $("example").onclick = () => Object.entries(EXAMPLE).forEach(([k, v]) => $("f-" + k).value = v);
+let LOGO = "";
+$("b-color").oninput = () => { $("b-usecolor").checked = true; };
+$("b-logo").onchange = () => {
+  const f = $("b-logo").files[0]; LOGO = ""; $("b-preview").textContent = "";
+  if (!f) return;
+  if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { toast("Please choose a PNG, JPEG or WebP image."); $("b-logo").value = ""; return; }
+  if (f.size > 100000) { toast("The logo must be under 100 KB. Try a smaller image."); $("b-logo").value = ""; return; }
+  const r = new FileReader();
+  r.onload = () => { LOGO = r.result; $("b-preview").innerHTML = `<img src="${LOGO}" alt="Your logo">`; };
+  r.readAsDataURL(f);
+};
+function brandInput() {
+  const b = {name: $("b-name").value.trim(), color: $("b-usecolor").checked ? $("b-color").value : "", logo: LOGO};
+  return (b.name || b.color || b.logo) ? b : null;
+}
 $("go").onclick = async () => {
   if ($("f-idea").value.trim().length < 15) { toast("Please describe your idea in a sentence or two first."); $("f-idea").focus(); return; }
   $("go").disabled = true; $("go").textContent = "Starting…";
-  try { const r = await api("/api/runs", {brief: composeBrief()}); location.search = "?run=" + r.run_id; }
+  try { const r = await api("/api/runs", {brief: composeBrief(), brand: brandInput()}); location.search = "?run=" + r.run_id; }
   catch { $("go").disabled = false; $("go").textContent = "Start my project"; }
 };
 $("homeBtn").onclick = () => location.href = "/";

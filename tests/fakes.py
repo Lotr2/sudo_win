@@ -123,7 +123,21 @@ class FakeModels:
 
     def landing_copywriter(self, p):
         return {"headline": "Get paid on time", "subheadline": "Templates and a guide for freelance designers",
-                "benefits": ["Clear invoices", "Polite reminders"], "cta_text": "Join the waitlist", "body": "Built by a designer."}
+                "benefits": ["Clear invoices", "Polite reminders"], "cta_text": "Join the waitlist", "body": "Built by a designer.",
+                "eyebrow": "For new freelance designers", "problem_title": "Sound familiar?",
+                "problems": ["I hate chasing clients for money", "I never know when to send a reminder"],
+                "features": [{"title": "Clear invoices", "text": "Look professional from day one.", "icon": "document"},
+                             {"title": "Polite reminders", "text": "Ready emails for every stage.", "icon": "mail"},
+                             {"title": "Know when to act", "text": "A simple timeline for follow-ups.", "icon": "calendar"}],
+                "steps": [{"title": "Join", "text": "Leave your email."}, {"title": "Get it", "text": "We email the kit."},
+                          {"title": "Use it", "text": "Send your next invoice."}],
+                "inside": ["An invoice template", "Three reminder emails", "A follow-up timeline"],
+                "faq": [{"q": "What format is it?", "a": "Google Docs and PDF."},
+                        {"q": "Do I pay now?", "a": "No. Joining the waitlist is just your email."},
+                        {"q": "When is it ready?", "a": "We'll email you when it's ready."}],
+                "closing": "Join the waitlist and we'll email you when it's ready.", "theme": "trust",
+                "layout": "product", "section_order": ["inside", "features", "steps", "problems", "faq"],
+                "font_style": "modern"}
 
     def product_manager(self, p):
         form = p["product_form"]

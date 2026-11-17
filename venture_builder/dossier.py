@@ -64,7 +64,8 @@ class Dossier(BaseModel):
     gates: dict[str, GateResult] = {}
     gate_attempts: dict[str, int] = {}
     lessons: list[str] = []
-    gate1_explained: dict = {}     # plain-words score breakdown and other directions shown at Gate 1
+    gate1_explained: dict = {}
+    brand: dict = {}               # founder's brand for the landing page: name, color (#hex), logo (data URI)     # plain-words score breakdown and other directions shown at Gate 1
     counters: dict[str, int] = {}
     asked: list[str] = []
     history: list[dict] = []
