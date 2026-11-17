@@ -11,15 +11,19 @@ class Adapter:
         self.api_json_schema = api_json_schema
         self.options = options
 
-    def build_request(self, *, system: str, prompt: str, max_tokens: int, temperature: float, seed: int,
+    SAMPLING_KEYS = ("temperature", "top_p", "top_k", "min_p")
+
+    def build_request(self, *, system: str, prompt: str, max_tokens: int, seed: int, sampling: dict | None = None,
                       json_schema: dict | None = None) -> dict:
+        """sampling = the model's recommended values (config/models.yaml) overridden by the caller's values."""
+        merged = {**(self.options.get("sampling") or {}), **(sampling or {})}
         body = {
             "model": self.served_name,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             "max_tokens": int(max_tokens),
-            "temperature": temperature,
             "seed": seed,
             "stream": False,
+            **{k: merged[k] for k in self.SAMPLING_KEYS if merged.get(k) is not None},
         }
         if json_schema is not None and self.api_json_schema:
             body["response_format"] = {"type": "json_schema", "json_schema": {"name": "answer", "schema": json_schema}}

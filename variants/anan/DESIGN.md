@@ -31,15 +31,16 @@ flowchart LR
 
 ## Gates and approvals
 
-- Same as the baseline: step gates [T] phase1_step2, phase1_step4, phase2_step4, phase4_step1 and [X] everywhere else; phase gates from gates.py recommend, [F] the founder decides.
-- ✋ Outward actions (MOCKED, outbox only, once each): send_outreach (1.5), publish_landing_page (2.2), open_store (5.1), publish_posts (5.2), refund (5.4), send_support_replies (6.1).
+- Same as the baseline: step gates [T] phase1_step2, phase1_step4, phase2_step4, phase4_step1 and [X] everywhere else; phase gates from gates.py recommend, [F] the founder decides with the stage review (revise / redo at gates 1-4, reset at gate 5, go / pivot / stop everywhere; max 3 retries per phase).
+- ✋ Outward actions (MOCKED, outbox only, once per content; changed content needs a new approval and supersedes the old item): send_outreach (1.5), publish_landing_page (2.2), open_store (5.1), publish_posts (5.2), refund (5.4), send_support_replies (6.1).
 
 ## How it differs from baseline
 
 - Prompts: numbered rules, an example answer shape, word limits per content type; `evidence_gaps` field for researcher and analyst.
 - Context: interview kit reads the pains (not competitors), canvas skips alternatives, demand test skips the landing page, pricing skips the canvas, user docs read only the spec. Result: 17 waves instead of 20.
 - Budgets: 4000/1800 tokens (builder 4500/2800, verifier 2000/400) instead of 5000/2000; digest 600 characters.
-- Hints: price must come from sourced competitor prices; the memo is told there are no real customers yet.
+- Hints (`HINTS`, added to every attempt): price must come from sourced competitor prices; the memo is told there are no real customers yet.
+- Sampling: workers use gpt-oss's recommended temperature 1.0 / top_p 1.0; the verifier uses temperature 0.5.
 - Researcher queries include the target market.
 
 ## Known weaknesses

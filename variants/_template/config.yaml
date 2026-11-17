@@ -11,8 +11,10 @@ budgets:                   # tokens; prompt + output must fit one server slot (l
   roles:
     builder: {max_output_tokens: 3000}
     verifier: {max_prompt_tokens: 2500, max_output_tokens: 600}
-temperature: 0
-seed: 42
+sampling:                  # on top of the model's recommended values (config/models.yaml)
+  default: {}              # e.g. {temperature: 0.7}
+  roles: {}                # e.g. verifier: {temperature: 0.5}
+seed: 42                   # each retry of a phase adds 1000, so a redo samples differently
 digest_chars: 800          # content characters of each earlier step passed to the next step
-max_phase_repeats: 1       # how often a phase may be re-run after a "repeat" decision
+max_phase_retries: 3       # revise + redo + reset attempts per phase; at the cap the founder must go / pivot / stop
 max_parallel_steps: 4      # upper bound for steps/feature calls run at once (also bounded by free model slots)

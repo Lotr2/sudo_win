@@ -69,6 +69,22 @@ class RunState:
             i["gates"].pop(str(phase), None)
             self.save()
 
+    def drop_steps(self, idea: str, keys) -> None:
+        with self._lock:
+            i = self._idea(idea)
+            for k in keys:
+                i["steps"].pop(k, None)
+            self.save()
+
+    def attempt(self, idea: str, phase: int) -> int:
+        with self._lock:
+            return int(self._idea(idea).setdefault("attempts", {}).get(str(phase), 1))
+
+    def set_attempt(self, idea: str, phase: int, n: int) -> None:
+        with self._lock:
+            self._idea(idea).setdefault("attempts", {})[str(phase)] = n
+            self.save()
+
     def get_gate(self, idea: str, phase: int) -> dict | None:
         with self._lock:
             return self._idea(idea)["gates"].get(str(phase))

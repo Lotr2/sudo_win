@@ -285,6 +285,12 @@ budgets:
   roles:
     builder: {max_prompt_tokens: 4500, max_output_tokens: 2800}
     verifier: {max_prompt_tokens: 2000, max_output_tokens: 400}
+sampling:                  # on top of the model's recommended values in config/models.yaml
+  default: {}              # gpt-oss-20b: temperature 1.0, top_p 1.0 (OpenAI's recommendation)
+  roles:
+    verifier: {temperature: 0.5}
+seed: 42                   # each retry of a phase adds 1000, so a redo samples differently
+max_phase_retries: 3       # revise + redo + reset per phase
 ```
 
 Model names must exist in `config/models.yaml`, whose `served_name` must equal the server's `--alias`:
@@ -295,6 +301,7 @@ gpt-oss-20b:
   served_name: gpt-oss-20b
   reasoning_effort: low
   api_json_schema: false
+  sampling: {temperature: 1.0, top_p: 1.0}
 ```
 
 Prompt + output per request must fit one slot (8192 tokens with `-c 32768 -np 4`); the builder's 4500 + 2800 = 7300 does.
@@ -343,6 +350,7 @@ Inside each run folder:
 | `decision_log.json` | one entry per agent action |
 | `outbox\` | MOCKED publish/send results, one file per approved action |
 | `product\<idea>\` | MVP feature files (code lives here, never in JSON) |
+| `attempts\<idea>\phase<N>\<n>\` | every decided attempt of a phase: its output files, `attempt.json` (recommendation, reasons, founder choice + note, passed or not, which steps were revised), plus product files (phase 3) or commerce + payment log (phase 5) |
 | `events.jsonl` | timestamped progress events (used by the UI and for timing) |
 | `summary.json` | per-run stats: runtime, tokens, calls, JSON retries, truncations, failed steps, calls per server |
 | `commerce_<idea>.json` | MOCKED orders, tokens, refunds, payouts |
@@ -350,6 +358,32 @@ Inside each run folder:
 | `worker.log` | orchestrator output (UI runs only) |
 
 `runs\` is gitignored. Only `--demo` writes the repo-root `outputs\` and `decision_log.json` that get committed; it **deletes the existing `outputs\` first** and refuses to run with the fake model.
+
+### Gate decisions: go, revise, redo, reset (stage review)
+
+At each gate the rules recommend go / repeat / pivot / stop, and the founder chooses:
+
+| Gate | Choices | What a retry does |
+|---|---|---|
+| 1–4 | accept, go, **revise**, **redo**, pivot, stop | **revise**: re-run only the failed steps (plus steps in the phase that read them), with the gate's failure reasons, a compressed copy of the previous answer and the founder's note. **redo**: re-run the whole phase from scratch (note still passed on) |
+| 5 Launch | accept, go, **reset**, pivot, stop | **reset**: new MOCKED commerce state (new test orders), then re-run phase 5 |
+| 6 Operate | accept, go, pivot, stop | no re-run: only real customers change this gate; accepting its "repeat" ends the run |
+
+- **Success:** a retry succeeds when the gate passes on the re-check. Changed output alone doesn't count.
+- **Retry cap:** every retry counts toward `max_phase_retries` (3). At the cap the retry choices disappear, and the founder must choose go, pivot or stop.
+- **Sampling:** each new attempt uses a new seed, so redo and revise don't just reproduce the same answer.
+- **Changed outward content:** if a retry changes a page, post or reply that was already approved, it needs a new approval. The old outbox file is kept and marked `SUPERSEDED`. Content that didn't change is not sent again.
+
+**Decisions are per attempt and never reused.** In the decisions file, `phase3.gate` answers attempt 1 only. Attempt 2 needs `phase3.gate@2`, and so on, and the same goes for outward actions (`phase5.step1.open_store@2`). A note can be added:
+
+```yaml
+idea2:
+  phase3.gate: accept                       # attempt 1 (gate recommended repeat -> revise)
+  phase3.gate@2: {choice: redo, note: "Shorter lessons, one template per level"}
+  phase3.gate@3: accept
+```
+
+In the UI, the Approvals tab shows only the choices allowed at that gate and attempt, and has a note field. A missing decision pauses the run (command line) or waits in the Approvals tab.
 
 ### Resume after a crash, pause or reboot
 
@@ -465,7 +499,8 @@ Record the results (GPU model, tokens/s, peak VRAM, JSON retry rate, truncations
 | **Cut-off answers** | `truncations` > 0; step files contain `finish_reason=length` | Raise that role's `max_output_tokens` in `variants\anan\config.yaml`, keeping prompt + output ≤ 8192 (or ≤ `-c`/`-np`). Check reasoning effort is low (server log / `reasoning_chars` in smoke test). Lower the prompt's word limit for that role |
 | **Request too long** | step fails with `HTTP 400 … context` | prompt + `max_output_tokens` exceeds the slot context: lower `max_prompt_tokens` for that role, or give more context per slot (`-c 32768 -np 3` → 10922 per slot, set `LLM_SLOTS=3`) |
 | **One server down** | `summary.json` → that endpoint has `failures` > 0 | Nothing to do mid-run: the router skips it for 30 s and sends calls to the other PC. Restart it (`sudo systemctl restart llama-server`). If both were down, steps fail; fix the servers and `--resume` |
-| **Run paused** | idea status `paused`; log entry `awaiting:<action>` | a founder decision is missing: add it to the decisions file (or answer in the UI) and `--resume` |
+| **Run paused** | idea status `paused`; log entry `awaiting:<action>` (with `attempt`) or `invalid:<action>` | a founder decision is missing, or not allowed at that gate/attempt (e.g. `revise` after the retry cap). Add the right key (`phase3.gate@2` for attempt 2) to the decisions file, or answer in the UI, then `--resume` |
+| **Retry doesn't help** | the gate fails again after revise/redo | read `runs\...\attempts\<idea>\phase<N>\<n>\attempt.json` (reasons, revised steps); add a founder note; after 3 retries the founder must go / pivot / stop |
 | **Slow first call** | first request takes much longer | model loading/warm-up; check that `/health` says ok before starting runs |
 | **Python errors on ORCH** | `pip` fails building `pyarrow` | you are on MSYS2/MinGW Python; install python.org Python and recreate `.venv` |
 | **UI shows no progress** | Progress tab empty | open the run's `worker.log` (shown under "Orchestrator error" if it crashed); check `LLM_ENDPOINTS` was set in the window that started the UI |
@@ -529,6 +564,9 @@ If your single GPU PC runs **Windows** instead: download the two zips `llama-<bu
 5. **UI pivot without a decisions file.** If the founder chooses "pivot" in the UI, the run stops there: there is no field to give the next brief (open task in `.planning/PROGRESS.md`).
 6. **No built-in timing or GPU metrics.** Tokens/s and VRAM come from the server log, `/metrics` and `nvidia-smi`; per-step timing needs the `events.jsonl` snippet in step 8.
 7. **Untested on real hardware.** Everything above was verified only with fake endpoints and `docker compose config`: the llama.cpp flags, the 8192-token slot budget, low reasoning effort, MXFP4 memory use and the JSON format all need the first real run. Also untested:
-   - temperature 0 with gpt-oss (OpenAI suggests 1.0 for this model; change `temperature` in the variant config if answers repeat themselves);
+   - gpt-oss's recommended temperature 1.0 / top_p 1.0 against our JSON format. If `json_retries` is above about 10%, try `sampling.default: {temperature: 0.7}` in the variant config;
+   - the verifier at temperature 0.5;
    - the server-side JSON constraint (`api_json_schema`), which stays off.
+9. **Attempt history path.** History is kept under `attempts\<idea>\phase<N>\<n>\`, not `attempts\<phase>\<n>\`, because several ideas can run in one run folder.
+10. **Revise targeting.** Only gate 3 (MVP tests) and gate 4 (price, policies) name the failing step. At gates 1–2, a revise re-runs every LLM step of the phase.
 8. **Fixed waiting times.** An approval waits at most 1 hour in the UI queue before the run pauses, and a call waits at most 10 minutes for a free slot (`wait_for_slot_s`). These are not exposed in the UI.

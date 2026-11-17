@@ -12,8 +12,11 @@ budgets:
   roles:
     builder: {max_prompt_tokens: 4500, max_output_tokens: 2800}
     verifier: {max_prompt_tokens: 2000, max_output_tokens: 400}
-temperature: 0
-seed: 42
+sampling:                  # gpt-oss-20b default from config/models.yaml: temperature 1.0, top_p 1.0 (OpenAI)
+  default: {}              # workers use the model's recommendation
+  roles:
+    verifier: {temperature: 0.5}   # steadier yes/no answers; untested, check on the first real run
+seed: 42                   # each retry of a phase adds 1000, so a redo samples differently
 digest_chars: 600
-max_phase_repeats: 1
+max_phase_retries: 3       # revise + redo + reset attempts per phase; at the cap the founder must go / pivot / stop
 max_parallel_steps: 4

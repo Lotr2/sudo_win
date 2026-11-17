@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import TYPE_CHECKING
 
 import gates
@@ -11,7 +12,8 @@ import reconcile
 import refunds
 import webhooks
 import delivery
-from core.conventions import ASSUMPTION, MOCKED, PAYMENT_TEST_LOG, PHASES, STUBBED, Step
+from approval import payload_hash
+from core.conventions import ASSUMPTION, MOCKED, PAYMENT_TEST_LOG, PHASES, STUBBED, Step, steps_in_phase
 
 if TYPE_CHECKING:
     from core.base_variant import BaseVariant
@@ -21,6 +23,53 @@ AGENT = {"phase2_step4": "gate", "phase3_step4": "qa_tests", "phase4_step2": "po
          "phase5_step4": "commerce", "phase5_step5": "commerce", "phase6_step2": "metrics"}
 
 EVIDENCE_STEPS = ("phase1_step2", "phase1_step4", "phase2_step1")
+
+
+def _order_id(v, n: int) -> str:
+    """MOCKED test order id; a phase 5 reset (attempt > 1) uses new orders."""
+    a = v.attempt(5)
+    return f"{v.idea}-order-00{n}" if a == 1 else f"{v.idea}-a{a}-order-00{n}"
+
+
+def revision_targets(v: "BaseVariant", phase: int, gd) -> dict[str, dict]:
+    """Which steps a 'revise' re-runs, and why. Failed steps, plus steps named by the gate's reasons; if the
+    reasons name no step (weak evidence, or the founder asked for changes), every LLM step of the phase."""
+    targets: dict[str, dict] = {}
+
+    def add(key: str, reason: str, features: list | None = None) -> None:
+        t = targets.setdefault(key, {"reasons": [], "features": None})
+        t["reasons"].append(reason)
+        if features:
+            t["features"] = sorted(set((t["features"] or []) + features))
+
+    steps = steps_in_phase(phase)
+    for s in steps:
+        rec = v.ctx.state.get_step(v.idea, s.key)
+        if rec and rec.get("failed"):
+            add(s.key, f"the step failed: {(rec.get('data') or {}).get('error', 'unknown error')}")
+    for r in gd.reasons:
+        if m := re.match(r"feature not in MVP: (.+)", r):
+            add("phase3_step2", r, [m.group(1)])
+        elif re.match(r"feature not in user docs: ", r):
+            add("phase3_step3", r)
+        elif r == "spec lists no features":
+            add("phase3_step1", r)
+        elif m := re.match(r"guardrail (\S+) in (phase\d_step\d)", r):
+            add(m.group(2), f"guardrail rule '{m.group(1)}' was triggered")
+        elif m := re.match(r"(phase\d_step\d) missing or failed", r):
+            add(m.group(1), r)
+        elif phase == 4 and "price" in r.lower():
+            add("phase4_step1", r)
+        elif phase == 4 and "polic" in r.lower():
+            for k in ("phase4_step2", "phase4_step3", "phase4_step4"):
+                add(k, r)
+    if not targets:
+        why = gd.reasons or ["the founder asked for a revision"]
+        for s in steps:
+            if s.kind == "llm":
+                for r in why:
+                    add(s.key, r)
+    return targets
 
 
 def _h(step: Step, idea: str) -> str:
@@ -68,8 +117,10 @@ def run(v: "BaseVariant", step: Step) -> tuple[dict, str]:
                            "max_assumption_ratio": gates.MAX_ASSUMPTION_RATIO}
         return e, json.dumps(e, indent=1)
     if k == "phase3_step4":
-        mvp = (v.results.get("phase3_step2").text if v.results.get("phase3_step2") else "").lower()
-        docs = (v.results.get("phase3_step3").text if v.results.get("phase3_step3") else "").lower()
+        # check the written content itself, not the metadata lists rendered under "Details"
+        mvp_rec, docs_rec = v.results.get("phase3_step2"), v.results.get("phase3_step3")
+        mvp = ((mvp_rec.content or mvp_rec.text) if mvp_rec else "").lower()
+        docs = ((docs_rec.content or docs_rec.text) if docs_rec else "").lower()
         feats = _features(v)
         failures = [f"feature not in MVP: {f}" for f in feats if f.lower() not in mvp]
         failures += [f"feature not in user docs: {f}" for f in feats if f.lower() not in docs]
@@ -100,7 +151,7 @@ def run(v: "BaseVariant", step: Step) -> tuple[dict, str]:
             _payment_log(v, f"- [{idea}] delivery test: store not open (founder did not approve) -> FAIL")
             v.invariants.update(store_opened_with_approval=False, delivered_once=False, replay_ignored=False)
             return {"failed": True}, h + "Store is not open (no founder approval), so no test order was possible.\n"
-        oid = f"{idea}-order-001"
+        oid = _order_id(v, 1)
         ev = payments.simulate_test_order(st, oid)
         body, sig = webhooks.sign(ev)
         first = webhooks.handle(st, body, sig)
@@ -123,24 +174,26 @@ def run(v: "BaseVariant", step: Step) -> tuple[dict, str]:
         if not st.listing:
             v.invariants["refund_revokes_access"] = False
             return {"failed": True}, h + "Store is not open; refund test skipped.\n"
-        oid = f"{idea}-order-002"
+        oid = _order_id(v, 2)
         ev = payments.simulate_test_order(st, oid)
         body, sig = webhooks.sign(ev)
         webhooks.handle(st, body, sig)
         prop = refunds.propose(st, oid, "buyer request (MOCKED test)")
         action_id = "phase5.step4.refund"
-        if v.ctx.state.outward_done(idea, action_id):          # refunded before a crash: never refund twice
+        done = v.ctx.state.outward_done(idea, action_id)
+        if done and done.get("payload_hash") == payload_hash(prop["content"]):   # this refund already ran: never twice
             res = {"status": "refunded"}
         else:
-            v.log("refunds", "propose_refund", order_id=oid, label=MOCKED)
-            receipt = v.request_approval(action_id, "refund", prop["content"], prop["content"])
+            v.log("refunds", "propose_refund", order_id=oid, label=MOCKED, attempt=v.attempt(5))
+            receipt = v.request_approval(action_id, "refund", prop["content"], prop["content"], 5)
             if receipt is None:
                 v.invariants["refund_revokes_access"] = False
                 _payment_log(v, f"- [{idea}] refund for {oid} proposed -> founder rejected; no refund")
                 return {"failed": True}, h + "Founder rejected the proposed refund.\n"
             res = refunds.execute(st, oid, content=prop["content"], receipt=receipt)
             v.commerce.save(v._commerce_path())
-            v.ctx.state.mark_outward(idea, action_id, order_id=oid)
+            v.ctx.state.mark_outward(idea, action_id, order_id=oid, payload_hash=payload_hash(prop["content"]),
+                                     attempt=v.attempt(5))
             v.log("refunds", "execute_refund", approved_by="founder", order_id=oid, label=MOCKED)
         revoked = all(not delivery.can_download(st, t) for t in delivery.tokens_for(st, oid))
         v.invariants["refund_revokes_access"] = st.orders[oid]["status"] == "refunded" and revoked

@@ -33,6 +33,19 @@ def write_outward(outbox: Path, kind: str, channel: str, content: str, key: str)
     return path
 
 
+def mark_superseded(outbox: Path, filename: str, by: str, attempt: int) -> None:
+    """An approved item was replaced by a newer approved version: label it, keep it (audit trail)."""
+    path = Path(outbox) / filename
+    if not path.exists():
+        return
+    text = path.read_text(encoding="utf-8")
+    if text.startswith("<!-- SUPERSEDED"):
+        return
+    at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    path.write_text(f"<!-- SUPERSEDED at {at} by {by} (attempt {attempt}): content changed; this version is no longer "
+                    f"valid. -->\n" + text, encoding="utf-8")
+
+
 @requires_approval("publish")
 def publish(outbox: Path, channel: str, *, content: str, key: str) -> Path:
     return write_outward(outbox, "publish", channel, content, key)

@@ -35,10 +35,10 @@ class ChatClient:
         self.models_cfg = load_models() if models_cfg is None else models_cfg
         self.label = label          # "fake" for the test endpoint, so logs never pass a fake run off as a real model
 
-    def complete(self, *, model: str, system: str, prompt: str, max_tokens: int, temperature: float = 0,
+    def complete(self, *, model: str, system: str, prompt: str, max_tokens: int, sampling: dict | None = None,
                  seed: int = 42, json_schema: dict | None = None) -> LLMResult:
         ad = get_adapter(model, self.models_cfg)
-        body = ad.build_request(system=system, prompt=prompt, max_tokens=max_tokens, temperature=temperature,
+        body = ad.build_request(system=system, prompt=prompt, max_tokens=max_tokens, sampling=sampling,
                                 seed=seed, json_schema=json_schema)
         try:
             data, endpoint = self.router.post(model, "chat/completions", body)

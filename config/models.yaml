@@ -1,12 +1,15 @@
 # Per-model quirks. Variants pick models by these names (config.yaml: models.default / models.roles).
 # adapter: gpt_oss | qwen3 | generic   served_name: the "model" field sent to the server.
+# sampling: the model maker's recommended values; a variant can override them per role (config.yaml: sampling).
 gpt-oss-20b:
   adapter: gpt_oss
   served_name: gpt-oss-20b     # llama-server --alias gpt-oss-20b; for Ollama use gpt-oss:20b
   reasoning_effort: low        # low | medium | high (gpt-oss cannot switch reasoning off)
   api_json_schema: false       # server-side schema constraint for JSON-only calls; enable only after testing
+  sampling: {temperature: 1.0, top_p: 1.0}           # OpenAI's recommendation for gpt-oss
 qwen3-8b:
   adapter: qwen3
   served_name: qwen3-8b
   thinking: false
   api_json_schema: false
+  sampling: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0}   # Qwen's recommendation for non-thinking mode

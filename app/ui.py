@@ -189,9 +189,13 @@ def approvals_view():
                 st.text(req["content"])
             decided = run_dir / "approvals" / "decided" / f"{req['id']}.json"
             if req["kind"] == "gate":
-                choice = st.selectbox("Founder decision", ["accept"] + list(GATE_OUTCOMES), key=f"sel_{req['id']}")
+                options = [c for c in req.get("choices", ["accept"] + list(GATE_OUTCOMES)) if c != "repeat"]
+                st.caption(f"Attempt {req.get('attempt', 1)}. revise = re-run only what failed, with your note; "
+                           "redo = re-run the whole phase; reset = new MOCKED commerce state (phase 5).")
+                choice = st.selectbox("Founder decision", options, key=f"sel_{req['id']}")
+                note = st.text_input("Note for the agents (used by revise / redo / reset)", key=f"note_{req['id']}")
                 if st.button("Submit decision", key=f"sub_{req['id']}"):
-                    decided.write_text(json.dumps({"choice": choice}), encoding="utf-8")
+                    decided.write_text(json.dumps({"choice": choice, "note": note}), encoding="utf-8")
             else:
                 c1, c2 = st.columns(2)
                 if c1.button("Approve", key=f"ap_{req['id']}", type="primary"):

@@ -35,6 +35,17 @@ Update this file when a task changes state (`[ ]` open, `[~]` in progress, `[x]`
 - [x] `docker-compose.yml` single-PC (llama-server + UI); `deploy/gpu-node`, `deploy/orchestrator` for the three-machine setup (all `docker compose config` valid, not yet run on GPUs)
 - [x] Fake endpoints with fault injection; new tests: router, parse, adapters, resume, parallel + faults
 
+## Done (stage review; decisions D13-D17, branch `anans-approach`)
+
+- [x] Replay defect fixed: decisions per attempt (`phase3.gate@2`), never reused automatically
+- [x] revise / redo at gates 1-4, reset at gate 5, founder-only gate 6; founder notes (UI field, decisions file, CLI)
+- [x] Success = gate passes on re-check; `max_phase_retries` (3) counts every retry; at the cap only go / pivot / stop
+- [x] Attempt history under `runs/<run>/attempts/<idea>/phase<N>/<n>/`; stale gate files removed from `outputs/`
+- [x] Changed outward content needs a new approval; old outbox item marked SUPERSEDED; new mock orders after reset
+- [x] Sampling per model (maker's recommendation) and per role; new seed per attempt
+- [x] MVP test checks the written content, not the metadata lists
+- [x] Tests: `tests/test_stage_review.py` (+ updated approval and adapter tests): 90 passing
+
 ## Tasks by person
 
 ### anan

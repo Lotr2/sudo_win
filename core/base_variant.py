@@ -12,6 +12,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import shutil
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -21,27 +22,28 @@ from types import ModuleType
 
 import yaml
 
+import gates
 import guardrails
 import payments
-from approval import ApprovalBroker, ApprovalPending
+from approval import ApprovalBroker, ApprovalPending, payload_hash
 from core import code_steps, render
 from core.brief import Brief
 from core.conventions import (LLM_STEP_KEYS, MAX_OUTPUT_BYTES, PAYMENT_TEST_LOG, STEP_BY_KEY, Step,
                               gate_filename, is_valid_output_name, steps_in_phase, waves)
 from core.llm import LLMError
 from core.log import DecisionLog
-from core.outbox import DuplicateOutward, key_path, write_outward
+from core.outbox import DuplicateOutward, key_path, mark_superseded, write_outward
 from core.parse import DELIM, ParseError, estimate_tokens, parse_answer, parse_claims
 from core.state import RunState
 from sources import Doc, SourceRegistry, check_provenance
 
 OUTWARD_KIND = {"send_outreach": "send", "send_support_replies": "send", "publish_landing_page": "publish",
                 "publish_posts": "publish", "open_store": "open_store"}
-CONFIG_KEYS = ("models", "retries", "verifier", "budgets", "temperature", "seed", "digest_chars",
-               "max_phase_repeats", "max_parallel_steps")
+CONFIG_KEYS = ("models", "retries", "verifier", "budgets", "sampling", "seed", "digest_chars",
+               "max_phase_retries", "max_parallel_steps")
 FINAL_METHODS = ("__init__", "execute", "llm_step", "code_step", "run_step", "parallel", "waves", "reset_phase",
-                 "phase_gate", "verify", "digest", "write_output", "outward", "request_approval", "steps", "result",
-                 "pivot_target", "log")
+                 "phase_gate", "review_phase", "retry_phase", "attempt", "verify", "digest", "write_output", "outward",
+                 "request_approval", "steps", "result", "pivot_target", "log")
 DONE_STATUSES = ("completed", "stopped", "refused", "pivot")
 
 
@@ -67,7 +69,7 @@ class RunContext:
     fake: bool
     stats: dict = field(default_factory=lambda: {
         "llm_calls": 0, "tokens": 0, "json_retries": 0, "truncations": 0, "trimmed_prompts": 0,
-        "cached_steps": 0, "failed_steps": [], "claims_total": 0, "claims_verified": 0,
+        "cached_steps": 0, "phase_retries": 0, "failed_steps": [], "claims_total": 0, "claims_verified": 0,
         "guardrail_findings": 0, "blocked_outward": 0, "outputs": []})
     _lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
 
@@ -106,9 +108,12 @@ class StepRecord:
 class GateDecision:
     phase: int
     recommended: str
-    final: str
+    final: str                  # go / pivot / stop / repeat (gate 6) or a retry: revise / redo / reset
     file: str
     reasons: list
+    attempt: int = 1
+    choice: str = ""
+    note: str = ""
 
 
 @dataclass
@@ -129,6 +134,8 @@ def _load_module(path: Path, name: str) -> ModuleType:
 
 
 class BaseVariant:
+    HINTS: dict = {}            # variant-defined extra instructions per step key (added to every attempt)
+
     def __init_subclass__(cls, **kw):
         super().__init_subclass__(**kw)
         bad = [m for m in FINAL_METHODS if m in cls.__dict__]
@@ -182,6 +189,7 @@ class BaseVariant:
         self.commerce = payments.CommerceState.load(cpath) if cpath.exists() else payments.CommerceState()
         self.invariants: dict[str, bool] = dict(st.get("invariants") or {})
         self.results: dict[str, StepRecord] = {}
+        self.revisions: dict[str, dict] = dict(st.get("revision") or {})
         for key, rec in (st.get("steps") or {}).items():
             if not rec.get("failed"):
                 self.results[key] = self._restore(key, rec)
@@ -246,6 +254,19 @@ class BaseVariant:
     def _model(self, role: str) -> str:
         m = self.config["models"]
         return (m.get("roles") or {}).get(role) or m["default"]
+
+    def _sampling(self, role: str) -> dict:
+        """Variant sampling (default, then per role) on top of the model's recommended values (config/models.yaml)."""
+        s = self.config.get("sampling") or {}
+        return {**(s.get("default") or {}), **((s.get("roles") or {}).get(role) or {})}
+
+    def attempt(self, phase: int) -> int:
+        """Current attempt of a phase (1 = first run; every revise/redo/reset adds one)."""
+        return self.ctx.state.attempt(self.idea, phase)
+
+    def _seed(self, phase: int | None) -> int:
+        """A new attempt samples differently (same seed + same input would reproduce the same answer)."""
+        return int(self.config["seed"]) + (1000 * (self.attempt(phase) - 1) if phase else 0)
 
     def _budget(self, role: str) -> tuple[int, int]:
         b = self.config["budgets"]
@@ -320,7 +341,7 @@ class BaseVariant:
                 "Claims are strings ending in \"[source: <URL from SOURCES>]\" or \"[ASSUMPTION]\".\n"
                 f"2. Then a line {DELIM} and the content in Markdown. Any code goes only here, never inside the JSON.")
 
-    def _call(self, role: str, system: str, prompt: str, schema: dict, content: bool) -> dict:
+    def _call(self, role: str, system: str, prompt: str, schema: dict, content: bool, phase: int | None = None) -> dict:
         """One model answer, parsed. Truncation fails the step; a parse error is retried with the error fed back."""
         model = self._model(role)
         _max_prompt, max_out = self._budget(role)
@@ -328,7 +349,7 @@ class BaseVariant:
         for _attempt in range(int(self.config["retries"]) + 1):
             try:
                 res = self.ctx.llm.complete(model=model, system=system, prompt=msg, max_tokens=max_out,
-                                            temperature=self.config["temperature"], seed=self.config["seed"],
+                                            sampling=self._sampling(role), seed=self._seed(phase),
                                             json_schema=None if content else schema)
             except LLMError as exc:
                 raise StepFailed(f"model unavailable: {exc}") from exc
@@ -375,7 +396,7 @@ class BaseVariant:
             self.ctx.bump("trimmed_prompts")
         if estimate_tokens(system + prompt) > max_prompt:
             raise StepFailed(f"prompt over budget ({max_prompt} tokens) even without inputs")
-        return self._call(role, system, prompt, schema, step.content)
+        return self._call(role, system, prompt, schema, step.content, step.phase)
 
     def verify(self, kind: str, text: str, evidence: str = "") -> tuple[bool, str]:
         """Narrow yes/no check by the verifier role. It only blocks or downgrades, and fails closed on errors."""
@@ -407,7 +428,7 @@ class BaseVariant:
         self.write_output(step.filename(self.idea), text)
         self.ctx.add("failed_steps", f"{self.idea}:{step.key}")
         self.log(role, f"{step.key}:{step.short}", model=self._model(role), failed=True, error=err[:300])
-        rec = StepRecord(step, {}, text, step.filename(self.idea), failed=True)
+        rec = StepRecord(step, {"error": err[:500]}, text, step.filename(self.idea), failed=True)
         self._save(rec)
         self.ctx.emit("step", idea=self.idea, phase=step.phase, step=step.key, status="failed", error=err[:300])
         return rec
@@ -441,8 +462,9 @@ class BaseVariant:
         reads = self.reads.get(step_key, step.reads)
         try:
             self._fetch(role, step)
+            extra_inputs = extra_inputs + self.HINTS.get(step_key, "") + self._revision_block(step_key)
             if step.fanout == "features":
-                data, content, model, tokens = self._fanout_features(role, step, reads)
+                data, content, model, tokens = self._fanout_features(role, step, reads, extra_inputs)
             else:
                 extra = extra_inputs
                 if step_key == "phase3_step3" and self._features():
@@ -482,18 +504,26 @@ class BaseVariant:
                       outward=rec.outward_status)
         return rec
 
-    def _fanout_features(self, role: str, step: Step, reads) -> tuple[dict, str, str, int]:
-        """One call per spec feature (in parallel); code is saved as plain files under product/."""
+    def _fanout_features(self, role: str, step: Step, reads, extra: str = "") -> tuple[dict, str, str, int]:
+        """One call per spec feature (in parallel); code is saved as plain files under product/.
+
+        On a 'revise', only the features named by the gate are re-run; the others keep their saved content.
+        """
         feats = self._features()
         if not feats:
             raise StepFailed("the MVP spec lists no features")
+        product = self.ctx.run_dir / "product" / self.idea
+        only = (self.revisions.get(step.key) or {}).get("features")
+        kept = {f: (product / self._slug(f)).read_text(encoding="utf-8") for f in feats
+                if only and f not in only and (product / self._slug(f)).exists()}
 
         def one(f: str) -> dict:
-            return self._ask(role, step, step.task, reads, extra=f"\nFEATURE: {f}")
+            return self._ask(role, step, step.task, reads, extra=f"{extra}\nFEATURE: {f}")
 
-        with ThreadPoolExecutor(max_workers=self._pool_size(len(feats))) as ex:
-            futures = {f: ex.submit(one, f) for f in feats}
-        outs, errors = {}, []
+        todo = [f for f in feats if f not in kept]
+        with ThreadPoolExecutor(max_workers=self._pool_size(len(todo))) as ex:
+            futures = {f: ex.submit(one, f) for f in todo}
+        outs, errors = {f: {"content": c, "data": {"claims": []}, "model": "kept", "tokens": 0} for f, c in kept.items()}, []
         for f, fut in futures.items():
             try:
                 outs[f] = fut.result()
@@ -501,17 +531,21 @@ class BaseVariant:
                 errors.append(f"{f}: {exc}")
         if errors:
             raise StepFailed("feature calls failed: " + "; ".join(errors))
-        product = self.ctx.run_dir / "product" / self.idea
         product.mkdir(parents=True, exist_ok=True)
         sections, claims = [], []
         for f in feats:
             body = outs[f]["content"].strip()
-            (product / (re.sub(r"[^a-z0-9]+", "-", f.lower()).strip("-") + ".md")).write_text(body + "\n", encoding="utf-8")
+            (product / self._slug(f)).write_text(body + "\n", encoding="utf-8")
             sections.append(body if body.lstrip().startswith("#") and f.lower() in body.lower()[:200] else f"## {f}\n\n{body}")
             claims += outs[f]["data"].get("claims") or []
         data = {"title": f"MVP: {len(feats)} features", "summary": f"Built one feature per call: {', '.join(feats)}.",
                 "features": feats, "claims": claims}
-        return data, "\n\n".join(sections), outs[feats[0]]["model"], sum(o["tokens"] for o in outs.values())
+        model = next((o["model"] for o in outs.values() if o["model"] != "kept"), self._model(role))
+        return data, "\n\n".join(sections), model, sum(o["tokens"] for o in outs.values())
+
+    @staticmethod
+    def _slug(name: str) -> str:
+        return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-") + ".md"
 
     def code_step(self, step_key: str) -> StepRecord:
         step = STEP_BY_KEY[step_key]
@@ -560,17 +594,22 @@ class BaseVariant:
         return results
 
     # ----------------------------------------------------- approvals & outward
-    def request_approval(self, action_id: str, kind: str, summary: str, content: str):
-        self.ctx.emit("approval", idea=self.idea, action_id=action_id, kind=kind, status="pending")
-        r = self.ctx.broker.request(self.idea, action_id, kind, summary, content)
-        self.ctx.emit("approval", idea=self.idea, action_id=action_id, kind=kind,
+    def request_approval(self, action_id: str, kind: str, summary: str, content: str, phase: int | None = None):
+        attempt = self.attempt(phase) if phase else 1
+        self.ctx.emit("approval", idea=self.idea, action_id=action_id, kind=kind, status="pending", attempt=attempt)
+        r = self.ctx.broker.request(self.idea, action_id, kind, summary, content, attempt)
+        self.ctx.emit("approval", idea=self.idea, action_id=action_id, kind=kind, attempt=attempt,
                       status="approved" if r else "rejected")
         return r
 
     def outward(self, rec: StepRecord) -> str:
+        """Publish / send / open the store once per content. Changed content (after revise, redo or reset)
+        needs a new founder approval for that attempt; the earlier outbox item is marked SUPERSEDED, not deleted."""
         step = rec.step
-        if self.ctx.state.outward_done(self.idea, step.action_id):
-            return "approved"
+        content_hash = payload_hash(rec.text)
+        done = self.ctx.state.outward_done(self.idea, step.action_id)
+        if done and done.get("payload_hash") == content_hash:
+            return "approved"                                   # same content already went out: never twice
         kind = OUTWARD_KIND[step.outward]
         reasons = list(rec.findings)
         if not reasons and "outward" in self._verifier_points():
@@ -581,10 +620,12 @@ class BaseVariant:
             self.ctx.bump("blocked_outward")
             self.log("guardrails", f"blocked:{step.action_id}", reasons=reasons)
             return "blocked"
-        receipt = self.request_approval(step.action_id, kind, f"{step.title}: {step.outward} (MOCKED)", rec.text)
+        attempt = self.attempt(step.phase)
+        what = "changed content, new approval needed" if done else step.outward
+        receipt = self.request_approval(step.action_id, kind, f"{step.title}: {what} (MOCKED)", rec.text, step.phase)
         if receipt is None:
             return "rejected"
-        key = f"{self.idea}__{step.action_id}"
+        key = f"{self.idea}__{step.action_id}" + (f"__a{attempt}" if attempt > 1 else "")
         try:
             if kind == "open_store":
                 price_rec = self.results.get("phase4_step1")
@@ -598,30 +639,164 @@ class BaseVariant:
                 path = fn(self.ctx.outbox_dir, f"{self.idea}-{step.short}", content=rec.text, key=key, receipt=receipt)
         except DuplicateOutward:
             path = key_path(self.ctx.outbox_dir, key)      # written before a crash; never write it again
-        self.ctx.state.mark_outward(self.idea, step.action_id, file=Path(path).name)
-        self.log("outbox", step.outward, approved_by="founder", label="MOCKED", outbox_file=Path(path).name,
-                 action_id=step.action_id)
+        name = Path(path).name
+        superseded = list((done or {}).get("superseded", []))
+        if done and done.get("file") and done["file"] != name:
+            mark_superseded(self.ctx.outbox_dir, done["file"], name, attempt)
+            superseded.append(done["file"])
+            self.log("outbox", f"supersede:{step.outward}", approved_by="founder", label="MOCKED",
+                     superseded_file=done["file"], replaced_by=name, attempt=attempt, action_id=step.action_id)
+        self.ctx.state.mark_outward(self.idea, step.action_id, file=name, payload_hash=content_hash, attempt=attempt,
+                                    superseded=superseded)
+        self.log("outbox", step.outward, approved_by="founder", label="MOCKED", outbox_file=name,
+                 action_id=step.action_id, attempt=attempt)
         return "approved"
 
-    # ------------------------------------------------------------------ gates
+    # ------------------------------------------------------------------ gates and stage review
+    def run_phase(self, phase: int) -> None:
+        """Run a phase's steps: waves of independent steps in parallel. Variants may override this.
+        Steps already done in this attempt are returned from state, so it also resumes and re-runs only what a
+        revise/redo/reset cleared."""
+        for wave in self.waves(phase):
+            self.parallel([s.key for s in wave])
+
+    def review_phase(self, phase: int) -> GateDecision:
+        """Run the phase and its gate; apply the founder's revise / redo / reset and check again, until the
+        founder decides go, pivot or stop (or 'repeat' at gate 6, which ends the run to collect real evidence)."""
+        while True:
+            self.run_phase(phase)
+            d = self.phase_gate(phase)
+            if d.final not in gates.RETRY_FINALS:
+                return d
+            self.retry_phase(phase, d)
+
     def phase_gate(self, phase: int) -> GateDecision:
+        attempt = self.attempt(phase)
         saved = self.ctx.state.get_gate(self.idea, phase)
-        if saved:
+        if saved and int(saved.get("attempt", 1)) == attempt:
             return GateDecision(**saved)
         g = code_steps.gate_result(self, phase)
         name = gate_filename(phase, self.idea, g.outcome)
-        body = code_steps.gate_text(self, g)
+        for old in self.ctx.outputs_dir.glob(f"phase{phase}_gate_{self.idea}-*.md"):
+            if old.name != name:                    # an earlier attempt's gate file (kept under attempts/)
+                old.unlink()
+        cap = int(self.config["max_phase_retries"])
+        allowed = gates.choices(phase, g.outcome, attempt - 1 < cap)
+        body = (code_steps.gate_text(self, g) + f"Attempt {attempt} of this phase; retries used {attempt - 1} of {cap}. "
+                f"Founder options: {', '.join(c for c in allowed if c != 'repeat')}.\n")
         self.write_output(name, body)
-        self.log("gate", f"phase{phase}_gate", outcome=g.outcome, reasons=g.reasons)
-        self.ctx.emit("gate", idea=self.idea, phase=phase, outcome=g.outcome, file=name, status="awaiting_founder")
-        self.ctx.emit("approval", idea=self.idea, action_id=f"phase{phase}.gate", kind="gate", status="pending")
+        self.log("gate", f"phase{phase}_gate", outcome=g.outcome, reasons=g.reasons, attempt=attempt)
+        self.ctx.emit("gate", idea=self.idea, phase=phase, outcome=g.outcome, file=name, status="awaiting_founder",
+                      attempt=attempt)
+        self.ctx.emit("approval", idea=self.idea, action_id=f"phase{phase}.gate", kind="gate", status="pending",
+                      attempt=attempt)
         d = self.ctx.broker.decide(self.idea, f"phase{phase}.gate", "gate",
-                                   f"Phase {phase} gate recommends {g.outcome.upper()}: {'; '.join(g.reasons)}", body)
-        final = g.outcome if d.choice == "accept" else d.choice
+                                   f"Phase {phase} gate (attempt {attempt}) recommends {g.outcome.upper()}: "
+                                   f"{'; '.join(g.reasons)}", body, attempt, allowed)
+        final = gates.resolve(phase, d.choice, g.outcome)
         self.write_output(name, body + f"\n## Founder decision\n\n- Decision: **{final}**"
-                          f"{' (accepted the recommendation)' if d.choice == 'accept' else ' (override)'}\n"
-                          f"- Input source: {d.source}\n")
-        self.ctx.emit("gate", idea=self.idea, phase=phase, outcome=g.outcome, final=final, file=name, status="decided")
-        gd = GateDecision(phase, g.outcome, final, name, g.reasons)
+                          f"{' (accepted the recommendation)' if d.choice == 'accept' else ' (founder choice)'}\n"
+                          f"- Input source: {d.source}\n" + (f"- Founder note: {d.note}\n" if d.note else ""))
+        self.ctx.emit("gate", idea=self.idea, phase=phase, outcome=g.outcome, final=final, file=name,
+                      status="decided", attempt=attempt)
+        gd = GateDecision(phase, g.outcome, final, name, g.reasons, attempt, d.choice, d.note)
         self.ctx.state.put_gate(self.idea, phase, asdict(gd))
+        self._snapshot(phase, gd, d.source)
         return gd
+
+    def _snapshot(self, phase: int, gd: GateDecision, source: str) -> None:
+        """Keep this attempt: outputs, product files (phase 3), commerce + payment log (phase 5), decision."""
+        dest = self.ctx.run_dir / "attempts" / self.idea / f"phase{phase}" / str(gd.attempt)
+        dest.mkdir(parents=True, exist_ok=True)
+        for f in self.ctx.outputs_dir.glob(f"phase{phase}_*_{self.idea}-*"):
+            shutil.copy2(f, dest / f.name)
+        if phase == 3 and (self.ctx.run_dir / "product" / self.idea).exists():
+            shutil.copytree(self.ctx.run_dir / "product" / self.idea, dest / "product", dirs_exist_ok=True)
+        if phase == 5:
+            if self._commerce_path().exists():
+                shutil.copy2(self._commerce_path(), dest / "commerce.json")
+            (dest / "payment_log.md").write_text("\n".join(self.ctx.state.idea(self.idea).get("payment_log") or []) + "\n",
+                                                encoding="utf-8")
+        steps = {k: {"failed": bool(r.get("failed")), "error": (r.get("data") or {}).get("error")}
+                 for k, r in (self.ctx.state.idea(self.idea).get("steps") or {}).items() if k.startswith(f"phase{phase}_")}
+        revised = sorted(k for k, r in self.revisions.items() if k.startswith(f"phase{phase}_") and r.get("attempt") == gd.attempt)
+        (dest / "attempt.json").write_text(json.dumps({
+            "idea": self.idea, "phase": phase, "attempt": gd.attempt, "recommended": gd.recommended,
+            "passed": gd.recommended == "go", "reasons": gd.reasons, "choice": gd.choice, "final": gd.final,
+            "note": gd.note, "input_source": source, "revised_steps": revised, "steps": steps, "at": time.time()},
+            indent=1), encoding="utf-8")
+
+    def _revision_block(self, step_key: str) -> str:
+        r = self.revisions.get(step_key)
+        if not r or r.get("attempt") != self.attempt(STEP_BY_KEY[step_key].phase):
+            return ""
+        lines = [f"\nREVISION (attempt {r['attempt']}): the previous attempt of this phase did not pass its gate "
+                 "or the founder asked for changes."]
+        if r.get("reasons"):
+            lines += ["WHAT FAILED:"] + [f"- {x}" for x in r["reasons"]]
+        if r.get("note"):
+            lines.append(f"FOUNDER NOTE: {r['note']}")
+        if r.get("previous"):
+            lines.append("PREVIOUS ANSWER (compressed):\n" + r["previous"])
+        lines.append("Fix what failed and follow the founder note; keep what was fine. "
+                     "Do not return the previous answer unchanged.")
+        return "\n".join(lines) + "\n"
+
+    def _dependents(self, phase: int, keys: set) -> set:
+        """Steps in this phase that read (directly or indirectly) one of `keys`."""
+        steps = steps_in_phase(phase)
+        deps = {s.key: set(self.reads.get(s.key, s.reads)) | set(s.after) for s in steps}
+        out, changed = set(keys), True
+        while changed:
+            changed = False
+            for s in steps:
+                if s.key not in out and deps[s.key] & out:
+                    out.add(s.key)
+                    changed = True
+        return out - set(keys)
+
+    def retry_phase(self, phase: int, decision: GateDecision) -> None:
+        """Apply the founder's revise / redo / reset for this phase. The caller then runs the phase and its gate
+        again (review_phase does both). Each call is one retry and counts toward max_phase_retries."""
+        if decision.final not in gates.RETRY_FINALS:
+            raise ContractError(f"retry_phase needs revise/redo/reset, got {decision.final}")
+        n = decision.attempt
+        if self.attempt(phase) != n:
+            return                                   # already applied before a crash (resumed run)
+        limit = 2 * int(self.config.get("digest_chars", 800))
+        plan: dict[str, dict] = {}
+        if decision.final == "revise":
+            targets = code_steps.revision_targets(self, phase, decision)
+            for k in self._dependents(phase, set(targets)):
+                targets[k] = {"reasons": [f"an input of this step was revised ({', '.join(sorted(targets))})"],
+                              "features": None}
+            keys = list(targets)
+            for k, t in targets.items():
+                prev = "\n\n".join(self._digest_parts([k]))
+                if not prev:
+                    err = ((self.ctx.state.get_step(self.idea, k) or {}).get("data") or {}).get("error")
+                    prev = f"(the previous attempt of this step failed: {err})" if err else ""
+                plan[k] = {"attempt": n + 1, "reasons": t["reasons"], "features": t.get("features"),
+                           "note": decision.note, "previous": prev[:limit]}
+        else:
+            keys = [s.key for s in steps_in_phase(phase)]
+            if decision.note:                        # a redo starts fresh, but the founder's note still applies
+                plan = {k: {"attempt": n + 1, "reasons": [], "features": None, "note": decision.note, "previous": ""}
+                        for k in keys if STEP_BY_KEY[k].kind == "llm"}
+            if decision.final == "reset":            # phase 5: new MOCKED commerce state, new test orders
+                self.commerce = payments.CommerceState()
+                self._commerce_path().unlink(missing_ok=True)
+                self.invariants = {}
+                self.ctx.state.set_idea(self.idea, invariants={}, payment_log=[])
+        with self._rlock:
+            for k in keys:
+                self.results.pop(k, None)
+        self.revisions = {k: v for k, v in self.revisions.items() if not k.startswith(f"phase{phase}_")}
+        self.revisions.update(plan)
+        self.ctx.state.set_idea(self.idea, revision=self.revisions)
+        self.ctx.state.drop_steps(self.idea, keys)
+        self.ctx.state.set_attempt(self.idea, phase, n + 1)
+        self.ctx.bump("phase_retries")
+        self.log("orchestrator", f"{decision.final}:phase{phase}", attempt=n + 1, steps=sorted(keys),
+                 note=decision.note or None)
+        self.ctx.emit("retry", idea=self.idea, phase=phase, mode=decision.final, attempt=n + 1, steps=sorted(keys))

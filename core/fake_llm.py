@@ -2,7 +2,8 @@
 
 They answer in each model's raw format (gpt-oss harmony channels, qwen3 <think>) with a decoy JSON in
 the reasoning, so tests prove only the final answer is parsed. Faults can be injected:
-{"length": n, "length_if": "<prompt substring>", "invalid_json": n, "down": ["fake-b"]}.
+{"length": n, "length_if": "<prompt substring>", "invalid_json": n, "docs_drop": n, "down": ["fake-b"],
+ "record": <list that receives every request body>}. Answers vary with the seed (seed 42 = the baseline answer).
 Runs made with these are never written to outputs/.
 """
 from __future__ import annotations
@@ -21,6 +22,7 @@ class FakeTransport:
     def __init__(self, faults: dict | None = None):
         self.faults = dict(faults or {})
         self.down = set(self.faults.pop("down", []))
+        self.record = self.faults.pop("record", None)
         self.calls = 0
         self._lock = threading.Lock()
 
@@ -39,8 +41,10 @@ class FakeTransport:
             return {"data": [{"id": "fake"}]}
         with self._lock:
             self.calls += 1
+            if self.record is not None:
+                self.record.append(body)
         prompt = body["messages"][-1]["content"]
-        final = self._answer(prompt)
+        final = self._answer(prompt, body.get("seed", 42))
         finish = "stop"
         if self._take("invalid_json"):
             final = "Here is the result: {title: 'unterminated"
@@ -61,26 +65,30 @@ class FakeTransport:
                 "usage": {"prompt_tokens": len(prompt) // 4, "completion_tokens": len(content) // 4}}
 
     # -- deterministic answer built from the prompt's SCHEMA line ---------------------------------
-    def _answer(self, prompt: str) -> str:
+    def _answer(self, prompt: str, seed: int = 42) -> str:
         m = re.search(r"^SCHEMA: (.+)$", prompt, re.MULTILINE)
         schema = json.loads(m.group(1)) if m else {"type": "object", "properties": {}}
         src = prompt.split("SOURCES", 1)[1] if "SOURCES" in prompt else ""
         urls = list(dict.fromkeys(_URL.findall(src)))[:5]
         obj = {k: self._value(k, v, urls) for k, v in schema.get("properties", {}).items()}
+        if seed not in (None, 42):          # another sample: change free-text fields so a redo is visibly different
+            obj = {k: (f"{v} (sample {seed})" if isinstance(v, str) and k not in ("reason",) else v) for k, v in obj.items()}
         out = json.dumps(obj)
         if "---CONTENT---" in prompt:
             out += "\n---CONTENT---\n" + self._content(prompt)
         return out
 
-    @staticmethod
-    def _content(prompt: str) -> str:
+    def _content(self, prompt: str) -> str:
         f = re.search(r"^FEATURE: (.+)$", prompt, re.MULTILINE)
         if f:
             name = f.group(1).strip()
             return f"## {name}\n\nHow {name} works.\n\n```python\nprint(\"{{'not': 'json'}}\")\n```\n"
         feats = re.search(r"^FEATURES TO COVER[^:]*:\s*(.+)$", prompt, re.MULTILINE)
         if feats:
-            return "\n".join(f"## {x.strip()}\n\nHow to use {x.strip()}.\n" for x in feats.group(1).split(";") if x.strip())
+            names = [x.strip() for x in feats.group(1).split(";") if x.strip()]
+            if self._take("docs_drop"):          # fault: user docs forget the last feature -> MVP tests fail
+                names = names[:-1]
+            return "\n".join(f"## {x}\n\nHow to use {x}.\n" for x in names)
         return "## Notes\n\nExample content based on the inputs.\n"
 
     @staticmethod

@@ -22,6 +22,32 @@ class GateResult:
     metrics: dict = field(default_factory=dict)
 
 
+# ---------------------------------------------------------------- founder choices at a gate (stage review)
+# revise = re-run only the failed steps with the failure reasons, a compressed previous answer and the founder's note
+# redo   = re-run the whole phase from scratch (new sampling seed)
+# reset  = phase 5 only: clear the MOCKED commerce state, then re-run the phase
+RETRY_FINALS = ("revise", "redo", "reset")
+_RETRIES_BY_PHASE = {1: ("revise", "redo"), 2: ("revise", "redo"), 3: ("revise", "redo"), 4: ("revise", "redo"),
+                     5: ("reset",), 6: ()}          # gate 6: re-running cannot create real customers -> founder decides
+
+
+def resolve(phase: int, choice: str, recommended: str) -> str:
+    """Founder choice -> final: accept follows the recommendation; 'repeat' maps to this gate's retry kind."""
+    if choice == "accept":
+        choice = recommended
+    if choice == "repeat":
+        choice = {5: "reset", 6: "repeat"}.get(phase, "revise")    # gate 6 'repeat' ends the run: collect evidence
+    return choice
+
+
+def choices(phase: int, recommended: str, retries_left: bool) -> list[str]:
+    """What the founder may choose at this gate right now (the cap removes the retry options)."""
+    retry = list(_RETRIES_BY_PHASE[phase]) if retries_left else []
+    allowed = ["go", "pivot", "stop"] + retry
+    out = [c for c in ("accept", "repeat") if resolve(phase, c, recommended) in allowed + (["repeat"] if phase == 6 else [])]
+    return out + allowed
+
+
 def phase1(*, excluded: list[str], verified_pain: int) -> GateResult:
     m = {"excluded_categories": excluded, "verified_pain_signals": verified_pain}
     if excluded:

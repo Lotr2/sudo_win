@@ -32,8 +32,8 @@ flowchart LR
 ## Gates and approvals
 
 - Step gates: [T] phase1_step2, phase1_step4, phase2_step4, phase4_step1; [X] every other step (schema, provenance, truncation, guardrails, tests).
-- Phase gates: deterministic rules in gates.py recommend go/repeat/pivot/stop; [F] the founder accepts or overrides each one.
-- ✋ Outward actions (MOCKED, outbox only, each at most once): send_outreach (1.5), publish_landing_page (2.2), open_store (5.1), publish_posts (5.2), refund (5.4), send_support_replies (6.1).
+- Phase gates: deterministic rules in gates.py recommend go/repeat/pivot/stop; [F] the founder decides. Stage review: go / pivot / stop at every gate; revise (re-run only failed steps with the failure reasons, previous answer and founder note) or redo at gates 1-4; reset (new MOCKED commerce state) at gate 5; gate 6 is a founder decision only. Each retry is re-checked by the gate and counts toward max_phase_retries (3).
+- ✋ Outward actions (MOCKED, outbox only, once per content): send_outreach (1.5), publish_landing_page (2.2), open_store (5.1), publish_posts (5.2), refund (5.4), send_support_replies (6.1). Content changed by a retry needs a new approval; the old outbox item is marked SUPERSEDED.
 
 ## How it differs from baseline
 
@@ -44,4 +44,4 @@ This is the baseline.
 - Parallelism inside one idea is limited (waves of 1-3 steps); run several ideas at once to keep both GPUs busy.
 - Provenance proves a URL was fetched, not that it is relevant; only the verifier checks support.
 - The verifier uses the same model as the workers, so it shares their blind spots.
-- A "repeat" re-runs the whole phase (outward actions already done are not repeated).
+- A revise only knows which step failed when the gate reason names it (gate 3 and 4); otherwise it revises every LLM step of the phase.

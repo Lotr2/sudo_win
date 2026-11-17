@@ -58,12 +58,30 @@ def test_outbox_key_is_written_once(tmp_path):
     assert len(list((tmp_path / "o").iterdir())) == 1
 
 
-def test_decision_replayed_only_for_same_content(tmp_path):
+def test_decisions_are_per_attempt_and_never_replayed(tmp_path):
     from core.state import RunState
     state = RunState(tmp_path / "state.json")
-    first = ApprovalBroker(DecisionLog(tmp_path / "l1.json"), {"idea2": {"a": "approve"}}, state=state)
-    first.request("idea2", "a", "publish", "s", "same text")
+    b = ApprovalBroker(DecisionLog(tmp_path / "l1.json"), {"idea2": {"a": "approve", "g": "revise"}}, state=state)
+    assert b.request("idea2", "a", "publish", "s", "same text") is not None
+    with pytest.raises(ApprovalPending):           # attempt 2 needs its own decision ("a@2"), even for the same text
+        b.request("idea2", "a", "publish", "s", "same text", attempt=2)
     again = ApprovalBroker(DecisionLog(tmp_path / "l2.json"), {}, state=RunState(tmp_path / "state.json"))
-    assert again.request("idea2", "a", "publish", "s", "same text") is not None
+    with pytest.raises(ApprovalPending):           # a stored decision is an audit record, not an answer
+        again.request("idea2", "a", "publish", "s", "same text")
+    d = b.decide("idea2", "g", "gate", "s", "body", attempt=1, choices=["accept", "revise", "stop"])
+    assert d.choice == "revise"
     with pytest.raises(ApprovalPending):
-        again.request("idea2", "a", "publish", "s", "different text")
+        b.decide("idea2", "g", "gate", "s", "body", attempt=2, choices=["accept", "revise", "stop"])
+
+
+def test_decisions_file_note_and_attempt_keys(tmp_path):
+    b = ApprovalBroker(DecisionLog(tmp_path / "l.json"),
+                       {"idea2": {"g@2": {"choice": "redo", "note": "shorter copy"}}})
+    d = b.decide("idea2", "g", "gate", "s", "body", attempt=2, choices=["redo", "stop"])
+    assert (d.choice, d.note) == ("redo", "shorter copy")
+
+
+def test_gate_choice_must_be_allowed_at_this_gate(tmp_path):
+    b = ApprovalBroker(DecisionLog(tmp_path / "l.json"), {"idea2": {"phase6.gate": "revise"}})
+    with pytest.raises(ApprovalPending, match="not one of"):
+        b.decide("idea2", "phase6.gate", "gate", "s", "body", choices=["accept", "go", "pivot", "stop"])
