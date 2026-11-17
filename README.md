@@ -17,12 +17,13 @@ docker compose up
 The first start downloads gpt-oss:20b (about 13 GB) and needs roughly 16 GB of RAM. When the log shows `Ready`, open the app in a second terminal:
 
 ```
-docker compose exec app python workflow.py
+docker compose exec app python workflow.py run
 ```
 
-That command shows where you are in the pipeline and the next command to run. For example:
+That runs the pipeline from wherever you are, one step after another. It asks before each step and stops whenever a gate does not pass or you stop it, and you pick up later by running it again. Other commands:
 
-- `python workflow.py discover` starts Phase 1
+- `python workflow.py` shows where you are and the next command
+- `python workflow.py discover` (or any phase name) runs one phase by hand
 - `python workflow.py test` runs every smoke test
 
 Pages served during a run:
@@ -31,7 +32,7 @@ Pages served during a run:
 - the MVP preview at http://localhost:8001
 - the store at http://localhost:8002
 
-**Without Docker:** install Python 3.12+, Node.js 25+ and Ollama, run `ollama pull gpt-oss:20b`, then `python workflow.py`. Nothing needs to be pip-installed; the code uses only the Python standard library.
+**Without Docker:** install Python 3.12+, Node.js 25+ and Ollama, run `ollama pull gpt-oss:20b`, then `python workflow.py run`. Settings such as `LLM_BASE_URL` are read from `.env` (copy `.env.example`), so a llama.cpp server works too, for example `LLM_BASE_URL=http://127.0.0.1:8090/v1`. Nothing needs to be pip-installed; the code uses only the Python standard library.
 
 ## What works and what is mocked
 

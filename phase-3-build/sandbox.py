@@ -137,10 +137,21 @@ class TestRun:
         return not self.failed and not self.error and bool(self.passed) and not self.skipped and not self.todo
 
 
+MIN_NODE_MAJOR = 25  # older Node versions let sandboxed code reach the network even with --permission
+_checked_nodes: set[str] = set()
+
+
 def node_path() -> str:
     node = shutil.which("node")
     if not node:
-        raise RuntimeError("Node.js (22 or newer) is needed to run the product's tests.")
+        raise RuntimeError(f"Node.js ({MIN_NODE_MAJOR} or newer) is needed to run the product's tests.")
+    if node not in _checked_nodes:
+        out = subprocess.run([node, "--version"], capture_output=True, text=True, timeout=10).stdout.strip()
+        m = re.match(r"v(\d+)", out)
+        if not m or int(m.group(1)) < MIN_NODE_MAJOR:
+            raise RuntimeError(f"Node.js {MIN_NODE_MAJOR} or newer is needed (found {out or 'unknown'}): older "
+                               "versions do not block network access in the sandbox.")
+        _checked_nodes.add(node)
     return node
 
 

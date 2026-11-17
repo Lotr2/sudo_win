@@ -53,7 +53,7 @@ Shared code in `common/`:
 - `guardrails.py`: forbidden requests, excluded categories, and copy rules
 - `approval.py`: founder choices, with no defaults
 
-`workflow.py` is the single entry point.
+`workflow.py` is the single entry point. `python workflow.py run` runs the remaining steps in order: it works out the next step from the files in `outputs/`, asks the founder before each one, and stops as soon as a step does not write its handoff (a gate said repeat, pivot or stop, or the founder stopped). It never approves anything itself; every gate and approval stays inside the phase.
 
 ## Phases
 

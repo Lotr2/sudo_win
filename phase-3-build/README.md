@@ -1,6 +1,6 @@
 # Phase 3: Build
 
-Turns the validated business into a **tested MVP with a user guide**. The tests are written from the spec **before** any code exists, and the gate passes only when every acceptance criterion has a passing test. Runs on `gpt-oss:20b` (local, $0 per run) and needs Node.js 22+ to run the product's tests. Starts from Phase 2's approved handoff (`outputs/phase2_step4_handoff.json`).
+Turns the validated business into a **tested MVP with a user guide**. The tests are written from the spec **before** any code exists, and the gate passes only when every acceptance criterion has a passing test. Runs on `gpt-oss:20b` (local, $0 per run) and needs Node.js 25+ to run the product's tests. Starts from Phase 2's approved handoff (`outputs/phase2_step4_handoff.json`).
 
 ## Run
 
