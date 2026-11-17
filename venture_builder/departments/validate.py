@@ -167,7 +167,7 @@ h1{{font-size:2rem}} li{{margin:.4rem 0}} form{{margin-top:2rem}} input,button{{
 
 def p2_landing(ctx: Context, answer) -> Ask:
     d = ctx.dossier
-    feedback = d.history[-1].get("landing_feedback", "") if d.history and "landing_feedback" in d.history[-1] else ""
+    feedback = next((h["landing_feedback"] for h in reversed(d.history) if "landing_feedback" in h), "")
     for attempt in (1, 2):
         copy = landing_copywriter.run(ctx, d.canvas.model_dump(), _variant(ctx).model_dump(), feedback)
         text = " ".join([copy.headline, copy.subheadline, copy.body, copy.cta_text, *copy.benefits])

@@ -487,7 +487,7 @@ The executor recomputes the item's hash. If the item changed after approval, the
 
 ## Built vs. stubbed
 
-Everything below is implemented and covered by the smoke tests in `tests/`, which run on a fake model client. The demo run in `outputs/` and `decision_log.json` is the real-model run.
+Everything below is implemented and covered by the smoke tests in `tests/`, which run on a fake model client. `outputs/` and `decision_log.json` hold only output of a real run on the real models; until that run is committed they are empty.
 
 | Part | Status | Files (in `venture_builder/`) |
 |---|---|---|

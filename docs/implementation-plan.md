@@ -66,6 +66,26 @@ outputs/, decision_log.json   the committed demo run
 10. Real demo runs.
 11. Final checklist.
 
+## Status
+
+| Milestone | State |
+|---|---|
+| 1-9: spine, tools, founder conversation, Phases 1-6, interfaces, tests, repository files | Done; 80 smoke tests pass on the fake model client |
+| Live checks | Gemma 4 31B on the Gemini API: verified (structured output, rate limiter). GPT-OSS-20B on Ollama: not yet run |
+| 10: real demo runs | Not run yet |
+| 11: final checklist | Done except for the items that need the demo run (`outputs/`, `decision_log.json`, cost figure) |
+
+## Continuing on another machine
+
+1. `uv sync`, then create `.env` from `.env.example`: `OLLAMA_HOST` (the machine running Ollama), `GEMINI_API_KEY`, and `SEARXNG_URL` (any SearXNG with the JSON format enabled; `config/searxng/settings.yml` has the settings). `.env` is never committed, so it must be recreated on each machine.
+2. `uv run venture doctor` must print `doctor: OK`. If a model name differs, set `MODEL_OSS` or `MODEL_GEMMA` to a name doctor lists.
+3. `uv run pytest -m live` checks both models.
+4. Plausible brief, all six phases: `uv run venture run briefs/plausible_client_kit.md` (interactive) or `uv run venture serve` and the web UI. The founder answers every question and makes every approval and gate decision; Phase 2 sign-ups and Phase 6 activity are entered as MOCKED values.
+5. Weak brief until it stops: `uv run venture run briefs/weak_meal_coach.md`; Gate 1 should recommend STOP (health product).
+6. Export: `uv run venture export <plausible_run_id>`, then `uv run venture export <weak_run_id> --tag weak --append` (weak-run files become `phase1_gate_weak_decision.md` and so on; both runs' log entries go to `decision_log.json`, each tagged with its run id).
+7. Fill the README `## Cost per run` line from the tokens in `decision_log.json`: `jq '[.[].tokens // 0] | add' decision_log.json`.
+8. `uv run pytest` again (the layout test checks the exported file names and log keys).
+
 ## Contradictions and resolutions
 
 Order of precedence: `CLAUDE.md`, then `ARCHITECTURE.md`, then `docs/phase-workflows.md`, then `docs/overview.md`.

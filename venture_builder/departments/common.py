@@ -27,6 +27,28 @@ def gate_markdown(ctx: Context, result: GateResult, memo: dict | None, title: st
     return "\n".join(lines) + "\n"
 
 
+def kickoff(ctx: Context, what: str, assumptions: list[str]) -> None:
+    """Phase kickoff from the Founder Liaison (non-blocking; the founder can reply in the chat any time)."""
+    from ..agents import founder_liaison
+    if ctx.demo:
+        ctx.say(f"Next: {what}. It relies on: {'; '.join(assumptions)}.", kind="kickoff")
+        return
+    ctx.say(founder_liaison.message(ctx, "phase_kickoff", phase=what, assumptions=assumptions), kind="kickoff")
+
+
+def walkthrough(ctx: Context, result: GateResult) -> None:
+    """Gate walk-through by the Founder Liaison: explains the memo; it cannot change the outcome."""
+    from ..agents import founder_liaison
+    base = f"Gate {result.gate} recommends {result.label.upper()}: {result.reasons[0]}"
+    if ctx.demo:
+        ctx.say(base, kind="gate")
+        return
+    rests = [f"{a.field} = {a.value} ({a.status})" for a in ctx.assumptions.rests_on(f"gate{result.gate}")]
+    msg = founder_liaison.message(ctx, "gate_walkthrough", gate=result.gate, outcome=result.label,
+                                  reasons=result.reasons, rests_on=rests)
+    ctx.say(f"{base}\n\n{msg}", kind="gate")
+
+
 def present_gate(ctx: Context, result: GateResult, markdown: str, resume_to: str, extra: dict | None = None) -> Ask:
     d = ctx.dossier
     n = result.gate
@@ -36,7 +58,7 @@ def present_gate(ctx: Context, result: GateResult, markdown: str, resume_to: str
     result.critical_unconfirmed = crit
     result.rests_on = [a.id for a in ctx.assumptions.rests_on(f"gate{n}")]
     ctx.store.write_output(f"phase{n}_gate_decision.md", markdown)
-    ctx.say(f"Gate {n} recommends {result.label.upper()}: {result.reasons[0]}", kind="gate")
+    walkthrough(ctx, result)
     return Ask("gate", {"gate": n, "attempt": attempt, "recommended": result.outcome, "label": result.label,
                         "reasons": result.reasons, "memo_file": f"phase{n}_gate_decision.md",
                         "critical_unconfirmed": crit, "code": gate_token(n, attempt)[:6], **(extra or {})},

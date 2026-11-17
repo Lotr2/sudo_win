@@ -25,6 +25,9 @@ def _price_evidence(ctx: Context) -> list[str]:
 def p4_start(ctx: Context, answer) -> Ask:
     ctx.dossier.phase = 4
     ctx.note("Phase 4 · Commercial setup started")
+    from .common import kickoff
+    kickoff(ctx, "Commercial setup: price from sourced anchors, then policy drafts checked by code",
+            ["competitor prices found in research", "a refund window fits a digital product"])
     q = ("Before pricing: what would feel too expensive for your customers, and how long a refund window "
          "are you comfortable with for a digital product?")
     ctx.say(q, kind="question")

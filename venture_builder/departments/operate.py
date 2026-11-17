@@ -25,6 +25,10 @@ def _events(ctx: Context) -> EventStore:
 def p6_start(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     d.phase = 6
+    from .common import kickoff
+    kickoff(ctx, "Operate and learn: compute metrics from the event log, answer support from the docs, "
+                 "write a persevere-or-pivot memo checked by a critic",
+            ["the activity entered is MOCKED", "targets are locked before the data"])
     d.gate6_targets = dict(ctx.t["gate6"])
     d.gate6_hash = gates.lock_hash(d.gate6_targets)
     log_action("threshold_lock", "lock_gate6_targets", targets=d.gate6_targets, hash=d.gate6_hash)

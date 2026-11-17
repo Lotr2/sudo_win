@@ -27,6 +27,9 @@ def p5_start(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     d.phase = 5
     ctx.note("Phase 5 · Launch started (publishing and payments MOCKED)")
+    from .common import kickoff
+    kickoff(ctx, "Launch: draft the store page and posts for your approval; test sale to cash (MOCKED)",
+            ["the channels you actually use", "the price and refund window from Phase 4"])
     found = [f["claim"] for f in d.findings.get(d.chosen_variant, []) if f["kind"] == "channel"][:4]
     q = ("Which channels do you actually use to reach these customers, and what tone should the posts have? "
          + (f"Research found: {'; '.join(found)}." if found else ""))

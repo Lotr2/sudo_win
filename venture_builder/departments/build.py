@@ -21,6 +21,9 @@ def _variant(ctx: Context):
 def p3_start(ctx: Context, answer) -> Next:
     ctx.dossier.phase = 3
     ctx.note("Phase 3 · Build started")
+    from .common import kickoff
+    kickoff(ctx, "Build: write the spec as tests, build from a template until the tests pass",
+            ["the landing-page promise can be met by a template", "the founder's weekly hours"])
     return Next("p3_spec")
 
 
@@ -77,6 +80,9 @@ def p3_build(ctx: Context, answer) -> Next:
         if report["total"] and report["passed"] == report["total"]:
             break
         failures = report["failures"] or [report["output"][-800:]]
+        if ctx.over_budget(ctx.t["demo"].get("node_budget_seconds", 240)):
+            ctx.note("Demo time budget for this step reached; stopping the build loop.")
+            break
         ctx.say(f"Build loop {loop}: {report['total'] - report['passed']} test(s) still fail; the Builder is "
                 "fixing them.", kind="progress")
     d.build = {"dir": str(out), "form": form, "loops": loop, "report": {k: v for k, v in report.items() if k != "output"},

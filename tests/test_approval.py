@@ -85,3 +85,17 @@ def test_every_outbound_item_in_a_full_run_has_an_approval(make_runtime):
     for item in published:
         rec = rt.ctx.outbox._db.execute("SELECT * FROM approvals WHERE item_id=?", (item["id"],)).fetchone()
         assert rec is not None and rec["approved_by"] == "founder" and rec["item_hash"] == item["content_hash"]
+
+
+def test_rejected_item_note_reaches_the_writer(make_runtime, models):
+    seen = []
+    orig = models.landing_copywriter
+    models.landing_copywriter = lambda p: (seen.append(p.get("feedback", "")), orig(p))[1]
+    rt = make_runtime()
+    p = _to_first_approval(rt)
+    rt.approve(p["items"][0]["id"], confirm_item(rt, p["items"][0]["id"]))  # experiment targets
+    p = rt.pending()
+    assert p["kind"] == "approval" and p["items"][0]["kind"] == "landing_page"
+    rt.reject(p["items"][0]["id"], "Say who it is for in the headline", "cli")
+    assert seen[-1] == "Say who it is for in the headline"
+    assert rt.pending()["kind"] == "approval"

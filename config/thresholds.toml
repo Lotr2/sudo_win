@@ -28,6 +28,7 @@ question_timeout_seconds = 30
 max_intake_questions = 3
 max_blocking_questions_per_phase = 1
 max_sources_per_variant = 5
+node_budget_seconds = 240  # time budget per step in demo mode
 
 [gate6]
 # Locked and hashed at the start of Phase 6, before any (MOCKED) event is entered.
