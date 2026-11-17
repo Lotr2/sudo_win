@@ -23,7 +23,9 @@ REQUIRED_FILES = ["DESIGN.md", "config.yaml", "orchestrator.py", "scorecard.md"]
 STANDARD_ROLES = {"researcher", "analyst", "builder", "marketer", "verifier"}
 BANNED_IMPORTS = {"socket", "requests", "httpx", "urllib", "http", "aiohttp", "smtplib", "subprocess", "approval",
                   "payments", "refunds", "webhooks", "delivery", "reconcile", "sources", "core.outbox", "core.log",
-                  "core.llm", "os", "shutil", "pathlib"}
+                  "core.llm", "core.router", "core.state", "core.fake_llm", "core.parse", "os", "shutil", "pathlib",
+                  "threading", "concurrent", "multiprocessing", "asyncio"}
+SCALAR = {"string", "number", "integer", "boolean"}
 BANNED_CALLS = {"open", "exec", "eval", "__import__", "write_text", "write_bytes", "_mint", "_write", "unlink", "remove"}
 VARIANTS = list_variants()
 
@@ -44,10 +46,18 @@ def test_structure(name):
     extra = {p.name for p in vdir.iterdir() if p.name not in {"__pycache__"}} - set(REQUIRED_FILES) - {"agents", "prompts", "schemas"}
     assert not extra, f"non-template files in variant root: {extra}"
     for r in roles:
-        json.loads((vdir / "schemas" / f"{r}.json").read_text(encoding="utf-8"))
+        schema = json.loads((vdir / "schemas" / f"{r}.json").read_text(encoding="utf-8"))
+        assert schema.get("type") == "object", f"schemas/{r}.json must be an object"
+        for field, spec in schema.get("properties", {}).items():
+            flat = spec.get("type") in SCALAR or (spec.get("type") == "array" and (spec.get("items") or {}).get("type") in SCALAR)
+            assert flat, f"schemas/{r}.json field {field!r} must be flat (scalar or list of scalars)"
     cfg = yaml.safe_load((vdir / "config.yaml").read_text(encoding="utf-8"))
     assert all(k in cfg for k in CONFIG_KEYS), f"config.yaml needs {CONFIG_KEYS}"
     assert "verifier" in roles or not cfg["verifier"].get("enabled"), "verifier enabled but no verifier role"
+    from core.adapters import load_models
+    known = set(load_models())
+    used = {cfg["models"]["default"], *(cfg["models"].get("roles") or {}).values()}
+    assert used <= known, f"models {used - known} are not in config/models.yaml"
 
 
 @pytest.mark.parametrize("name", VARIANTS)

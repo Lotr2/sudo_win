@@ -6,6 +6,7 @@
 
 # Secrets and local environments
 .env
+.claude/settings.local.json
 .venv/
 venv/
 

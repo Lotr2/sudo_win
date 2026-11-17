@@ -6,11 +6,11 @@ Each person builds their own architecture variant in `variants/<name>/`. Every v
 
 | Time | Milestone | Done when |
 |---|---|---|
-| 12:30 | Shared core + `variants/_template/` + contract test on `main` | `pytest` green; `compare_variants.py --all --fake-llm` < 1 min |
+| 12:30 | Shared core + `variants/_template/` + contract test on branch `variants-shared-core` | `pytest` green; `compare_variants.py --all --fake-llm` < 1 min |
 | 14:30 | Every variant passes the contract test | `pytest tests/test_variant_contract.py -k <name>` green for all 4 |
-| 16:30 | Real runs (Ollama, 16 GB GPU) and scorecards | `scorecard.md` for all 4 + `.planning/COMPARISON.md` from real runs |
+| 16:30 | Real runs (gpt-oss-20b on both GPU PCs via llama-server) and scorecards | `scorecard.md` for all 4 + `.planning/COMPARISON.md` from real runs |
 | 16:45 | Team picks the winner from `COMPARISON.md` | decision recorded in `.planning/PROGRESS.md` |
-| 17:15 | Winner promoted to the root layout CLAUDE.md expects (`orchestrator.py`, `agents/`, `prompts/`); other variants removed from `main` and summarized in `ARCHITECTURE.md` | contract + smoke tests green on the root layout |
+| 17:15 | Winner promoted to the root layout CLAUDE.md expects (`orchestrator.py`, `agents/`, `prompts/`); other variants removed and summarized in `ARCHITECTURE.md` | contract + smoke tests green on the root layout |
 | 19:30 | Committed demo run (`--demo`, real model) | `outputs/` + `decision_log.json` committed |
 | 23:30 | Final push (deadline 23:59) | pre-push checklist in CLAUDE.md all green |
 
@@ -22,9 +22,9 @@ Variants never reimplement or edit these. **Need a change? Ask the owner** (Slac
 
 | Owner | Files |
 |---|---|
-| **anan** (integration, founder inputs) | `core/base_variant.py`, `core/runner.py`, `core/conventions.py`, `core/brief.py`, `core/render.py`, `core/code_steps.py`, `app/run.py`, `variants/_template/`, `tests/test_variant_contract.py`, `tests/conftest.py`, `scripts/compare_variants.py`, `demo/` (founder briefs + `founder_decisions.yaml`: the founder writes and signs these off) |
+| **anan** (integration, founder inputs) | `core/base_variant.py`, `core/runner.py`, `core/state.py`, `core/parse.py`, `core/conventions.py`, `core/brief.py`, `core/render.py`, `core/code_steps.py`, `app/run.py`, `tests/test_resume.py`, `tests/test_parallel_and_faults.py`, `tests/test_parse.py`, `variants/_template/`, `tests/test_variant_contract.py`, `tests/conftest.py`, `scripts/compare_variants.py`, `demo/` (founder briefs + `founder_decisions.yaml`: the founder writes and signs these off) |
 | **ziad** (founder control and safety) | `approval.py`, `guardrails.py`, `core/outbox.py`, `evals/trick_prompts/`, `tests/test_approval.py`, `tests/test_guardrails.py`, `tests/test_no_network_posting.py` |
-| **aly** (evidence, models, infra) | `sources.py`, `gates.py`, `core/llm.py`, `core/log.py`, `tests/fixtures/`, `docker-compose.yml`, `Dockerfile`, `.dockerignore`, `requirements.txt`, `.env.example`, `LICENSE`, `tests/test_gates.py`, `tests/test_decision_log.py` |
+| **aly** (evidence, models, infra) | `sources.py`, `gates.py`, `core/llm.py`, `core/router.py`, `core/adapters/`, `core/fake_llm.py`, `config/`, `core/log.py`, `tests/fixtures/`, `docker-compose.yml`, `deploy/`, `Dockerfile`, `.dockerignore`, `requirements.txt`, `.env.example`, `LICENSE`, `tests/test_gates.py`, `tests/test_decision_log.py`, `tests/test_router.py`, `tests/test_adapters.py` |
 | **mostafa** (sale to cash, UI) | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `tests/test_commerce.py`, `app/ui.py` |
 
 `CLAUDE.md` is never edited.
@@ -36,7 +36,7 @@ Copy `variants/_template/` first. Identical layout and file names in every varia
 ```
 variants/<name>/
   DESIGN.md          # fixed headings (below), max 1 page
-  config.yaml        # models per role, retries, verifier on/off, num_ctx, temperature (keep every key)
+  config.yaml        # models per role, retries, verifier, token budgets, parallelism (keep every key)
   orchestrator.py    # class Variant(BaseVariant) with run(brief, decisions) -> RunResult
   agents/<role>.py   # one thin file per role: ROLE, STEPS, READS, SOURCES
   prompts/<role>.md  # same role names as agents/
@@ -48,17 +48,22 @@ variants/<name>/
 
 Use the same role names wherever the job is the same (`researcher`, `analyst`, `builder`, `marketer`, `verifier`). You may merge or add roles; list every role in the roster. Every LLM step in `core/conventions.py` must be covered by exactly one role's `STEPS`.
 
-**Free to vary:** number of agents and roles, orchestration pattern (order, repeats, which helper calls), prompts, schemas, model per role, verifier usage, retry and context strategy (`READS`, `digest_chars`, `num_ctx`, `extra_inputs`). **Nothing else.** Variant code may only use the `BaseVariant` helpers (`llm_step`, `code_step`, `phase_gate`, `verify`, `digest`, `steps`, `result`, `pivot_target`); the contract test fails on file writes, network or approval/commerce imports, or overriding helpers.
+**Free to vary:** number of agents and roles, orchestration pattern (order, waves, repeats, which helper calls), prompts, flat schemas, model per role (names from `config/models.yaml`), verifier usage, retries, token budgets, context strategy (`READS`, `digest_chars`, `extra_inputs`), `max_parallel_steps`. **Nothing else.** Variant code may only use the `BaseVariant` helpers (`waves`, `parallel`, `run_step`, `llm_step`, `code_step`, `reset_phase`, `phase_gate`, `verify`, `digest`, `steps`, `result`, `pivot_target`); the contract test fails on file writes, network, threads, approval/commerce/state imports, nested schemas, unknown models, or overriding helpers.
 
 ## One entry point
 
 ```bash
-ARCH_VARIANT=<name> python -m app.run --brief demo/founder_brief_idea1.md            # real model
-ARCH_VARIANT=<name> python -m app.run --brief demo/founder_brief_idea1.md --fake-llm # structure only
+ARCH_VARIANT=<name> python -m app.run --brief demo/founder_brief_idea1.md            # real model (LLM_ENDPOINTS)
+ARCH_VARIANT=<name> python -m app.run --brief demo/founder_brief_idea1.md --fake-llm # structure only, no GPU
+python -m app.run --brief a.md --brief b.md                                           # several ideas at once
+python -m app.run --resume runs/<variant>/<run_id>                                    # continue a stopped run
 python -m pytest tests/test_variant_contract.py -k <name>                             # contract
 python scripts/compare_variants.py --variant <name> --fake-llm                        # scorecard (fake)
-python scripts/compare_variants.py --variant <name>                                   # scorecard (real, Ollama)
+python scripts/compare_variants.py --all --jobs 2                                     # scorecards (real, both GPUs)
 streamlit run app/ui.py                                                               # UI with variant selector
+
+# Model servers: one GPU PC -> docker compose up ; two GPU PCs + orchestrator -> deploy/gpu-node + deploy/orchestrator
+# LLM_ENDPOINTS=pc1=http://<ip>:8080/v1,pc2=http://<ip>:8080/v1
 ```
 
 On Windows PowerShell: `$env:ARCH_VARIANT="<name>"; python -m app.run ...`. Use the project `.venv` (`python -m venv .venv` with a standard CPython 3.12+, then `pip install -r requirements.txt`; the MSYS2 Python cannot install Streamlit).
@@ -69,28 +74,30 @@ Suggested directions so the four variants test different hypotheses (change with
 
 | Person | Variant | Hypothesis to test |
 |---|---|---|
-| anan | `variants/anan/` | **Tuned baseline:** template roles, sharper prompts, context strategy (`READS`, `digest_chars`) tuned for qwen3:8b |
+| anan | `variants/anan/` | **Tuned baseline:** template roles, sharper prompts and context strategy (`READS`, `digest_chars`, budgets) tuned for gpt-oss-20b |
 | ziad | `variants/ziad/` | **Critic-heavy:** verifier at every point, `retries: 2`, stricter prompts; does a critic pay for its calls? |
 | aly | `variants/aly/` | **Generalists:** merge to 3 roles (`analyst` = research + analysis, `maker` = build + marketing, `verifier`); fewer prompts to tune |
-| mostafa | `variants/mostafa/` | **Bigger workers, wider context:** `qwen3:14b` for builder/analyst (fits 16 GB with gemma3:4b), larger `num_ctx`/`digest_chars` |
+| mostafa | `variants/mostafa/` | **Wide context, more parallel:** larger budgets/`digest_chars` within the 8192-token slot, `READS` that pass more earlier steps, more steps per wave |
 
-Models other than `qwen3:8b`/`gemma3:4b` need a manual `ollama pull` for the 16:30 real runs; if one wins, aly adds it to `docker-compose.yml`.
+All variants use `gpt-oss-20b` (default) unless the team decides to mix models; a different model needs an entry in `config/models.yaml` and a server that serves it (aly).
 
 ## Starter prompts (paste into Claude Code)
 
 **anan**
-> I am anan on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/anan/ first**, then build my variant "tuned baseline": keep the template roles, improve prompts/ and schemas/ for qwen3:8b, and tune READS/digest_chars/num_ctx. Change only files inside variants/anan/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k anan` and `python scripts/compare_variants.py --variant anan --fake-llm`. Shared-core files I own are listed in TEAM.md; for others, ask the owner. Pull --rebase, then push to main.
+> I am anan on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/anan/ first**, then build my variant "tuned baseline": keep the template roles, improve prompts/ and flat schemas/ for gpt-oss-20b, and tune READS/digest_chars/budgets. Change only files inside variants/anan/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k anan` and `python scripts/compare_variants.py --variant anan --fake-llm`. Shared-core files I own are listed in TEAM.md; for others, ask the owner. Pull --rebase, then push to the variants-shared-core branch (the team merges into main later).
 
 **ziad**
-> I am ziad on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/ziad/ first**, then build my variant "critic-heavy": verifier enabled at request, claims and outward points, retries 2, prompts that make the verifier strict and the workers cite sources. Change only files inside variants/ziad/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k ziad` and `python scripts/compare_variants.py --variant ziad --fake-llm`. I also own approval.py, guardrails.py, core/outbox.py and evals/; nobody else edits them. Pull --rebase, then push to main.
+> I am ziad on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/ziad/ first**, then build my variant "critic-heavy": verifier enabled at request, claims and outward points, retries 2, prompts that make the verifier strict and the workers cite sources. Change only files inside variants/ziad/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k ziad` and `python scripts/compare_variants.py --variant ziad --fake-llm`. I also own approval.py, guardrails.py, core/outbox.py and evals/; nobody else edits them. Pull --rebase, then push to the variants-shared-core branch (the team merges into main later).
 
 **aly**
-> I am aly on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/aly/ first**, then build my variant "generalists": merge roles into analyst (all research + analysis steps), maker (all builder + marketer steps) and verifier; delete the unused agents/prompts/schemas files and list the roster in DESIGN.md. Change only files inside variants/aly/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k aly` and `python scripts/compare_variants.py --variant aly --fake-llm`. I also own sources.py, gates.py, core/llm.py, core/log.py and the Docker files; first task: verify `docker compose up` on the 16 GB GPU machine. Pull --rebase, then push to main.
+> I am aly on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/aly/ first**, then build my variant "generalists": merge roles into analyst (all research + analysis steps), maker (all builder + marketer steps) and verifier; delete the unused agents/prompts/schemas files and list the roster in DESIGN.md. Change only files inside variants/aly/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k aly` and `python scripts/compare_variants.py --variant aly --fake-llm`. I also own sources.py, gates.py, core/llm.py, core/log.py and the Docker files; first task: verify `docker compose up` (single-PC) on a GPU PC, then deploy/gpu-node on both PCs and the orchestrator compose on the CPU machine; record tokens/s per PC. Pull --rebase, then push to the variants-shared-core branch (the team merges into main later).
 
 **mostafa**
-> I am mostafa on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/mostafa/ first**, then build my variant "bigger workers, wider context": qwen3:14b for builder and analyst in config.yaml, larger num_ctx and digest_chars, READS that pass more earlier steps. Change only files inside variants/mostafa/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k mostafa` and `python scripts/compare_variants.py --variant mostafa --fake-llm`. I also own the commerce modules and app/ui.py (make the UI presentable). Pull --rebase, then push to main.
+> I am mostafa on the sudo_win hackathon team. Read CLAUDE.md, .planning/TEAM.md and .planning/PROGRESS.md. **Copy variants/_template/ to variants/mostafa/ first**, then build my variant "wide context, more parallel": larger budgets and digest_chars (prompt + output must fit 8192 tokens), READS that pass more earlier steps, max_parallel_steps tuned. Change only files inside variants/mostafa/. Fill DESIGN.md with the exact fixed headings. After each change run `python -m pytest tests/test_variant_contract.py -k mostafa` and `python scripts/compare_variants.py --variant mostafa --fake-llm`. I also own the commerce modules and app/ui.py (make the UI presentable). Pull --rebase, then push to the variants-shared-core branch (the team merges into main later).
 
-## Rules for working on main
+## Rules for working on the shared branch
+
+All work goes to `variants-shared-core`; the team merges the chosen setup into `main` later (README and ARCHITECTURE.md come then).
 
 - Commit only your variant folder and the shared files you own. `scorecard.md` and `.planning/COMPARISON.md` are generated; commit them as generated.
 - `git pull --rebase` before every push; push small and often.

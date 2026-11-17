@@ -16,6 +16,10 @@ def issue_token(state: CommerceState, order_id: str) -> str:
     return token
 
 
+def tokens_for(state: CommerceState, order_id: str) -> list[str]:
+    return [t for t, v in state.tokens.items() if v["order_id"] == order_id]
+
+
 def can_download(state: CommerceState, token: str) -> bool:
     t = state.tokens.get(token)
     return bool(t) and not t["revoked"]

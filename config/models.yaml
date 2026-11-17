@@ -1,0 +1,12 @@
+# Per-model quirks. Variants pick models by these names (config.yaml: models.default / models.roles).
+# adapter: gpt_oss | qwen3 | generic   served_name: the "model" field sent to the server.
+gpt-oss-20b:
+  adapter: gpt_oss
+  served_name: gpt-oss-20b     # llama-server --alias gpt-oss-20b; for Ollama use gpt-oss:20b
+  reasoning_effort: low        # low | medium | high (gpt-oss cannot switch reasoning off)
+  api_json_schema: false       # server-side schema constraint for JSON-only calls; enable only after testing
+qwen3-8b:
+  adapter: qwen3
+  served_name: qwen3-8b
+  thinking: false
+  api_json_schema: false

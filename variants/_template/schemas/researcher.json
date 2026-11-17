@@ -7,43 +7,10 @@
   "summary": {
    "type": "string"
   },
-  "sections": {
-   "type": "array",
-   "items": {
-    "type": "object",
-    "properties": {
-     "heading": {
-      "type": "string"
-     },
-     "body": {
-      "type": "string"
-     }
-    },
-    "required": [
-     "heading",
-     "body"
-    ]
-   }
-  },
   "claims": {
    "type": "array",
    "items": {
-    "type": "object",
-    "properties": {
-     "text": {
-      "type": "string"
-     },
-     "source_url": {
-      "type": [
-       "string",
-       "null"
-      ]
-     }
-    },
-    "required": [
-     "text",
-     "source_url"
-    ]
+    "type": "string"
    }
   },
   "competitor_prices_usd": {
@@ -56,7 +23,6 @@
  "required": [
   "title",
   "summary",
-  "sections",
   "claims"
  ]
 }

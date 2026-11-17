@@ -7,112 +7,36 @@
   "summary": {
    "type": "string"
   },
-  "sections": {
-   "type": "array",
-   "items": {
-    "type": "object",
-    "properties": {
-     "heading": {
-      "type": "string"
-     },
-     "body": {
-      "type": "string"
-     }
-    },
-    "required": [
-     "heading",
-     "body"
-    ]
-   }
-  },
   "claims": {
    "type": "array",
    "items": {
-    "type": "object",
-    "properties": {
-     "text": {
-      "type": "string"
-     },
-     "source_url": {
-      "type": [
-       "string",
-       "null"
-      ]
-     }
-    },
-    "required": [
-     "text",
-     "source_url"
-    ]
+    "type": "string"
    }
   },
   "alternatives": {
    "type": "array",
    "items": {
-    "type": "object",
-    "properties": {
-     "name": {
-      "type": "string"
-     },
-     "skills_fit": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 5
-     },
-     "budget_fit": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 5
-     },
-     "time_fit": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 5
-     },
-     "values_fit": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 5
-     }
-    },
-    "required": [
-     "name",
-     "skills_fit",
-     "budget_fit",
-     "time_fit",
-     "values_fit"
-    ]
+    "type": "string"
    }
   },
   "price_usd": {
    "type": "number"
   },
-  "demand_target": {
-   "type": "object",
-   "properties": {
-    "metric": {
-     "type": "string"
-    },
-    "target": {
-     "type": "integer",
-     "minimum": 1
-    },
-    "days": {
-     "type": "integer",
-     "minimum": 1
-    }
-   },
-   "required": [
-    "metric",
-    "target",
-    "days"
-   ]
+  "demand_target_metric": {
+   "type": "string"
+  },
+  "demand_target_value": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "demand_target_days": {
+   "type": "integer",
+   "minimum": 1
   }
  },
  "required": [
   "title",
   "summary",
-  "sections",
   "claims"
  ]
 }

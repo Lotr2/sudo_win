@@ -1,0 +1,16 @@
+# Run on the CPU-only orchestrator machine, from the repository root:
+#   LLM_ENDPOINTS=pc1=http://<pc1-ip>:8080/v1,pc2=http://<pc2-ip>:8080/v1 docker compose -f deploy/orchestrator/compose.yml up
+# Open http://localhost:8501. Calls are spread over both GPU PCs (least busy first, failover if one is down).
+services:
+  app:
+    build: ../..
+    ports:
+      - "8501:8501"
+    environment:
+      - LLM_ENDPOINTS=${LLM_ENDPOINTS:?set LLM_ENDPOINTS=pc1=http://<ip>:8080/v1,pc2=http://<ip>:8080/v1}
+      - LLM_SLOTS=${LLM_SLOTS:-4}
+      - LLM_TIMEOUT_S=${LLM_TIMEOUT_S:-300}
+      - ARCH_VARIANT=${ARCH_VARIANT:-_template}
+    volumes:
+      - ../../runs:/app/runs
+    restart: unless-stopped

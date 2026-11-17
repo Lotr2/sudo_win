@@ -49,10 +49,15 @@ def _features(v) -> list[str]:
 
 
 def _payment_log(v, line: str) -> None:
-    v.payment_log.append(line)
-    text = (f"# Payment and delivery test log ({MOCKED})\n\nAll payments, webhooks, deliveries, refunds and payouts below are "
-            f"{MOCKED}: no real or sandbox payment provider is used and no money moves.\n\n" + "\n".join(v.payment_log) + "\n")
-    v.write_output(PAYMENT_TEST_LOG, text)
+    """One section per idea; ideas may run in parallel, and lines survive a resume (kept in state)."""
+    with v.ctx._lock:
+        lines = list(v.ctx.state.idea(v.idea).get("payment_log") or []) + [line]
+        v.ctx.state.set_idea(v.idea, payment_log=lines)
+        sections = [f"## {idea}\n\n" + "\n".join(d["payment_log"]) + "\n"
+                    for idea, d in sorted(v.ctx.state.data["ideas"].items()) if d.get("payment_log")]
+        text = (f"# Payment and delivery test log ({MOCKED})\n\nAll payments, webhooks, deliveries, refunds and payouts below are "
+                f"{MOCKED}: no real or sandbox payment provider is used and no money moves.\n\n" + "\n".join(sections))
+        v.write_output(PAYMENT_TEST_LOG, text)
 
 
 def run(v: "BaseVariant", step: Step) -> tuple[dict, str]:
@@ -95,12 +100,15 @@ def run(v: "BaseVariant", step: Step) -> tuple[dict, str]:
             _payment_log(v, f"- [{idea}] delivery test: store not open (founder did not approve) -> FAIL")
             v.invariants.update(store_opened_with_approval=False, delivered_once=False, replay_ignored=False)
             return {"failed": True}, h + "Store is not open (no founder approval), so no test order was possible.\n"
-        ev = payments.simulate_test_order(st, f"{idea}-order-001")
+        oid = f"{idea}-order-001"
+        ev = payments.simulate_test_order(st, oid)
         body, sig = webhooks.sign(ev)
         first = webhooks.handle(st, body, sig)
         second = webhooks.handle(st, body, sig)
-        ok_dl = delivery.can_download(st, first.get("token", ""))
-        v.invariants.update(store_opened_with_approval=True, delivered_once=first["status"] == "delivered" and len(st.deliveries) == 1,
+        tokens = delivery.tokens_for(st, oid)
+        ok_dl = bool(tokens) and delivery.can_download(st, tokens[0])
+        v.invariants.update(store_opened_with_approval=True,
+                            delivered_once=len([d for d in st.deliveries if d["order_id"] == oid]) == 1,
                             replay_ignored=second["status"] == "duplicate_ignored", download_works=ok_dl)
         for line in (f"- [{idea}] {MOCKED} test order {ev['order_id']}: {ev['amount']:.2f} USD, fee {ev['fee']:.2f}",
                      f"- [{idea}] webhook {ev['id']} -> {first['status']} (token issued)",
@@ -115,20 +123,27 @@ def run(v: "BaseVariant", step: Step) -> tuple[dict, str]:
         if not st.listing:
             v.invariants["refund_revokes_access"] = False
             return {"failed": True}, h + "Store is not open; refund test skipped.\n"
-        ev = payments.simulate_test_order(st, f"{idea}-order-002")
+        oid = f"{idea}-order-002"
+        ev = payments.simulate_test_order(st, oid)
         body, sig = webhooks.sign(ev)
-        token = webhooks.handle(st, body, sig).get("token", "")
-        prop = refunds.propose(st, ev["order_id"], "buyer request (MOCKED test)")
-        v.log("refunds", "propose_refund", order_id=ev["order_id"], label=MOCKED)
-        receipt = v.request_approval("phase5.step4.refund", "refund", prop["content"], prop["content"])
-        if receipt is None:
-            v.invariants["refund_revokes_access"] = False
-            _payment_log(v, f"- [{idea}] refund for {ev['order_id']} proposed -> founder rejected; no refund")
-            return {"failed": True}, h + "Founder rejected the proposed refund.\n"
-        res = refunds.execute(st, ev["order_id"], content=prop["content"], receipt=receipt)
-        revoked = not delivery.can_download(st, token)
-        v.invariants["refund_revokes_access"] = res["status"] == "refunded" and revoked
-        v.log("refunds", "execute_refund", approved_by="founder", order_id=ev["order_id"], label=MOCKED)
+        webhooks.handle(st, body, sig)
+        prop = refunds.propose(st, oid, "buyer request (MOCKED test)")
+        action_id = "phase5.step4.refund"
+        if v.ctx.state.outward_done(idea, action_id):          # refunded before a crash: never refund twice
+            res = {"status": "refunded"}
+        else:
+            v.log("refunds", "propose_refund", order_id=oid, label=MOCKED)
+            receipt = v.request_approval(action_id, "refund", prop["content"], prop["content"])
+            if receipt is None:
+                v.invariants["refund_revokes_access"] = False
+                _payment_log(v, f"- [{idea}] refund for {oid} proposed -> founder rejected; no refund")
+                return {"failed": True}, h + "Founder rejected the proposed refund.\n"
+            res = refunds.execute(st, oid, content=prop["content"], receipt=receipt)
+            v.commerce.save(v._commerce_path())
+            v.ctx.state.mark_outward(idea, action_id, order_id=oid)
+            v.log("refunds", "execute_refund", approved_by="founder", order_id=oid, label=MOCKED)
+        revoked = all(not delivery.can_download(st, t) for t in delivery.tokens_for(st, oid))
+        v.invariants["refund_revokes_access"] = st.orders[oid]["status"] == "refunded" and revoked
         for line in (f"- [{idea}] refund proposed for {ev['order_id']} -> founder approved -> {MOCKED} refund {prop['amount']:.2f} USD",
                      f"- [{idea}] download after refund -> {'denied (access revoked)' if revoked else 'STILL ALLOWED (FAIL)'}"):
             _payment_log(v, line)

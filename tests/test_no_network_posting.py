@@ -1,11 +1,11 @@
-"""No network-posting or email code anywhere. Only core/llm.py (local Ollama) and sources.py (read-only GET) touch the network."""
+"""No network-posting or email code anywhere. Only core/router.py (LLM endpoints) and sources.py (read-only GET) touch the network."""
 import ast
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 NETWORK_MODULES = {"socket", "requests", "httpx", "urllib", "http", "aiohttp", "smtplib", "ftplib", "telnetlib",
                    "email", "paramiko", "tweepy", "praw", "websocket", "websockets"}
-ALLOWED = {"core/llm.py", "sources.py"}
+ALLOWED = {"core/router.py", "sources.py"}
 SKIP_DIRS = {".venv", "runs", ".git", "node_modules", "__pycache__"}
 
 

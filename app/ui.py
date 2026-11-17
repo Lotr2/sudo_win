@@ -1,10 +1,13 @@
-"""Founder UI (Streamlit shell). Start: streamlit run app/ui.py  (docker compose up serves it on :8501)."""
+"""Founder UI (Streamlit). Start: streamlit run app/ui.py  (docker compose up serves it on :8501).
+
+The UI never runs the pipeline itself: it starts the orchestrator as its own process (python -m app.run)
+and reads that run's state.json / events.jsonl. Approvals go through the run's approval queue.
+"""
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
-import threading
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -15,7 +18,8 @@ import streamlit as st  # noqa: E402
 import streamlit.components.v1 as components  # noqa: E402
 
 from core.conventions import GATE_OUTCOMES, MOCKED, PHASES, STEPS, STUBBED  # noqa: E402
-from core.runner import list_variants, run_variant  # noqa: E402
+from core.router import Router  # noqa: E402
+from core.runner import list_variants  # noqa: E402
 
 UI_RUNS = ROOT / "runs" / "ui"
 DEMO_DECISIONS = ROOT / "demo" / "founder_decisions.yaml"
@@ -31,22 +35,36 @@ def badge(text: str, color: str = "#92400e", bg: str = "#fde68a") -> str:
 MOCK_BADGE, STUB_BADGE = badge(MOCKED), badge(STUBBED, "#1e3a8a", "#bfdbfe")
 
 
-def _bg_run(variant, brief_path, decisions, fake, run_dir):
-    try:
-        run_variant(variant, brief_path, decisions, fake=fake, run_dir=run_dir, queue_dir=run_dir / "approvals")
-    except Exception as exc:  # shown in the UI
-        (run_dir / "error.txt").write_text(f"{type(exc).__name__}: {exc}", encoding="utf-8")
+def _spawn(args: list[str], run_dir: Path) -> None:
+    """Start the orchestrator as its own process; it keeps running if the UI reloads or closes."""
+    log = open(run_dir / "worker.log", "a", encoding="utf-8")
+    subprocess.Popen([sys.executable, "-m", "app.run", *args, "--queue-dir", str(run_dir / "approvals")],
+                     cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
 
 
-def start_run(variant: str, brief_text: str, use_decisions: bool, fake: bool) -> None:
+def start_run(variant: str, briefs: list[str], use_decisions: bool, fake: bool) -> None:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     run_dir = UI_RUNS / variant / stamp
     run_dir.mkdir(parents=True, exist_ok=True)
-    brief_path = run_dir / "brief.md"
-    brief_path.write_text(brief_text, encoding="utf-8")
-    threading.Thread(target=_bg_run, args=(variant, brief_path, DEMO_DECISIONS if use_decisions else None, fake, run_dir),
-                     daemon=True).start()
+    args = ["--variant", variant, "--run-dir", str(run_dir), "--decisions", str(DEMO_DECISIONS) if use_decisions else ""]
+    for b in briefs:
+        args += ["--brief", b]
+    if fake:
+        args.append("--fake-llm")
+    _spawn(args, run_dir)
     st.session_state.run_dir = str(run_dir)
+
+
+def resume_run(run_dir: Path) -> None:
+    _spawn(["--resume", str(run_dir)], run_dir)
+
+
+def run_state(run_dir: Path) -> dict:
+    f = run_dir / "state.json"
+    try:
+        return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+    except json.JSONDecodeError:
+        return {}
 
 
 def events(run_dir: Path) -> list[dict]:
@@ -67,6 +85,12 @@ if past:
         st.session_state.run_dir = str(UI_RUNS / variant / pick)
 st.sidebar.markdown(f"{MOCK_BADGE} payments, publishing, sending, delivery<br>{STUB_BADGE} policy templates, outbox senders",
                     unsafe_allow_html=True)
+if st.sidebar.button("Check model endpoints"):
+    try:
+        for name, ok in Router.from_config().health().items():
+            st.sidebar.write(f"{'🟢' if ok else '🔴'} {name}")
+    except Exception as exc:
+        st.sidebar.error(str(exc))
 
 run_dir = Path(st.session_state["run_dir"]) if st.session_state.get("run_dir") else None
 tab_brief, tab_progress, tab_approvals, tab_outputs, tab_outbox = st.tabs(
@@ -85,12 +109,26 @@ with tab_brief:
         tme = c2.text_input("Time available", "")
         market = c1.text_input("Target market", "")
         values = c2.text_input("Values", "")
+        demo_briefs = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "demo").glob("founder_brief_*.md"))
+        also = st.multiselect("Also run these briefs at the same time (keeps both GPUs busy)", demo_briefs)
         use_dec = st.checkbox("Use the founder decisions file (demo/founder_decisions.yaml); otherwise decide here", value=False)
-        if st.form_submit_button("Start run") and idea.strip():
-            text = (f"# Founder brief: {bid}\n\n- id: {bid}\n- idea: {idea}\n- skills: {skills}\n- budget: {budget}\n"
-                    f"- time: {tme}\n- target_market: {market}\n- values: {values}\n")
-            start_run(variant, text, use_dec, fake)
-            st.success("Run started. Watch Progress and Approvals.")
+        if st.form_submit_button("Start run") and (idea.strip() or also):
+            briefs = list(also)
+            if idea.strip():
+                stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+                path = UI_RUNS / "briefs" / f"{bid}-{stamp}.md"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(f"# Founder brief: {bid}\n\n- id: {bid}\n- idea: {idea}\n- skills: {skills}\n- budget: {budget}\n"
+                                f"- time: {tme}\n- target_market: {market}\n- values: {values}\n", encoding="utf-8")
+                briefs.insert(0, str(path))
+            start_run(variant, briefs, use_dec, fake)
+            st.success("Run started in its own process. Watch Progress and Approvals.")
+    if run_dir and run_dir.exists():
+        ideas = run_state(run_dir).get("ideas", {})
+        unfinished = [i for i, d in ideas.items() if d.get("status") in ("paused", "failed", "running")]
+        if unfinished and st.button(f"Resume this run ({', '.join(unfinished)})"):
+            resume_run(run_dir)
+            st.success("Resuming from the last completed step.")
 
 
 # ----------------------------------------------------------------- progress
@@ -100,11 +138,13 @@ def progress_view():
         st.info("No run yet.")
         return
     ev = events(run_dir)
-    if (run_dir / "error.txt").exists():
-        st.error((run_dir / "error.txt").read_text(encoding="utf-8"))
-    status = [e for e in ev if e["type"] == "status"]
-    if status:
-        st.write("Status: " + " → ".join(f"{e['idea']}: **{e['status']}**" for e in status[-4:]))
+    ideas = run_state(run_dir).get("ideas", {})
+    if ideas:
+        st.write("Status: " + " · ".join(f"{i}: **{d.get('status')}**" for i, d in ideas.items()))
+    wlog = run_dir / "worker.log"
+    if wlog.exists() and "Traceback" in wlog.read_text(encoding="utf-8", errors="ignore"):
+        with st.expander("Orchestrator error"):
+            st.code(wlog.read_text(encoding="utf-8", errors="ignore")[-3000:])
     ideas = list(dict.fromkeys(e["idea"] for e in ev if e.get("idea")))
     for idea_id in ideas:
         st.markdown(f"#### {idea_id}")

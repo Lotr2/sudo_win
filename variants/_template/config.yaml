@@ -1,14 +1,18 @@
-# Free to vary: models per role, retries, verifier usage, context and sampling. Keep every key.
+# Free to vary: models per role, retries, verifier usage, token budgets, parallelism. Keep every key.
 models:
-  default: qwen3:8b        # workers
-  verifier: gemma3:4b      # different model family from the workers
-  roles: {}                # per-role override, e.g. builder: qwen3:8b
-retries: 1                 # extra attempts when a step returns invalid JSON
+  default: gpt-oss-20b     # names from config/models.yaml; every role uses this unless overridden
+  roles: {}                # e.g. builder: qwen3-8b, verifier: gpt-oss-20b
+retries: 1                 # extra attempts when an answer cannot be parsed (the error is fed back)
 verifier:
   enabled: true
   points: [request, claims, outward]   # any of: request, claims, outward
-num_ctx: 8192
+budgets:                   # tokens; prompt + output must fit one server slot (llama-server -c 32768 -np 4 = 8192)
+  default: {max_prompt_tokens: 5000, max_output_tokens: 2000}
+  roles:
+    builder: {max_output_tokens: 3000}
+    verifier: {max_prompt_tokens: 2500, max_output_tokens: 600}
 temperature: 0
 seed: 42
-digest_chars: 1500         # characters of each earlier output passed to the next step
+digest_chars: 800          # content characters of each earlier step passed to the next step
 max_phase_repeats: 1       # how often a phase may be re-run after a "repeat" decision
+max_parallel_steps: 4      # upper bound for steps/feature calls run at once (also bounded by free model slots)

@@ -96,12 +96,14 @@ class ApprovalBroker:
     """Collects founder decisions and mints receipts. One broker per run."""
 
     def __init__(self, log, decisions: dict | None = None, queue_dir: Path | None = None,
-                 interactive: bool = False, timeout_s: float = 3600):
+                 interactive: bool = False, timeout_s: float = 3600, state=None):
         self.log = log
         self.decisions = decisions or {}
         self.queue_dir = Path(queue_dir) if queue_dir else None
         self.interactive = interactive
         self.timeout_s = timeout_s
+        self.state = state          # core.state.RunState: founder decisions survive a crash/resume
+        self._cli_lock = threading.Lock()
 
     # -- decision sources -------------------------------------------------
     def _from_file(self, idea: str, action_id: str) -> Decision | None:
@@ -134,11 +136,20 @@ class ApprovalBroker:
         if not self.interactive:
             return None
         options = "/".join(GATE_CHOICES) if kind == "gate" else "approve/reject"
-        answer = input(f"\n[FOUNDER] {action_id}: {summary}\n  {options}? ").strip().lower()
+        with self._cli_lock:          # parallel ideas must not interleave terminal prompts
+            answer = input(f"\n[FOUNDER] {action_id}: {summary}\n  {options}? ").strip().lower()
         return Decision(answer, "cli") if answer else None
 
+    def _from_state(self, idea: str, action_id: str, content: str) -> Decision | None:
+        """A decision the founder already made for exactly this content (resumed run)."""
+        prev = self.state.get_decision(idea, action_id) if self.state else None
+        if prev and prev["payload_hash"] == payload_hash(content):
+            return Decision(prev["choice"], f"resume:{prev['source']}")
+        return None
+
     def decide(self, idea: str, action_id: str, kind: str, summary: str, content: str) -> Decision:
-        d = (self._from_file(idea, action_id)
+        d = (self._from_state(idea, action_id, content)
+             or self._from_file(idea, action_id)
              or self._from_queue(idea, action_id, kind, summary, content)
              or self._from_cli(action_id, kind, summary))
         if d is None:
@@ -149,6 +160,8 @@ class ApprovalBroker:
             raise ApprovalPending(f"invalid founder decision {d.choice!r} for {action_id}")
         self.log.append("founder", f"{d.choice}:{action_id}", approved_by="founder", idea=idea,
                         input_source=d.source, payload_hash=payload_hash(content))
+        if self.state and not d.source.startswith("resume:"):
+            self.state.put_decision(idea, action_id, d.choice, payload_hash(content), d.source)
         return d
 
     # -- receipts ----------------------------------------------------------

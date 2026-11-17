@@ -1,111 +1,61 @@
-"""LLM clients: Ollama (local, open-weight, $0) and a deterministic FakeLLM for tests and structural checks.
+"""Model-agnostic chat client: OpenAI-compatible /v1/chat/completions through the Router.
 
-The fake is only for tests/compare --fake-llm; runs made with it are never written to outputs/.
+Works with llama-server, vLLM and Ollama. Model quirks live in core/adapters; endpoints in config/endpoints.yaml.
 """
 from __future__ import annotations
 
-import json
-import os
-import re
-import urllib.request
 from dataclasses import dataclass
 
-FAKE_MODEL = "fake-llm"
-
-
-@dataclass
-class LLMResult:
-    data: dict
-    model: str
-    prompt_tokens: int
-    output_tokens: int
-
-    @property
-    def tokens(self) -> int:
-        return self.prompt_tokens + self.output_tokens
+from core.adapters import get_adapter, load_models
+from core.router import RequestError, Router, RouterError
 
 
 class LLMError(RuntimeError):
     pass
 
 
-class OllamaClient:
-    """Calls Ollama's /api/chat with a JSON-schema `format` (structured outputs)."""
+@dataclass
+class LLMResult:
+    text: str            # final answer only (reasoning removed by the adapter)
+    reasoning: str
+    model: str
+    endpoint: str
+    prompt_tokens: int
+    output_tokens: int
+    finish_reason: str
 
-    def __init__(self, host: str | None = None, timeout: int = 600):
-        self.host = (host or os.environ.get("OLLAMA_HOST") or "http://localhost:11434").rstrip("/")
-        if not self.host.startswith("http"):
-            self.host = "http://" + self.host
-        self.timeout = timeout
+    @property
+    def tokens(self) -> int:
+        return self.prompt_tokens + self.output_tokens
 
-    def complete(self, *, model: str, system: str, prompt: str, schema: dict,
-                 temperature: float = 0, num_ctx: int = 8192, seed: int = 42) -> LLMResult:
-        body = {
-            "model": model,
-            "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
-            "format": schema,
-            "stream": False,
-            "keep_alive": "30m",
-            "options": {"temperature": temperature, "num_ctx": num_ctx, "seed": seed},
-        }
-        if model.startswith("qwen3"):
-            body["think"] = False
-        req = urllib.request.Request(f"{self.host}/api/chat", data=json.dumps(body).encode(),
-                                     headers={"Content-Type": "application/json"})
+
+class ChatClient:
+    def __init__(self, router: Router, models_cfg: dict | None = None, label: str = ""):
+        self.router = router
+        self.models_cfg = load_models() if models_cfg is None else models_cfg
+        self.label = label          # "fake" for the test endpoint, so logs never pass a fake run off as a real model
+
+    def complete(self, *, model: str, system: str, prompt: str, max_tokens: int, temperature: float = 0,
+                 seed: int = 42, json_schema: dict | None = None) -> LLMResult:
+        ad = get_adapter(model, self.models_cfg)
+        body = ad.build_request(system=system, prompt=prompt, max_tokens=max_tokens, temperature=temperature,
+                                seed=seed, json_schema=json_schema)
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                payload = json.loads(resp.read())
-        except Exception as exc:  # network/model errors become step failures upstream
-            raise LLMError(f"ollama call failed: {exc}") from exc
-        content = payload.get("message", {}).get("content", "")
-        try:
-            data = json.loads(content)
-        except json.JSONDecodeError as exc:
-            raise LLMError(f"model returned invalid JSON: {content[:200]!r}") from exc
-        return LLMResult(data, model, int(payload.get("prompt_eval_count", 0)), int(payload.get("eval_count", 0)))
+            data, endpoint = self.router.post(model, "chat/completions", body)
+        except (RouterError, RequestError) as exc:
+            raise LLMError(str(exc)) from exc
+        choices = data.get("choices") or []
+        if not choices:
+            raise LLMError("server returned no choices")
+        final, reasoning = ad.extract(choices[0])
+        usage = data.get("usage") or {}
+        name = f"{model} ({self.label})" if self.label else model
+        return LLMResult(final, reasoning, name, endpoint, int(usage.get("prompt_tokens", 0)),
+                         int(usage.get("completion_tokens", 0)), ad.finish_reason(choices[0]))
 
 
-_URL_RE = re.compile(r"https?://[^\s)\]>\"']+")
-
-
-class FakeLLM:
-    """Builds a schema-valid object deterministically. Claims cite the URLs listed after 'SOURCES'."""
-
-    def complete(self, *, model: str, system: str, prompt: str, schema: dict, **_) -> LLMResult:
-        src_part = prompt.split("SOURCES", 1)[1] if "SOURCES" in prompt else ""
-        urls = list(dict.fromkeys(_URL_RE.findall(src_part)))[:5]
-        m = re.search(r"^FEATURES TO COVER[^:]*:\s*(.+)$", prompt, re.MULTILINE)
-        self._features = [f.strip() for f in m.group(1).split(";") if f.strip()] if m else []
-        data = self._value(schema, "root", urls)
-        return LLMResult(data, FAKE_MODEL, len(prompt) // 4, len(json.dumps(data)) // 4)
-
-    def _value(self, schema: dict, name: str, urls: list[str]):
-        if name == "sections" and getattr(self, "_features", None):
-            return [{"heading": f, "body": f"How {f} works."} for f in self._features]
-        t = schema.get("type")
-        if isinstance(t, list):
-            t = next((x for x in t if x != "null"), "null")
-        if "enum" in schema:
-            return schema["enum"][0]
-        if t == "object":
-            props = schema.get("properties", {})
-            return {k: self._value(v, k, urls) for k, v in props.items()}
-        if t == "array":
-            items = schema.get("items", {})
-            if name == "claims":
-                claims = [{"text": f"Sourced observation {i + 1}", "source_url": u} for i, u in enumerate(urls)]
-                claims.append({"text": "Unsourced estimate of segment size", "source_url": None})
-                return claims
-            n = max(int(schema.get("minItems", 0)), 2)
-            return [self._value(items, f"{name}_{i}", urls) for i in range(n)]
-        if t == "integer":
-            return int(schema.get("minimum", 3)) if name != "score" else 3
-        if t == "number":
-            return 19.0 if "price" in name else float(schema.get("minimum", 1))
-        if t == "boolean":
-            return True
-        return f"Example {name.replace('_', ' ')}"
-
-
-def make_client(fake: bool):
-    return FakeLLM() if fake else OllamaClient()
+def make_client(fake: bool = False, faults: dict | None = None) -> ChatClient:
+    if fake:
+        from core.fake_llm import fake_router
+        return ChatClient(fake_router(faults), label="fake")
+    return ChatClient(Router.from_config())

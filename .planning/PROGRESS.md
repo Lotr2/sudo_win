@@ -5,7 +5,7 @@ Update this file when a task changes state (`[ ]` open, `[~]` in progress, `[x]`
 ## Status
 
 - **Current block:** 12:30 → 14:30, variants pass the contract test.
-- **Shared core:** on `main`. Tests: 47 passing, with the fake LLM and no Ollama. `compare_variants.py --all --fake-llm`: about 2 s.
+- **Shared core:** on branch `variants-shared-core` (not `main`). Tests: 76 passing in about 10 s with fake endpoints and no model server. `compare_variants.py --all --fake-llm --jobs 2`: about 5 s.
 - **Winner:** not picked yet (16:45).
 
 ## Done (shared core block, by 12:30)
@@ -17,11 +17,23 @@ Update this file when a task changes state (`[ ]` open, `[~]` in progress, `[x]`
 - [x] Outbox-only publish/send (`core/outbox.py`); no network-posting or email code (test enforced)
 - [x] `sources.py` (HN Algolia + Wikipedia, read-only GET) + provenance check; `gates.py` thresholds
 - [x] Commerce mocks: payments, webhooks (idempotent), delivery (tokens), refunds (founder-approved, revokes), reconcile
-- [x] `core/llm.py` (Ollama structured outputs, `think: false` for qwen3) + FakeLLM; `core/log.py` (7 keys validated)
+- [x] `core/log.py` (7 keys validated)
 - [x] Streamlit UI shell (`app/ui.py`): variant selector, brief form, live progress, gates, approvals, outputs, outbox, badges
-- [x] `docker-compose.yml` (ollama + model-pull + app, NVIDIA GPU reservation): `docker compose config` valid
+- [x] ~~`docker-compose.yml` with Ollama~~ (superseded by the llama-server compose below)
 - [x] `variants/_template/` (6 roles) + `tests/test_variant_contract.py` + `scripts/compare_variants.py`
 - [x] MIT `LICENSE`, `.env.example`, `.gitignore`, `requirements.txt`, `Dockerfile`
+
+## Done (model-agnostic, durable, two-GPU rework; decisions D7-D12)
+
+- [x] `config/endpoints.yaml` + `LLM_ENDPOINTS`; `config/models.yaml`; adapters for gpt-oss (low reasoning, harmony final channel), qwen3 (`<think>` stripped), generic
+- [x] `core/llm.py`: one OpenAI-compatible client; `core/router.py`: least-in-flight routing, slots, timeouts, failover, health
+- [x] Flat schemas; metadata JSON + `---CONTENT---` + text; forgiving parser with validation-error retry (`core/parse.py`); only the final answer is parsed
+- [x] `finish_reason=length` fails the step; per-role token budgets with prompt trimming; one call per MVP feature (code saved as files under `runs/<run>/product/`)
+- [x] `core/state.py`: every step saved; `--resume`; outward actions keyed and run once (outbox idempotency key, refund once); verifier fails closed
+- [x] Waves of independent steps run in parallel; several ideas at once; payment log one section per idea
+- [x] UI starts the orchestrator as its own process, can resume runs, checks endpoint health
+- [x] `docker-compose.yml` single-PC (llama-server + UI); `deploy/gpu-node`, `deploy/orchestrator` for the three-machine setup (all `docker compose config` valid, not yet run on GPUs)
+- [x] Fake endpoints with fault injection; new tests: router, parse, adapters, resume, parallel + faults
 
 ## Tasks by person
 
@@ -43,11 +55,14 @@ Update this file when a task changes state (`[ ]` open, `[~]` in progress, `[x]`
 - [ ] README `## Models and free resources`, `## Cost per run` (from the demo run's tokens)
 
 ### mostafa
-- [ ] Create `variants/mostafa/` (bigger workers, wider context); contract green by 14:30
+- [ ] Create `variants/mostafa/` (wide context, more parallel); contract green by 14:30
 - [ ] Make the UI presentable; rough end-to-end through the UI by ~17:00 (idea1 → STOP, idea2 → phase 6) to measure real runtime and failure points
 - [ ] Screen recording (≤ 3 min) for README `## Demo video` after the 19:30 run
 
 ## Open risks
+
+- Not yet measured on real GPUs: tokens/s, KV headroom with 4 slots x 8192, JSON retry and truncation rates for gpt-oss-20b (owner: aly, first real run).
+- llama-server image tag and `-hf` download not yet verified on the GPU PCs' OS (owner: aly).
 
 - Real searches return hits for almost any query, so idea1 may not STOP with real sources (owner: aly, after the first real run).
 - Docker on the GPU machine is not verified yet (owner: aly).

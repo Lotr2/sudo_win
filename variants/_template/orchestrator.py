@@ -1,8 +1,8 @@
-"""Baseline variant: hub-and-spoke. One LLM call per LLM step, shared code steps, one gate per phase.
+"""Baseline variant: hub-and-spoke. Each phase runs in waves (independent steps in parallel), then one gate.
 
 Copy this whole folder to variants/<name>/ and change HOW it works (roles, order, prompts, models,
-verifier, retries, context). Do not write files, call the network or touch approvals directly:
-use the BaseVariant helpers (llm_step, code_step, phase_gate, verify, digest).
+verifier, retries, budgets). Do not write files, call the network, start threads or touch approvals
+directly: use the BaseVariant helpers (waves, parallel, run_step, llm_step, code_step, phase_gate, verify).
 """
 from core.base_variant import BaseVariant, RunResult
 
@@ -12,12 +12,11 @@ class Variant(BaseVariant):
         max_repeats = int(self.config["max_phase_repeats"])
         decision = None
         for phase in range(1, 7):
-            for _attempt in range(max_repeats + 1):
-                for step in self.steps(phase):
-                    if step.kind == "llm":
-                        self.llm_step(step.key)
-                    else:
-                        self.code_step(step.key)
+            for attempt in range(max_repeats + 1):
+                if attempt:
+                    self.reset_phase(phase)
+                for wave in self.waves(phase):
+                    self.parallel([s.key for s in wave])
                 decision = self.phase_gate(phase)
                 if decision.final != "repeat" or phase == 6:
                     break

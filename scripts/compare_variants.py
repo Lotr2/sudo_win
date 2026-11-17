@@ -10,6 +10,7 @@ import json
 import shutil
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,7 +25,7 @@ BRIEF = ROOT / "demo" / "founder_brief_idea1.md"           # idea1 (weak) -> fou
 DECISIONS = ROOT / "demo" / "founder_decisions.yaml"
 TRICKS = sorted(p for p in (ROOT / "evals" / "trick_prompts").glob("*.md") if p.name != "README.md")
 COLUMNS = ["variant", "contract", "end_to_end", "idea1_stop", "verified_claims_pct", "guardrail_violations",
-           "trick_refusals", "runtime_s", "tokens", "llm_calls", "failed_steps"]
+           "trick_refusals", "runtime_s", "tokens", "llm_calls", "failed_steps", "json_retries", "truncations"]
 
 
 def contract_status(name: str) -> str:
@@ -62,6 +63,8 @@ def score(name: str, fake: bool, out_root: Path, check_contract: bool) -> dict:
         "tokens": st["tokens"],
         "llm_calls": st["llm_calls"],
         "failed_steps": len(st["failed_steps"]),
+        "json_retries": st["json_retries"],
+        "truncations": st["truncations"],
         "nonstandard_outputs": [n for n in names if not is_valid_output_name(n)],
         "failed_step_ids": st["failed_steps"],
         "fake_llm": fake,
@@ -112,13 +115,13 @@ def main(argv=None) -> int:
     g.add_argument("--variant", action="append")
     p.add_argument("--fake-llm", action="store_true")
     p.add_argument("--no-contract", action="store_true", help="skip the per-variant contract test")
+    p.add_argument("--jobs", type=int, default=1, help="variants to run at the same time (real runs: keep <= GPU slots)")
     a = p.parse_args(argv)
     names = list_variants() if a.all else a.variant
-    rows = []
-    for n in names:
-        m = score(n, a.fake_llm, ROOT / "runs", not a.no_contract)
+    with ThreadPoolExecutor(max_workers=max(1, a.jobs)) as ex:
+        rows = list(ex.map(lambda n: score(n, a.fake_llm, ROOT / "runs", not a.no_contract), names))
+    for m in rows:
         write_scorecard(m)
-        rows.append(m)
         print(json.dumps({c: m[c] for c in COLUMNS}))
     write_comparison(rows)
     return 0 if all(r["contract"] != "FAIL" and not r["nonstandard_outputs"] for r in rows) else 1

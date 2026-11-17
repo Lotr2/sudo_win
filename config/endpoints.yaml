@@ -1,0 +1,11 @@
+# LLM endpoints (OpenAI-compatible /v1). Single-PC mode is one local endpoint.
+# Override without editing: LLM_ENDPOINTS="pc1=http://192.168.1.10:8080/v1,pc2=http://192.168.1.11:8080/v1"
+# (plain URLs also work), LLM_SLOTS=4, LLM_TIMEOUT_S=300.
+endpoints:
+  - name: local
+    base_url: http://localhost:8080/v1
+    models: ["*"]        # model names from config/models.yaml this server can answer, or "*"
+    slots: 4             # must match llama-server -np (parallel slots)
+    timeout_s: 300
+down_for_s: 30           # how long a failed endpoint is skipped
+wait_for_slot_s: 600     # how long a call waits for a free slot before failing

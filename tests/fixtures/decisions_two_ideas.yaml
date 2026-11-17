@@ -1,0 +1,15 @@
+# Test fixture: founder decisions for running idea2 and idea3 in parallel.
+idea2: &all
+  phase1.step5.send_outreach: approve
+  phase1.gate: accept
+  phase2.step2.publish_landing_page: approve
+  phase2.gate: accept
+  phase3.gate: accept
+  phase4.gate: accept
+  phase5.step1.open_store: approve
+  phase5.step2.publish_posts: approve
+  phase5.step4.refund: approve
+  phase5.gate: accept
+  phase6.step1.send_support_replies: approve
+  phase6.gate: accept
+idea3: *all

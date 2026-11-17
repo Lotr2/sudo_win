@@ -1,18 +1,24 @@
-# One-command setup: docker compose up  ->  open http://localhost:8501
-# Needs an NVIDIA GPU with ~16 GB VRAM and the NVIDIA Container Toolkit (qwen3:8b + gemma3:4b stay loaded together).
+# Single-PC mode, one command: docker compose up  ->  open http://localhost:8501
+#   llm  llama.cpp server on this PC's GPU (downloads gpt-oss-20b MXFP4 GGUF once, ~12 GB)
+#   app  founder UI; each run starts the orchestrator as its own process
+# Needs one NVIDIA GPU with 16 GB VRAM and the NVIDIA Container Toolkit.
+# Two GPU PCs + a CPU-only orchestrator machine: see deploy/gpu-node and deploy/orchestrator.
 services:
-  ollama:
-    image: ollama/ollama:latest
-    volumes:
-      - ollama:/root/.ollama
+  llm:
+    image: ${LLAMA_IMAGE:-ghcr.io/ggml-org/llama.cpp:server-cuda}
+    command: >-
+      -hf ${LLM_HF_REPO:-ggml-org/gpt-oss-20b-GGUF} --alias ${LLM_MODEL:-gpt-oss-20b}
+      --jinja -ngl 99 -c ${LLM_CTX:-32768} -np ${LLM_SLOTS:-4} --host 0.0.0.0 --port 8080
     environment:
-      - OLLAMA_MAX_LOADED_MODELS=2
-      - OLLAMA_KEEP_ALIVE=30m
+      - LLAMA_CACHE=/models
+    volumes:
+      - llm-models:/models
     healthcheck:
-      test: ["CMD", "ollama", "list"]
-      interval: 5s
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
       timeout: 5s
-      retries: 30
+      retries: 360          # first start downloads the model
+      start_period: 30s
     deploy:
       resources:
         reservations:
@@ -21,28 +27,19 @@ services:
               count: all
               capabilities: [gpu]
 
-  model-pull:
-    image: ollama/ollama:latest
-    depends_on:
-      ollama:
-        condition: service_healthy
-    environment:
-      - OLLAMA_HOST=http://ollama:11434
-    entrypoint: ["/bin/sh", "-c", "ollama pull ${MODEL_DEFAULT:-qwen3:8b} && ollama pull ${MODEL_VERIFIER:-gemma3:4b}"]
-    restart: "no"
-
   app:
     build: .
     ports:
       - "8501:8501"
     environment:
-      - OLLAMA_HOST=http://ollama:11434
+      - LLM_ENDPOINTS=local=http://llm:8080/v1
+      - LLM_SLOTS=${LLM_SLOTS:-4}
       - ARCH_VARIANT=${ARCH_VARIANT:-_template}
     volumes:
       - ./runs:/app/runs
     depends_on:
-      model-pull:
-        condition: service_completed_successfully
+      llm:
+        condition: service_healthy
 
 volumes:
-  ollama:
+  llm-models:

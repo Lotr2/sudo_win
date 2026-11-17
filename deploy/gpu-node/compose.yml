@@ -1,0 +1,32 @@
+# Run on EACH GPU PC (16 GB VRAM):  docker compose -f deploy/gpu-node/compose.yml up -d
+# Serves gpt-oss-20b (or LLM_HF_REPO) on port 8080 for the orchestrator machine on the LAN.
+# Context: -c is shared by all slots (32768 / 4 slots = 8192 tokens per request).
+services:
+  llm:
+    image: ${LLAMA_IMAGE:-ghcr.io/ggml-org/llama.cpp:server-cuda}
+    command: >-
+      -hf ${LLM_HF_REPO:-ggml-org/gpt-oss-20b-GGUF} --alias ${LLM_MODEL:-gpt-oss-20b}
+      --jinja -ngl 99 -c ${LLM_CTX:-32768} -np ${LLM_SLOTS:-4} --host 0.0.0.0 --port 8080
+    environment:
+      - LLAMA_CACHE=/models
+    ports:
+      - "8080:8080"
+    volumes:
+      - llm-models:/models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 360
+      start_period: 30s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  llm-models:

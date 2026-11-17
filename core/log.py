@@ -30,12 +30,16 @@ def validate_entry(entry: dict) -> None:
 
 
 class DecisionLog:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, append: bool = False):
+        """append=True continues an existing log (resumed run); otherwise starts a new one."""
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.Lock()
-        self.entries: list[dict] = []
-        self.path.write_text("[]\n", encoding="utf-8")
+        if append and self.path.exists():
+            self.entries: list[dict] = json.loads(self.path.read_text(encoding="utf-8"))
+        else:
+            self.entries = []
+            self.path.write_text("[]\n", encoding="utf-8")
 
     def append(self, agent: str, action: str, *, sources=None, model=None, cost=0, approved_by=None, **extra) -> dict:
         entry = {

@@ -33,6 +33,12 @@ class CommerceState:
         d["processed_events"] = sorted(self.processed_events)
         Path(path).write_text(json.dumps(d, indent=1), encoding="utf-8")
 
+    @classmethod
+    def load(cls, path: Path) -> "CommerceState":
+        d = json.loads(Path(path).read_text(encoding="utf-8"))
+        d["processed_events"] = set(d.get("processed_events", []))
+        return cls(**d)
+
 
 @requires_approval("open_store")
 def open_store(state: CommerceState, product: str, price_usd: float, *, content: str) -> dict:
@@ -50,6 +56,8 @@ def simulate_test_order(state: CommerceState, order_id: str) -> dict:
     """A MOCKED buyer completes a MOCKED checkout. Returns the provider's payment_succeeded event."""
     if not state.listing:
         raise RuntimeError("store is not open (no founder-approved listing)")
+    if order_id in state.orders:      # idempotent: a resumed run never creates the same test order twice
+        return next(e for e in state.events if e["id"] == f"evt_{order_id}_paid")
     amount = state.listing["price_usd"]
     state.orders[order_id] = {"order_id": order_id, "amount": amount, "status": "paid", "label": MOCKED}
     event = {"id": f"evt_{order_id}_paid", "type": "payment_succeeded", "order_id": order_id,
@@ -58,11 +66,14 @@ def simulate_test_order(state: CommerceState, order_id: str) -> dict:
     return event
 
 
-def mock_payout(state: CommerceState) -> dict:
-    """MOCKED payout of net captured funds minus refunds."""
+def mock_payout(state: CommerceState) -> dict | None:
+    """MOCKED payout of net funds not yet paid out (idempotent: nothing is paid out twice)."""
     gross = sum(e["amount"] for e in state.events if e["type"] == "payment_succeeded")
     fees = sum(e["fee"] for e in state.events if e["type"] == "payment_succeeded")
     refunded = sum(r["amount"] for r in state.refunds)
-    payout = {"id": f"po_{len(state.payouts) + 1}", "amount": round(gross - fees - refunded, 2), "label": MOCKED}
+    due = round(gross - fees - refunded - sum(p["amount"] for p in state.payouts), 2)
+    if abs(due) < 0.005:
+        return None
+    payout = {"id": f"po_{len(state.payouts) + 1}", "amount": due, "label": MOCKED}
     state.payouts.append(payout)
     return payout
