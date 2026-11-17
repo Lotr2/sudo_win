@@ -229,7 +229,8 @@ def test_gates_return_reason_codes_and_labels_word_them():
     assert "$50" in res.reasons[0]
     # Every code a gate can return has wording.
     import inspect, re
-    codes = set(re.findall(r'"([a-z_]+)"', inspect.getsource(gates)))
+    from venture_builder.departments import common
+    codes = set(re.findall(r'"([a-z_]+)"', inspect.getsource(gates) + inspect.getsource(common)))
     returned = {c for c in codes if c in labels.GATE_REASONS}
     assert len(returned) == len(labels.GATE_REASONS)
 
