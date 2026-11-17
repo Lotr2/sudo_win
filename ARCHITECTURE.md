@@ -33,6 +33,19 @@ flowchart LR
   end
 ```
 
+### Core steps at a glance
+
+Every core step of the brief, where it lives, and how it is checked. Each phase's section under [Phases](#phases) has the full detail.
+
+| Core step | Phase | Agents (model) and code | Method | Outputs | Checked by |
+|---|---|---|---|---|---|
+| **Find opportunities** | 1 Discover | Brief Parser, Founder Liaison (Gemma 4 31B); Opportunity Scout, Market Researcher, Competitor Analyst (GPT-OSS-20B); Shortlist, Evidence Ledger, Scorer [code] | Intake interview and read-back; 10 candidate versions, 4 shortlisted; research loop with search and full-page reading until the evidence bar is met; graded findings kept only when readings agree; weighted-sum score shown as points per factor | `phase1_step1_opportunities.md`, `phase1_step2_scores.json`, `phase1_step3_interview_script.md` | Gate 1: ≥3 sourced examples of the problem on ≥2 websites, score ≥60/100, fits the founder's skills, budget and time; excluded products stop |
+| **Design the business** | 2 Validate | Canvas Builder (Gemma 4 31B) ⇄ Skeptical Investor (GPT-OSS-20B, high); Experiment Designer; Landing Copywriter; Threshold Lock, page renderer [code] | Generator–critic debate (2 rounds) with the investor's objections put to the founder; demand-test target proposed, approved and hashed into the log before any result; waitlist page rendered by code in the founder's brand | `phase2_step1_lean_canvas.md`, `phase2_step2_experiment.md`, `phase2_step3_landing_page.html` | Gate 2: result vs the locked target (≥100% go, 50–99% repeat once, <50% pivot or stop); no unanswered fatal risk |
+| **Build the product** | 3 Build | Product Manager, Builder (GPT-OSS-20B); Product Reviewer, Docs Writer (Gemma 4 31B); QA Runner [code] | Spec written as acceptance tests and checked per product type; build–test loop (up to 3 rounds) in a no-network sandbox; rubric self-review with one revision | `phase3_step1_spec.md`, `phase3_step2_test_report.md`, `phase3_step3_user_guide.md` | Gate 3: every acceptance test passes |
+| **Set the price and policies** | 4 Commercial setup | Pricing Analyst (GPT-OSS-20B); Policy Drafter (Gemma 4 31B); Compliance Linter [code] | Price anchored on sourced competitor prices; terms, privacy and refund drafts ("DRAFT: not legal advice"); linter loop until clean; no payments of any kind | `phase4_step1_pricing.md`, `phase4_step2_policies.md` | Gate 4: zero wording violations; price within the sourced range or justified |
+| **Open the store; deliver automatically** | 5 Launch | Launch Writers (Gemma 4 31B); Approval Outbox, publish adapter, `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py` [code] | Store page and posts drafted into an outbox; each executed only with a hash-bound founder approval (publishing MOCKED); a MOCKED payment event delivers exactly once, an approved refund revokes access, reconciliation matches the books | `phase5_step1_store_page.md`, `phase5_step2_launch_posts.md`, `payment_test_log.md` | Gate 5: every item approved; delivery, duplicate-event, refund and reconciliation checks pass |
+| Operate and learn (no core step) | 6 Operate | Support Agent (GPT-OSS-20B); Pivot Memo Writer (Gemma 4 31B) ⇄ Critic (GPT-OSS-20B); Metrics Engine [code] | Numbers computed by code from the (MOCKED) event log; support answers only from the user docs; review memo fact-checked against the numbers and goals | `phase6_step1_metrics.md`, `phase6_step2_support_log.md`, `phase6_step3_pivot_memo.md` | Gate 6: goals locked before data; keep going, change course or stop |
+
 ### Seven principles
 
 1. **Code controls the pipeline; agents fill in the departments.** The orchestrator, gates, approvals, policy checks and payment flow are deterministic code. Agents receive one narrow task and return JSON that matches a schema.
