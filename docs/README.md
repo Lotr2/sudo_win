@@ -4,6 +4,7 @@ The root [`ARCHITECTURE.md`](../ARCHITECTURE.md) is the full design. This folder
 
 | File | Contents |
 |---|---|
+| [`architecture-details.md`](architecture-details.md) | The full design: every step of every phase with its diagram, patterns, code map, founder conversation, model routing, safety and the design decisions |
 | [`overview.md`](overview.md) | One-page summary: pipeline, spine, constraints and stress tests |
 | [`phase-workflows.md`](phase-workflows.md) | Mermaid diagrams for model routing, the founder conversation and every phase |
 | [`implementation-plan.md`](implementation-plan.md) | How the design became code: file tree, build order, status, and how contradictions between the design documents were resolved |

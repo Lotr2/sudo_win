@@ -73,7 +73,7 @@ Two open-weight models split the work (GPT-OSS-20B locally, Gemma 4 31B on the G
 
 The Founder Liaison (Gemma 4 31B) is the system's one voice, in a chat beside the progress view or inline in the CLI. It talks a lot and decides nothing: gates are code, and approvals happen only through buttons or commands.
 
-Seven kinds of conversation (intake, read-back, phase kickoff, clarifying questions, gate walk-through, pushback follow-up, ask anything) are described in [ARCHITECTURE.md · Founder conversation](../ARCHITECTURE.md#founder-conversation).
+Seven kinds of conversation (intake, read-back, phase kickoff, clarifying questions, gate walk-through, pushback follow-up, ask anything) are described in [Architecture details · Founder conversation](architecture-details.md#founder-conversation).
 
 How a question becomes blocking: the Clarifier re-runs the scorer or gate with other plausible values for each open assumption. If the result would change, the founder must answer before the decision is final. A new answer that contradicts a confirmed one triggers a "which is right?" question. Everything the founder says is stored as `founder_reported`: it confirms their own facts (budget, hours, skills) but never counts as market evidence on its own.
 

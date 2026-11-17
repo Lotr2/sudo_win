@@ -24,7 +24,7 @@ Open **http://localhost:8000**, describe your idea (or press "Fill in an example
 | Keep a live demo short | `RUN_MODE=demo`: time budget per step, 5 sources per version, 3 intake questions, 30-second question timeouts |
 | Start a real project or a practice run | the web form asks; in the terminal, `venture run` is real and `venture run --practice` is practice. Every log entry carries `"project": "real"` or `"practice"`, and a person's decisions carry `real_founder: true` |
 | Add a finished real project to the repository | `venture export RUN_ID --tag real --append` (adds its outputs as `phase<N>_step<M>_real_…` and its log entries to `decision_log.json`) |
-| Check that it works | `uv run pytest` (117 smoke tests on a fake model, no model needed); `uv run python evals/run_evals.py` (8 briefs on the real models) |
+| Check that it works | `uv run pytest` (118 smoke tests on a fake model, no model needed; also run on every push by `.github/workflows/tests.yml`); `uv run python evals/run_evals.py` (8 briefs on the real models) |
 
 ## What works and what is mocked
 
@@ -55,7 +55,7 @@ Open **http://localhost:8000**, describe your idea (or press "Fill in an example
 
 ## Architecture
 
-The system is organised like a small company: six departments, one per phase, each on the agent pattern its work needs (fan-out research, generator–critic debate, build–test loop, pipes and filters, transactional outbox, monitor loop). A LangGraph state machine moves one shared record, the Venture Dossier, through the phases and pauses at a single founder node for every question, approval and stage decision. Gates are pure functions over evidence and thresholds locked before results exist, and every outcome is explained point by point. Agents cite evidence by ID from a ledger only tools can write; a checker on the other model reviews critical work, and a fact-checker checks every explanation before the founder reads it. Agents can only draft into an outbox, and no LLM touches the money path. Full design with diagrams: [ARCHITECTURE.md](ARCHITECTURE.md); one-page summary and stress tests: [docs/overview.md](docs/overview.md).
+The system is organised like a small company: six departments, one per phase, each on the agent pattern its work needs (fan-out research, generator–critic debate, build–test loop, pipes and filters, transactional outbox, monitor loop). A LangGraph state machine moves one shared record, the Venture Dossier, through the phases and pauses at a single founder node for every question, approval and stage decision. Gates are pure functions over evidence and thresholds locked before results exist, and every outcome is explained point by point. Agents cite evidence by ID from a ledger only tools can write; a checker on the other model reviews critical work, and a fact-checker checks every explanation before the founder reads it. Agents can only draft into an outbox, and no LLM touches the money path. Design with diagrams: [ARCHITECTURE.md](ARCHITECTURE.md); every step in full and the design decisions: [docs/architecture-details.md](docs/architecture-details.md); one-page summary and stress tests: [docs/overview.md](docs/overview.md).
 
 ## Models and free resources
 

@@ -6,7 +6,7 @@ Diagrams for every phase. The text behind them is in [ARCHITECTURE.md](../ARCHIT
 
 GPT-OSS-20B runs locally through Ollama or llama.cpp; Gemma 4 31B runs on Google's Gemini API free tier. No paid service, $0 per run; without a Gemini key every role runs on GPT-OSS-20B.
 
-Full role table: [ARCHITECTURE.md · Model routing](../ARCHITECTURE.md#model-routing).
+Full role table: [Architecture details · Model routing](architecture-details.md#model-routing).
 
 Router rules:
 1. **Checker ≠ maker.** A critic or classifier never runs on the model that wrote the work.
