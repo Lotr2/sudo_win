@@ -1,56 +1,56 @@
-# Phase 2 · Step 1: Lean Canvas (Proposal & Invoice Guide)
+# Phase 2 · Step 1: Lean Canvas (Client Communication Checklist Pack)
 
 ## Problem
 
-Freelance designers in their first three years find it hard to write clear proposals and invoices.
+Business owners who hire freelance designers often lack a clear checklist for communicating about proposals, invoices, and payment reminders.
 
-Source: https://dribbble.com/resources/freelance/design-proposal
+Source: ASSUMPTION
 
 ## Customer Segments
 
-Freelance designers who are new to the industry and looking for guidance.
+Small business owners in English‑speaking countries who outsource design work to freelancers.
 
 Source: ASSUMPTION
 
 ## Unique Value
 
-A concise guide that gives ready‑to‑use templates and step‑by‑step instructions for proposals and invoices.
+A ready‑made set of checklists that saves time, reduces miscommunication, and helps owners stay organized when working with designers.
 
-Source: https://aiproposer.com/guides/upwork-proposals/freelance-proposal-template, https://www.canva.com/proposals/templates/, https://www.freepik.com/free-photos-vectors/proposal-design-freelancers/2, https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC, https://www.linkedin.com/pulse/easiest-way-start-offering-invoicing-onboarding-kelly-pennington-ndacf, https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c, https://www.pinterest.com/ideas/canva-free-proposal-template/898604145179/, https://www.template.net/proposals/one-page
+Source: ASSUMPTION
 
 ## Solution
 
-A downloadable guide with templates and best‑practice tips.
+A downloadable template pack of editable, fillable checklists for proposals, invoices, and payment reminders.
 
-Source: https://aiproposer.com/guides/upwork-proposals/freelance-proposal-template, https://www.canva.com/proposals/templates/, https://www.freepik.com/free-photos-vectors/proposal-design-freelancers/2, https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC, https://www.linkedin.com/pulse/easiest-way-start-offering-invoicing-onboarding-kelly-pennington-ndacf, https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c, https://www.pinterest.com/ideas/canva-free-proposal-template/898604145179/, https://www.template.net/proposals/one-page
+Source: https://www.checkli.com/, https://www.template.net/edit-online/438220/digital-marketing-client-onboarding-checklist
 
 ## Channels
 
-Online design communities, freelance platforms, and social media groups.
+Online distribution through freelance platforms, design‑related forums, and social media groups for small business owners.
 
-Source: https://dribbble.com/resources/freelance/design-proposal, https://www.linkedin.com/posts/bigorchard_design-branding-invoices-activity-6631016972479979520-l2iC, https://www.linkedin.com/pulse/invoicing-designers-8-easy-steps-get-paid-time-hiveage-dgk3c, https://www.upwork.com/freelancers/~0114fc75229dbf28b6
+Source: https://www.linkedin.com/posts/nikki-sanz_nobody-teaches-you-how-to-freelance-which-activity-7506400354704609281-Uc6-, https://www.upwork.com/hire/graphic-designers/
 
 ## Revenue
 
-The guide will be offered for free, with optional paid add‑ons or a subscription for updated content.
+The product will be offered for free to encourage adoption and gather feedback.
 
 Source: ASSUMPTION
 
 ## Costs
 
-Minimal development time (10 hours) and no upfront budget.
+Estimated build time is about 10 hours with no monetary cost.
 
 Source: ASSUMPTION
 
 ## Key Metrics
 
-Number of guide downloads, user feedback, and repeat usage.
+Number of downloads, user feedback on usefulness, and repeat usage of the checklists.
 
 Source: ASSUMPTION
 
 ## Unfair Advantage
 
-First mover in providing a focused, designer‑centric proposal and invoice guide.
+Quick development time and the founder’s familiarity with freelance design workflows give a slight edge in creating relevant content.
 
 Source: ASSUMPTION
 
@@ -58,20 +58,21 @@ Source: ASSUMPTION
 
 | Box | Score | Comment |
 |---|---|---|
-| problem | 5 | Well supported by evidence. |
-| customer_segments | 2 | Assumption, no evidence. |
-| unique_value | 5 | Well supported by evidence. |
-| solution | 5 | Well supported by evidence. |
-| channels | 5 | Well supported by evidence. |
-| revenue | 2 | Assumption, no evidence. |
-| costs | 2 | Assumption, no evidence. |
-| key_metrics | 2 | Assumption, no evidence. |
-| unfair_advantage | 2 | Assumption, no evidence. |
+| problem | 2 | No evidence for problem statement. |
+| customer_segments | 2 | No evidence for customer segment. |
+| unique_value | 2 | No evidence for unique value proposition. |
+| solution | 5 | Evidence shows free editable checklist templates available. |
+| channels | 4 | Evidence shows Upwork and LinkedIn as distribution channels. |
+| revenue | 2 | No evidence for free revenue model. |
+| costs | 2 | No evidence for build time estimate. |
+| key_metrics | 2 | No evidence for key metrics. |
+| unfair_advantage | 2 | No evidence for unfair advantage. |
 
 ### Riskiest assumptions
 
-- Revenue model (risk 5 of 5; could sink the business if wrong)
-- Target customer segment (risk 5 of 5; could sink the business if wrong)
+- problem (risk 5 of 5; could sink the business if wrong)
+- customer_segments (risk 5 of 5; could sink the business if wrong)
+- unique_value (risk 4 of 5)
 
 ### Your answers to the reviewer's questions
 

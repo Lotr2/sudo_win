@@ -6,42 +6,42 @@ These are drafts for this product, generated from templates and checked by code.
 
 DRAFT: not legal advice
 
-## Licence to Use
-You may download and use the "Proposal & Invoice Guide for Freelance Designers" for your own personal or business use. You may not copy, sell, or distribute the guide or any part of it without written permission.
+**License**
+You may use the Client Communication Checklist Pack for personal use only. You may not redistribute, sell, or otherwise transfer the templates to third parties.
 
-## Refunds
-For refund details, see the Refund Policy linked below.
+**Refunds**
+For refund requests, see our Refund Policy.
 
-## Contact
-If you have questions, email support@example.com.
-
-## Links
-- Refund Policy: [Refund Policy](#refund-policy)
+**Contact**
+If you have questions, email us at support@example.com.
 
 
 ## Privacy policy
 
 DRAFT: not legal advice
 
-## What We Collect
-We collect your email address and the payment information needed to process your purchase. We do not collect or store passwords or card numbers.
+**What we collect**
+We collect your name, email address, and payment information to process your purchase.
 
-## How We Use the Information
-Your email is used to send you the guide and any support you may need. Payment details are used only to complete the transaction and are not retained.
+**How we use it**
+We use this information to deliver the product and to contact you about updates or support.
 
-## Contact
-If you have privacy questions, email privacy@example.com.
+**Security**
+Passwords and card numbers are never collected or stored by us.
+
+**Contact**
+If you have questions about this policy, email us at support@example.com.
 
 
 ## Refund policy
 
 DRAFT: not legal advice
 
-## Refund Window
+**Refund Window**
 You may request a refund within 14 days of purchase.
 
-## How to Request a Refund
-Send an email to refund@example.com with your order details and a brief reason for the refund. We will review your request and respond within a few business days.
+**How to Request**
+Send an email to support@example.com with your order number and reason for the refund. We will review your request and respond within 5 business days.
 
 
 ## Compliance Linter

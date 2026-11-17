@@ -19,8 +19,8 @@ This check makes sure every page and post was approved by the founder before any
 
 ## What you can do next
 
-- Connect a real payment provider in test mode and repeat the practice sale
-- Publish the approved pages yourself when you're ready
+- Publish the approved pages yourself, under your own name, when you're ready
+- When you sell for real, use a store or payment service you set up yourself: this system never takes, holds or moves money
 
 ## Key numbers
 

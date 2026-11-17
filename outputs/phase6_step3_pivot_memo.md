@@ -2,15 +2,15 @@
 
 **The review recommends: Keep going**
 
-The conversion rate is 3.5%, which is above the target of 2%. The refund rate is 7.1%, which is below the target of 10%. Support tickets are low, with only 2 tickets for 14 orders. Tickets per order is 0.14, indicating a small support burden. These numbers are practice data (MOCKED), not real sales. Next, run an A/B test on the checkout page to see if a simpler layout increases conversion, and add a FAQ section about downloading templates to reduce support tickets.
+The practice data shows a conversion of 3.5%, which is above the target of 2%. You had 14 orders and 1 refund, giving a refund rate of about 7%, below the 10% target. Support tickets were only 2, and the average tickets per order is 0.14, indicating low friction. Visitors were 400, so the traffic volume is modest but growing. The ticket themes you noted—questions about downloading templates and refund eligibility—were recorded, but we don’t have evidence to confirm they are the main concerns. Since the key metrics meet or exceed the targets, keep moving forward. Next steps: 1) run a small ad campaign to increase visitors and test if the conversion stays high. 2) add a clear FAQ page about downloading templates to reduce support tickets and improve user confidence.
 
 ## Fact-check
 
 A second model checked every statement against the numbers and the goals:
 
-- Checks out: The conversion rate is 3.5%, which is above the target of 2%.
-- Checks out: The refund rate is 7.1%, which is below the target of 10%.
-- Checks out: Support tickets are low, with only 2 tickets for 14 orders.
-- Checks out: Tickets per order is 0.14, indicating a small support burden.
+- Checks out: The practice data shows a conversion of 3.5%, which is above the target of 2%.
+- Checks out: You had 14 orders and 1 refund, giving a refund rate of about 7%, below the 10% target.
+- Checks out: Support tickets were only 2, and the average tickets per order is 0.14, indicating low friction.
+- Checks out: Visitors were 400, so the traffic volume is modest but growing.
 
 Fact-check score: 5 out of 5. The review passes.

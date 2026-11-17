@@ -1,14 +1,14 @@
 # Phase 2 · Step 2: Demand test and its goal
 
-**The test:** You can create a simple landing page that offers the free guide and includes a link to a paid add‑on on a platform like Gumroad. Share the page in online design communities, freelance platforms, and social media groups where new designers hang out. Track how many visitors click the paid link and complete the purchase.
+**The test:** You build a landing page that offers the free checklist pack in exchange for an email address. You post the link in online groups where small business owners discuss hiring freelancers, such as freelance platforms, design forums, and small‑business Facebook or LinkedIn groups. You count the number of sign‑ups over 30 days.
 
-**Why this goal:** A 7% conversion rate would show that designers are willing to pay for extra value, proving the revenue model works.
+**Why this goal:** If at least 50 people sign up, it shows that small business owners care about the problem and want a solution.
 
 ## Goal set before any result existed
 
-- What is measured: paid conversion rate
-- Success means: 7%
-- Time allowed: 14 days
-- Fingerprint of this goal: `sha256:4b51143e4cdaf6af91221077635a6819501785e00f148a63f61d60c113a59396`. It was written to the decision log when the goal was set, so anyone can check the goal wasn't changed after the results came in.
+- What is measured: waitlist sign-ups
+- Success means: 50
+- Time allowed: 30 days
+- Fingerprint of this goal: `sha256:272d93d11cdd67c35335d5c9c6778ac378b1ff57c9b8ea3414927860d34fa921`. It was written to the decision log when the goal was set, so anyone can check the goal wasn't changed after the results came in.
 
 Lowest goals the team may propose (config/thresholds.toml): 30 waitlist sign-ups, or 5% of visitors signing up; at most 30 days.

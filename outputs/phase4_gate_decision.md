@@ -23,7 +23,7 @@ This check reads the price, the terms of service, the privacy policy and the ref
 ## Key numbers
 
 - Wording problems to fix: none
-- Price: $27
+- Price: $29
 - What similar products charge: not available
 
 ## What this is based on

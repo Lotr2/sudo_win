@@ -6,7 +6,7 @@
 
 ## In short
 
-Stop the current idea because it involves medical advice, which is outside the scope of what we can support.
+Stop the idea because it involves medical advice, which we cannot support.
 
 ## Why
 
@@ -14,23 +14,23 @@ Stop the current idea because it involves medical advice, which is outside the s
 
 ## What the team found
 
-We reviewed your idea of an AI meal coach for people with type 2 diabetes. The main issue is that it gives specific dietary recommendations based on blood sugar readings, which is medical advice. Our policy says we cannot help with health or medical advice products because they can cause real harm if the advice is wrong and they require licensed experts. Because of that, the idea must be stopped. This decision saves you time and money by avoiding a risky path.
+The review found that your AI meal coach would give advice on eating for people with type 2 diabetes, which is medical advice. That falls outside the scope of products we can help with. The team’s policy says we must avoid any product that could influence medical decisions. Because of that rule, the idea cannot move forward. Stopping early saves you time and money that would otherwise be spent on a product that is not allowed.
 
 ## What you can do next
 
-- Explore a different digital product that does not provide medical or health advice, such as a general meal planner for anyone looking to eat healthier.
-- Consider building a recipe recommendation chatbot that suggests meals based on taste preferences and dietary restrictions like vegetarian or gluten‑free, which stays clear of medical guidance.
-- Look into creating a grocery list generator that builds weekly shopping lists from user‑chosen recipes, using your writing and spreadsheet skills.
-- If you still want to help people with diabetes, think about a non‑advisory educational resource that explains general nutrition concepts without giving specific meal plans.
+- Reframe the product to give general meal suggestions for healthy living without diagnosing or treating diabetes.
+- Focus on a broader audience such as people looking to improve nutrition or manage weight, removing any reference to blood‑sugar readings.
+- Remove any medical claims and instead provide educational content about balanced meals and portion sizes.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Build a recipe recommendation chatbot that suggests meals based on taste preferences and dietary restrictions such as vegetarian or gluten‑free. *It uses your writing skills, stays away from medical advice, and can be offered as a free or low‑cost digital tool.*
-- **Customer group:** Target busy professionals who want quick, balanced meals without needing medical guidance. *Your spreadsheet skills can help create meal templates that fit a busy schedule, and this group is large and open to digital solutions.*
-- **Product idea:** Create a grocery list generator that builds weekly shopping lists from user‑selected recipes. *It leverages your spreadsheet expertise, offers a tangible benefit, and does not touch on medical advice.*
-- **Market:** Apply the same approach to the vegan community, offering a digital cookbook with plant‑based recipes and shopping lists. *Your writing and spreadsheet skills fit this niche, and vegan cooking is a growing market that doesn’t involve medical advice.*
+- **Product idea:** Create an AI recipe planner that suggests weekly menus based on dietary preferences, avoiding medical claims. *It uses the same AI and spreadsheet skills but stays in the general nutrition space.*
+- **Product idea:** Build a grocery list generator that optimizes for cost and nutrition for families. *It leverages spreadsheet skills and is a purely digital tool.*
+- **Product idea:** Offer a calorie tracker app for weight management. *It requires no medical expertise and can be built quickly.*
+- **Product idea:** Develop a meal prep scheduling tool for busy professionals. *It uses your writing and spreadsheet strengths and stays outside medical advice.*
+- **Customer group:** Target fitness enthusiasts with a meal planning app that supports workout nutrition. *The same technology can serve a different audience that does not need medical guidance.*
 
 ## What this is based on
 

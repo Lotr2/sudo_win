@@ -11,6 +11,6 @@ Calculated by code from the activity entered for the review period. Every number
 | Buyers who asked for a refund | 7.1% | at most 10% |
 | Support tickets | 2 | |
 
-Numbers the business plan said to watch: Number of guide downloads, user feedback, and repeat usage.
+Numbers the business plan said to watch: Number of downloads, user feedback on usefulness, and repeat usage of the checklists.
 
 Fingerprint of the goals: `sha256:d58516044317fc4baf39e023264afe15774df6b88fa375f238d76f09b3c5e434`. It was logged before any data was entered, so the goals can't quietly change afterwards.

@@ -1,16 +1,16 @@
 # Phase 4 · Step 1: Pricing
 
-**Launch price:** $27
+**Launch price:** $29
 
 | Option | Price | What's included |
 |---|---|---|
-| Basic | $27 | Core guide; All standard templates |
-| Pro | $47 | Core guide; All standard templates; Premium template bundle |
-| Premium | $67 | Core guide; All standard templates; Premium template bundle; Bonus resources |
+| Basic | $29 | All checklists |
+| Standard | $49 | All checklists; Additional templates |
+| Premium | $79 | All checklists; Additional templates; Video guide |
 
 ## Why this price
 
-Many free proposal and invoice templates are available, so a low price makes the guide accessible for new freelancers.  Digital guides for similar audiences typically sell between $30 and $50, so $27 is competitive while still covering production costs.  The basic tier includes the core guide and all templates, ensuring the main value is not hidden behind an upsell.  The higher tiers add extra premium templates and bonus resources for those who want more variety.
+Similar template packs are often free, but paid ones usually cost around $49. Setting the launch price at $29 makes it affordable for new freelancers while still reflecting the value of a ready‑made checklist pack. Three tiers let customers choose a basic option or upgrade for extra resources, keeping the core checklist available in every package.
 
 Sources: a reasoned guess (ASSUMPTION): no sourced prices back it yet
 

@@ -1,92 +1,53 @@
-# Phase 3 · Step 3: User guide: Proposal & Invoice Guide for Freelance Designers
+# Phase 3 · Step 3: User guide: Client Communication Checklist Pack
 
-# Proposal & Invoice Guide for Freelance Designers
+# Client Communication Checklist Pack
 
 ## What it is
-This guide gives you ready‑to‑use templates and simple steps to write proposals and invoices that look professional and protect your time.
+The Client Communication Checklist Pack is a set of ready‑made, editable checklists that help you talk to freelance designers about proposals, invoices, and payment reminders. Each checklist is written in plain language, has fill‑in fields for the key details you need, and is designed to fit into a Google Docs document so you can copy, paste, and tweak it right away. The goal is to save you time and avoid back‑and‑forth emails by making sure every important point is covered before you send anything.
 
-## How to start
-1. Download the guide from the product page.
-2. Open it in any word processor or email client.
-3. Read the four main sections: Why Proposals Matter, Crafting a Winning Proposal, Invoice Essentials, Common Mistakes to Avoid.
+## Getting Started
+1. **Download the pack** – you’ll receive a ZIP file that contains a Google Docs template for each checklist.
+2. **Open the template** – click the link, choose *Open with Google Docs*, and the file will appear in your Drive.
+3. **Make a copy** – click *File > Make a copy* so you can edit your own version without changing the original.
+4. **Fill in the fields** – replace the placeholder text with your project details, dates, and contact information.
+5. **Save and share** – once you’re happy, share the document with the designer or export it as a PDF to attach to an email.
 
-## How to use each part
-### Why Proposals Matter
-Read the short story that explains why a clear proposal helps you win work and keep projects on track.
+## Using the Checklists
+- **Proposal Checklist** – Use it before you send a proposal. Check every item, then send the completed document or a PDF version. The designer can see exactly what you expect and can give you a more accurate quote.
+- **Invoice Checklist** – Run this checklist each time you send an invoice. It ensures you include the invoice number, dates, itemized work, totals, and payment terms. A clean invoice speeds up payment and keeps your records tidy.
+- **Payment Reminder Checklist** – When a payment is overdue, use this checklist to draft a polite reminder. It reminds you to include the due date, amount, and a friendly request for action.
 
-### Crafting a Winning Proposal
-1. Copy the proposal template.
-2. Replace the bracketed placeholders with your own details.
-3. Keep the formatting simple: use a clean font like Arial or Helvetica, 11‑12 pt, 1.15 line spacing.
-4. Save the finished proposal as a PDF if you want a final copy.
+## Limits & Tips
+- The pack is meant for digital communication only; it does not replace legal contracts.
+- Each checklist is a template – you can add or remove items if your project needs it, but keep the core details to avoid confusion.
+- Keep the document in a shared folder so you can update it later and all collaborators see the latest version.
+- If you’re working with multiple designers, create a separate copy for each project to keep details distinct.
 
-### Invoice Essentials
-1. Copy the invoice template.
-2. Fill in your name, address, invoice number, dates, client details, and amounts.
-3. List each line item, subtotal, tax (if any), and total.
-4. Add your payment methods and terms.
-5. Send the invoice to the client.
+Feel free to experiment with the layout and wording to match your brand voice. The key is to keep the information clear and consistent so both you and the designer know exactly what’s expected.
 
-### Common Mistakes to Avoid
-Read the list of pitfalls that can delay payments or damage relationships. Use it as a quick checklist before sending any proposal or invoice.
-
-## Limits
-- The guide does not replace legal advice or a formal contract.
-- It does not cover tax calculations or local regulations.
-- It is meant for freelance designers; other professions may need different templates.
-- The templates are generic; adjust them to fit your specific workflow.
-
----
-
-# FAQ
-
-**Q1: How do I access the guide?**
-A1: The guide is available for download on the product page. It comes as a PDF and a text version.
-
-**Q2: Can I use the templates for multiple clients?**
-A2: Yes. Copy the template, replace the placeholders, and send it to each client.
-
-**Q3: What if I need a different format?**
-A3: The templates are plain text, so you can paste them into any word processor and adjust fonts, colors, or layout as you like.
-
-**Q4: Are refunds available?**
-A4: Refunds are handled per the product's refund policy, which can be found in the product details.
-
-**Q5: Will the guide be updated?**
-A5: New versions may be released. Check the product page for updates and download the latest copy.
-
-**Q6: Does the guide include legal terms?**
-A6: No. The guide provides templates but does not replace a formal contract or legal advice. Consider consulting a lawyer for binding agreements.
-
-**Q7: What if I have a question after purchase?**
-A7: Contact support through the platform's help center or the support email listed in the product details.
 
 ## FAQ
 
-**How do I access the guide?**
+**How do I access the checklist pack?**
 
-The guide is available for download on the product page. It comes as a PDF and a text version.
+After you purchase the pack, you’ll receive an email with a download link. Click the link, unzip the file, and open the Google Docs templates in your Drive. If you need help, let us know and we’ll resend the link.
 
-**Can I use the templates for multiple clients?**
+**Can I edit the checklists?**
 
-Yes. Copy the template, replace the placeholders, and send it to each client.
+Yes. Open the template in Google Docs, click *File > Make a copy*, and then edit the copy. Your changes won’t affect the original template.
 
-**What if I need a different format?**
+**What if I need a refund?**
 
-The templates are plain text, so you can paste them into any word processor and adjust fonts, colors, or layout as you like.
+Our refund policy applies to all digital products. If you’re not satisfied, contact our support team within 30 days of purchase, and we’ll review your request. Please refer to the refund policy for details.
 
-**Are refunds available?**
+**Will the pack receive updates?**
 
-Refunds are handled per the product's refund policy, which can be found in the product details.
+We occasionally release updates to improve clarity or add new items. When an update is available, you’ll receive a notification and a new download link. You can replace your existing copy with the updated version.
 
-**Will the guide be updated?**
+**Do I need a Google account to use the templates?**
 
-New versions may be released. Check the product page for updates and download the latest copy.
+Yes, you need a Google account to open and edit the Google Docs templates. If you don’t have one, you can create a free account at google.com.
 
-**Does the guide include legal terms?**
+**Can I use the checklists for other types of freelancers?**
 
-No. The guide provides templates but does not replace a formal contract or legal advice. Consider consulting a lawyer for binding agreements.
-
-**What if I have a question after purchase?**
-
-Contact support through the platform's help center or the support email listed in the product details.
+Absolutely. The checklists are generic enough to work with designers, writers, developers, or any freelance professional. Just adjust the wording to fit the specific role.

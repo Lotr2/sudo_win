@@ -6,3 +6,10 @@ search:
   formats:
     - html
     - json
+# Public engines often block self-hosted search with CAPTCHAs or rate limits. These two usually still answer, and
+# the research tools retry on them when a search finds nothing (SEARXNG_FALLBACK_ENGINES).
+engines:
+  - name: bing
+    disabled: false
+  - name: yandex
+    disabled: false

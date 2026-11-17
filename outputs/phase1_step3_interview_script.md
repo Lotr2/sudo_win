@@ -1,28 +1,32 @@
-# Customer interview script: Proposal & Invoice Guide
+# Customer interview script: Client Communication Checklist Pack
 
-I'm looking into how people handle writing proposals and invoices. Could I ask you about the last time you had to create one?
+Hi, I’m exploring how small business owners manage communication with freelance designers. Could I ask you about the last time you worked on a design project?
 
 ## Questions (about past behaviour)
 
-1. Tell me about the last time you had to write a proposal or invoice.
-2. What steps did you follow to get it done?
-3. How long did it take you to finish it?
-4. Did you use any templates or tools? If so, which ones?
-5. What was the biggest challenge you faced during that process?
-6. How did you feel after you finished it?
-7. If you had to do it again, what would you do differently?
-8. Did you ever need to explain or justify the proposal/invoice to a client? How did that go?
+1. Tell me about the last time you sent a proposal to a freelance designer. What did you include?
+2. How did you follow up after sending the proposal? What steps did you take?
+3. When you received an invoice, how did you review and respond to it?
+4. What do you do when you need to send a payment reminder?
+5. Can you describe a time when a communication hiccup caused a delay or misunderstanding?
+6. What tools or templates do you currently use to keep track of these communications?
+7. How much time do you think you spend on these tasks each month?
+8. What would make this process easier for you?
 
 ## Notes template
 
-Tip: talk to 3-5 people and listen more than you talk.
+**Tip:** Talk to 3‑5 people and listen more than you talk.
 
----
-**Date:**
-**Interviewee:**
-**Problem (in their words):**
-**What they tried:**
-**Cost (time or money):**
+*Date:* 
+*Interviewer:* 
+*Interviewee:* 
+
+**Problem (in their words):** 
+
+**What they tried:** 
+
+**Cost (time, money, frustration):** 
+
 **Memorable quotes:**
 
 Interviews are run by the founder with real people. Simulated persona interviews, if any, are labelled SIMULATED and count for nothing at any gate.

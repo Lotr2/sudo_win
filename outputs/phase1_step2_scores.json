@@ -2,160 +2,100 @@
  "how_scores_work": "Each version gets up to 100 points: evidence that people have this problem (30 points), fit with your skills, budget and time (25 points), places to reach these customers (20 points), can be built as a first version (15 points), room next to existing options (10 points). These weights are design choices, not facts (config/scoring.toml).",
  "versions": [
   {
-   "name": "Proposal & Invoice Guide",
+   "name": "Client Communication Checklist Pack",
    "total_out_of_100": 60,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1).",
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1); it scores 60 out of 100; 60 is needed.",
    "points": {
-    "Evidence that people have this problem": "5 of 30: Found 1 real example of people describing this problem or looking for help with it, on dribbble.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 1 of 1 is about your market. For example: “Freelance graphic designers find writing proposals daunting when they have never done it before”.",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing and graphic design; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Evidence that people have this problem": "5 of 30: Found 1 real example of people describing this problem or looking for help with it, on linkedin.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 1 of 1 is about your market. For example: “Business owners find it difficult to negotiate and set expectations with freelance designers”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing, graphic design and google docs; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).",
     "Places to reach these customers": "13 of 20: These customers can be found on linkedin.com and upwork.com.",
+    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "2 of 10: Found 3 existing options but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Polite Reminder Pack",
+   "total_out_of_100": 50,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1); it scores 50 out of 100; 60 is needed.",
+   "points": {
+    "Evidence that people have this problem": "3 of 30: Found 1 real example of people describing this problem or looking for help with it, on microfreelancehub.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Graphic designers often struggle to draft polite, effective late‑payment reminder emails that keep clients happy”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for email writing, graphic design and figma; it needs about 8 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Places to reach these customers": "7 of 20: These customers can be found on graphicdesign.stackexchange.com.",
+    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "0 of 10: Found 6 existing options but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Timing Guide",
+   "total_out_of_100": 40,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.",
+   "points": {
+    "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing, graphic design and google docs; it needs about 12 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
     "Can be built as a first version": "15 of 15: It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "2 of 10: Found 7 existing options and 1 complaint about them. Complaints show where you could do better."
-   }
-  },
-  {
-   "name": "Invoice Template Pack",
-   "total_out_of_100": 59,
-   "verdict": "Held back because it scores 59 out of 100; 60 is needed.",
-   "points": {
-    "Evidence that people have this problem": "19 of 30: Found 4 real examples of people describing this problem or looking for help with it, on billed.app, freshbooks.com, invoicemaker.com and pinterest.com. Full marks need 5. Of these, 4 are articles or other pages (these count a little less); 4 of 4 are about your market. For example: “Freelance designers are looking for ready‑made invoice templates to save time and look professional”.",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for graphic design and writing; it needs about 5 hours (you have about 24 a month) and about $0 (your budget is $150).",
-    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
-    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "0 of 10: Found 9 existing options but no complaints about them. Complaints show where you could do better."
-   }
-  },
-  {
-   "name": "Polite Reminder Email Pack",
-   "total_out_of_100": 55,
-   "verdict": "Held back because it scores 55 out of 100; 60 is needed.",
-   "points": {
-    "Evidence that people have this problem": "15 of 30: Found 5 real examples of people describing this problem or looking for help with it, on flowlu.com, hellobonsai.com, pumble.com and saleshandy.com and 1 more. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 4 are articles or other pages (these count a little less); 0 of 5 are about your market (the others count less). For example: “Freelancers are looking for polite reminder email templates to avoid sounding pushy” / “People ask how to politely remind someone via email, indicating a need for guidance on tone”.",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for graphic design and writing; it needs about 6 hours (you have about 24 a month) and about $0 (your budget is $150).",
-    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
-    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "0 of 10: Found 8 existing options but no complaints about them. Complaints show where you could do better."
+    "Room next to existing options": "0 of 10: Found 5 existing options but no complaints about them. Complaints show where you could do better."
    }
   }
  ],
  "raw_scores": [
   {
    "variant_id": "v1",
-   "pain": 0.504,
+   "pain": 0.096,
    "founder_fit": 1.0,
-   "reachability": 0.0,
+   "reachability": 0.333,
    "buildability": 1.0,
    "competition_gap": 0.0,
-   "score": 0.551,
-   "pain_signals": 5,
-   "pain_domains": 5,
+   "score": 0.495,
+   "pain_signals": 1,
+   "pain_domains": 1,
    "fit_rules_pass": true,
    "inputs": {
     "hours_per_week": 6.0,
     "budget_usd": 150.0,
     "skill_coverage": 1.0,
     "budget_ok": true,
-    "build_hours": 6.0,
+    "build_hours": 8.0,
     "complaints": 0,
-    "alternatives": 8,
-    "channels": 0,
+    "alternatives": 6,
+    "channels": 1,
     "skills_covered": [
+     "email writing",
      "graphic design",
-     "writing"
+     "Figma"
     ],
     "skills_learnable": [],
     "skills_missing": [],
     "help_affordable": false,
     "budget_needed": 0.0,
     "month_hours": 24.0,
-    "channel_sites": [],
+    "channel_sites": [
+     "graphicdesign.stackexchange.com"
+    ],
     "problem_sites": [
-     "flowlu.com",
-     "hellobonsai.com",
-     "pumble.com",
-     "saleshandy.com",
-     "tickoffhq.com"
+     "microfreelancehub.com"
     ],
     "in_templates": true,
     "problem_claims": [
-     "Freelancers are looking for polite reminder email templates to avoid sounding pushy.",
-     "People ask how to politely remind someone via email, indicating a need for guidance on tone.",
-     "There are many ready‑made polite reminder email templates available online for freelancers."
+     "Graphic designers often struggle to draft polite, effective late‑payment reminder emails that keep clients happy."
     ],
     "problem_grades": {
-     "question": 1,
-     "article": 4
+     "article": 1
     },
     "problem_on_market": 0,
     "problem_urls": [
-     "https://pumble.com/blog/friendly-reminder-email/",
-     "https://tickoffhq.com/",
-     "https://www.flowlu.com/blog/productivity/gentle-reminder-email/",
-     "https://www.hellobonsai.com/blog/gentle-reminder-email-example",
-     "https://www.saleshandy.com/blog/politely-remind-someone-reply-email/"
+     "https://www.microfreelancehub.com/templates/graphic-designer-late-payment-demand-letter"
     ]
    }
   },
   {
    "variant_id": "v2",
-   "pain": 0.64,
-   "founder_fit": 1.0,
-   "reachability": 0.0,
-   "buildability": 1.0,
-   "competition_gap": 0.0,
-   "score": 0.592,
-   "pain_signals": 4,
-   "pain_domains": 4,
-   "fit_rules_pass": true,
-   "inputs": {
-    "hours_per_week": 6.0,
-    "budget_usd": 150.0,
-    "skill_coverage": 1.0,
-    "budget_ok": true,
-    "build_hours": 5.0,
-    "complaints": 0,
-    "alternatives": 9,
-    "channels": 0,
-    "skills_covered": [
-     "graphic design",
-     "writing"
-    ],
-    "skills_learnable": [],
-    "skills_missing": [],
-    "help_affordable": false,
-    "budget_needed": 0.0,
-    "month_hours": 24.0,
-    "channel_sites": [],
-    "problem_sites": [
-     "billed.app",
-     "freshbooks.com",
-     "invoicemaker.com",
-     "pinterest.com"
-    ],
-    "in_templates": true,
-    "problem_claims": [
-     "Freelance designers are looking for ready‑made invoice templates to save time and look professional."
-    ],
-    "problem_grades": {
-     "article": 4
-    },
-    "problem_on_market": 4,
-    "problem_urls": [
-     "https://billed.app/invoice-templates/freelance-designer/",
-     "https://invoicemaker.com/templates/freelance/designer/",
-     "https://www.freshbooks.com/invoice-templates/freelance-design",
-     "https://www.pinterest.com/ideas/freelance-invoice-template/944099864122/"
-    ]
-   }
-  },
-  {
-   "variant_id": "v3",
    "pain": 0.16,
    "founder_fit": 1.0,
    "reachability": 0.667,
    "buildability": 1.0,
-   "competition_gap": 0.2,
-   "score": 0.601,
+   "competition_gap": 0.16,
+   "score": 0.597,
    "pain_signals": 1,
    "pain_domains": 1,
    "fit_rules_pass": true,
@@ -165,12 +105,13 @@
     "skill_coverage": 1.0,
     "budget_ok": true,
     "build_hours": 10.0,
-    "complaints": 1,
-    "alternatives": 7,
+    "complaints": 0,
+    "alternatives": 3,
     "channels": 2,
     "skills_covered": [
      "writing",
-     "graphic design"
+     "graphic design",
+     "Google Docs"
     ],
     "skills_learnable": [],
     "skills_missing": [],
@@ -182,19 +123,58 @@
      "upwork.com"
     ],
     "problem_sites": [
-     "dribbble.com"
+     "linkedin.com"
     ],
     "in_templates": true,
     "problem_claims": [
-     "Freelance graphic designers find writing proposals daunting when they have never done it before."
+     "Business owners find it difficult to negotiate and set expectations with freelance designers."
     ],
     "problem_grades": {
      "article": 1
     },
     "problem_on_market": 1,
     "problem_urls": [
-     "https://dribbble.com/resources/freelance/design-proposal"
+     "https://www.linkedin.com/posts/nikki-sanz_nobody-teaches-you-how-to-freelance-which-activity-7506400354704609281-Uc6-"
     ]
+   }
+  },
+  {
+   "variant_id": "v3",
+   "pain": 0.0,
+   "founder_fit": 1.0,
+   "reachability": 0.0,
+   "buildability": 1.0,
+   "competition_gap": 0.0,
+   "score": 0.4,
+   "pain_signals": 0,
+   "pain_domains": 0,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 12.0,
+    "complaints": 0,
+    "alternatives": 5,
+    "channels": 0,
+    "skills_covered": [
+     "writing",
+     "graphic design",
+     "Google Docs"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 0.0,
+    "month_hours": 24.0,
+    "channel_sites": [],
+    "problem_sites": [],
+    "in_templates": true,
+    "problem_claims": [],
+    "problem_grades": {},
+    "problem_on_market": 0,
+    "problem_urls": []
    }
   }
  ]

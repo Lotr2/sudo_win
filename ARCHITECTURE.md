@@ -590,7 +590,7 @@ Router rules:
 
 **Run modes.** `RUN_MODE=full` runs every phase with the full conversation. `RUN_MODE=demo` sets a time budget per node, caps research at 5 sources per variant, streams progress to the UI, and keeps the conversation short: at most 3 intake questions, one read-back, at most 1 blocking question per phase, and a 30-second timeout after which an open question stays a labelled assumption. Phases 1–2 and their gates then finish within a few minutes on a laptop.
 
-**Cost per run.** $0.00: GPT-OSS-20B is local and Gemma 4 31B runs on the Gemini API free tier. Tokens are logged for every call, per model, so the cost of other setups can be compared. The committed six-stage demo run used about 237,000 tokens; the agentic skills account for most of the increase over a single-pass design (about 28,000 tokens for Stage 1), in exchange for steadier, better-sourced results.
+**Cost per run.** $0.00: GPT-OSS-20B is local and Gemma 4 31B runs on the Gemini API free tier. Tokens are logged for every call, per model, so the cost of other setups can be compared. The committed six-stage demo run used about 251,000 tokens; the agentic skills account for most of the increase over a single-pass design (about 28,000 tokens for Stage 1), in exchange for steadier, better-sourced results.
 
 ## Safety and founder control
 

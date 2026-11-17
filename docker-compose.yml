@@ -48,6 +48,8 @@ services:
       - path: .env
         required: false
     environment:
+      # Fixed here so a local .env made for running without Docker cannot point the container elsewhere.
+      OSS_BACKEND: ollama
       OLLAMA_HOST: http://ollama:11434
       SEARXNG_URL: http://searxng:8080
       RUNS_DIR: /app/runs

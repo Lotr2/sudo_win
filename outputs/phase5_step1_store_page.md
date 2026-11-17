@@ -1,13 +1,15 @@
-# Proposal & Invoice Guide for Freelance Designers
+# Client Communication Checklist Pack
 
-A concise guide that gives ready‑to‑use templates and step‑by‑step instructions for proposals and invoices.
+A ready‑made set of editable checklists that helps small business owners communicate clearly with freelance designers about proposals, invoices, and payment reminders.
 
 ## What's included
 
-- Core guide
-- All standard templates
+- Pre‑written checklists for proposals, invoices, and payment reminders
+- Editable in Google Docs for quick customization
+- Fill‑in fields to capture key details
+- Saves time and reduces miscommunication
 
-**$27.00**
+**Basic: $29 • Standard: $49 • Premium: $79**
 
 14‑day money‑back guarantee
 
