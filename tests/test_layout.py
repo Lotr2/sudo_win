@@ -71,6 +71,8 @@ class LayoutTest(unittest.TestCase):
 
     def test_package_modules_import(self):
         for path in sorted((ROOT / "venture_builder").rglob("*.py")):
+            if path.name.startswith("acceptance_"):  # run inside a built product, next to its spec.json
+                continue
             module = ".".join(path.relative_to(ROOT).with_suffix("").parts).removesuffix(".__init__")
             importlib.import_module(module)
 
