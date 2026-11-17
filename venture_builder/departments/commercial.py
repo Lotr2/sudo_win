@@ -44,19 +44,36 @@ def p4_start_answer(ctx: Context, answer) -> Next:
 
 
 def _sourced_range(ctx: Context, ids: list[str]) -> tuple[float, float] | None:
+    from ..tools.research import price_quotes
     prices = []
     for i in ids:
         item = ctx.ledger.get(i)
         if item and item.type == "web":
-            for m in __import__("re").finditer(r"\$\s?(\d{1,4}(?:\.\d{2})?)", item.snippet):
-                prices.append(float(m.group(1)))
+            for quote in price_quotes(item.snippet):      # only prices stated for a comparable product
+                for m in __import__("re").finditer(r"\$\s?(\d{1,4}(?:\.\d{2})?)", quote):
+                    prices.append(float(m.group(1)))
     prices = [p for p in prices if 1 <= p <= 2000]
     return (min(prices), max(prices)) if len(prices) >= 2 else None
 
 
+FORM_WORDS = {"guide": "guide", "template_pack": "template pack", "web_tool": "online tool"}
+
+
+def _research_prices(ctx: Context) -> list[str]:
+    """What do products like the one actually built cost? Stage 1 researched the problem before the product
+    existed; this looks up comparable products by the spec's title and form."""
+    from ..tools.research import research_prices
+    d = ctx.dossier
+    customer = next((v.target_customer for v in d.variants if v.id == d.chosen_variant), d.profile.market or "")
+    form = FORM_WORDS.get(d.spec.product_form, "digital product")
+    queries = [f"{d.spec.title} price", f"{form} for {customer} price".strip()]
+    return research_prices(queries, ledger=ctx.ledger, search=ctx.search, fetch=ctx.fetch,
+                           fetch_pages=int(ctx.skill("fetch_pages") or 2))
+
+
 def p4_pricing(ctx: Context, answer) -> Next:
     d = ctx.dossier
-    ids = _price_evidence(ctx)
+    ids = list(dict.fromkeys(_price_evidence(ctx) + _research_prices(ctx)))
     payload = {"product": d.spec.model_dump(include={"title", "summary", "product_form", "features"}),
                "price_evidence": ctx.ledger.listing(ids),
                "founder_preferences": [x["text"] for x in d.founder_inputs if x.get("phase") == 4]}

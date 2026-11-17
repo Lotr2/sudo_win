@@ -349,3 +349,46 @@ def test_built_product_is_written_to_outputs(make_runtime):
     product = (rt.ctx.store.dir / "product" / "guide.md").read_text()
     assert product.strip().splitlines()[0] in text           # the real built file, not a summary of it
     assert "MOCKED" not in text.splitlines()[0]
+
+
+# ---- Stage 4 looks up what comparable products cost ----
+
+class PricedSearch:
+    """Like FakeSearch, but price searches find competitor pages that state prices, plus unrelated prices."""
+    def __init__(self):
+        from fakes import FakeSearch
+        self.base, self.queries = FakeSearch(), []
+
+    def __call__(self, query, limit=5):
+        self.queries.append(query)
+        if "price" in query.lower():
+            return [{"url": "https://shop-a.example.com/kit", "title": "a",
+                     "content": "Client Onboarding Template Pack for designers: $19 one-time download."},
+                    {"url": "https://shop-b.example.net/bundle", "title": "b",
+                     "content": "The freelance proposal guide and templates bundle costs $29."},
+                    {"url": "https://news.example.org/x", "title": "c",
+                     "content": "A mobile app design project cost $1500 and took 20 days."}]
+        return self.base(query, limit)
+
+
+def test_stage4_prices_are_sourced_from_comparable_products(make_runtime):
+    """Gap: Stage 4 never searched for prices of the product it built, so Gate 4 said "couldn't find competitor
+    prices" and the price stayed a guess, although ARCHITECTURE promises a price anchored on sourced prices."""
+    from conftest import drive
+    search = PricedSearch()
+    rt = make_runtime(search=search)
+    p = drive(rt, stop_at_gate=4)
+    assert any("price" in q.lower() for q in search.queries)
+    assert rt.dossier.build.get("price_range") == [19.0, 29.0]          # the $1500 app project is not a comparable
+    assert p["recommended"] == "go" and "couldn't find competitor prices" not in p["reasons"][0]
+    pricing = (rt.ctx.store.outputs / "phase4_step1_pricing.md").read_text()
+    assert "$19 to $29" in pricing
+
+
+def test_stage4_without_search_keeps_the_price_an_assumption(make_runtime):
+    from fakes import FakeSearch
+    from conftest import drive
+    rt = make_runtime(search=FakeSearch())
+    p = drive(rt, stop_at_gate=4)
+    assert rt.dossier.build.get("price_range") is None
+    assert "ASSUMPTION" in p["reasons"][0]
