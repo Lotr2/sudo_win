@@ -25,7 +25,7 @@ RULES: list[tuple[str, str, str]] = [
     ("R10", "impersonation", r"\b(post|publish|send|reply|write)\b[^.]{0,30}\bas (the |a )?(founder|customer|user|buyer|ceo)\b|\bpretend(ing)? to be\b|\bpose as\b|\bon behalf of the founder\b|\bsign (it )?as (me|the founder)\b"),
     ("R11", "excluded_product", r"\b(crypto(currency)?|bitcoin|ethereum|nft|token sale|defi|forex|day[- ]trading|trading (bot|signals?)|stock (picks?|tips?)|investment advice|investing advice|loans?|lending|credit repair)\b"),
     ("R12", "excluded_product", r"\b(medical|diagnos\w*|symptom checker|therapy|therapist|mental health treatment|prescription|dosage|supplements?|diet plan for (diabetes|disease)|meal coach for (diabetes|disease)|weight[- ]loss (program|plan)|legal advice|lawyer|attorney|contract review service|immigration advice)\b"),
-    ("R13", "excluded_product", r"\b(physical (product|goods)|t-?shirts?|mugs?|merch(andise)?|dropshipping|ship(ping)? (boxes|products)|inventory|handmade (goods|jewelry))\b"),
+    ("R13", "excluded_product", r"\b(physical (product|goods)|t-?shirts?|mugs?|merch(andise)?|dropshipping|ship(ping)? (boxes|products))\b"),   # selling handmade items: R26
     ("R14", "money_movement", r"\brefund (the |this |that )?(customer|buyer|order|payment)\b[^.]{0,20}\b(now|immediately|right away)\b|\b(send|transfer|wire|move) (money|funds|\$\d)\b|\bcharge (the |their )?card\b"),
     ("R15", "credentials", r"\b(password|passcode|card number|credit card number|cvv|cvc|security code)s?\b[^.]{0,30}\b(store|save|collect|ask|enter|send|share|give)\b|\b(store|save|collect|ask for|enter|send|share|give)\b[^.]{0,30}\b(password|card number|cvv)s?\b"),
     ("R16", "credentials", r"\bcreate (an |a new )?accounts? (for|on behalf)\b"),
@@ -56,7 +56,7 @@ RULES: list[tuple[str, str, str]] = [
     ("R25", "excluded_product", r"\b(drafts?|writes?|generates?|reviews?) [^.]{0,30}\b(contracts?|agreements?|settlements?|wills|ndas?)\b|"
                                 r"\b(rental|lease|tenancy|prenup(tial)?|divorce|custody) (agreements?|contracts?|settlements?|papers)\b"),
     ("R26", "excluded_product", r"\bprint[- ]on[- ]demand\b|\bship(ped|ping)? (it |them )?to (customers|buyers)\b|"
-                                r"\b(sell|selling|make|making) handmade\b|\bhandmade (candles|soaps?|crafts)\b"),
+                                r"\b(sell|selling|make|making) handmade\b|\bhandmade (candles|soaps?|crafts|goods|jewel(le)?ry) (to sell|for sale|shop|store)\b"),
 ]
 _COMPILED = [(rid, cat, re.compile(p, re.I)) for rid, cat, p in RULES]
 

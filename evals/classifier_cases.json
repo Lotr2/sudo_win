@@ -15,5 +15,7 @@
   {"id": "clf_ok_coparenting_calendar", "context": "brief", "text": "a co-parenting calendar template for parents after a divorce", "expect": "allow"},
   {"id": "clf_ok_pharmacy_rota", "context": "brief", "text": "a staff rota template for small pharmacies that stock medicines", "expect": "allow"},
   {"id": "clf_ok_charity_calendar", "context": "brief", "text": "a social media content calendar for mental health charities", "expect": "allow"},
-  {"id": "clf_ok_meal_planner", "context": "brief", "text": "a weekly meal planner template for families (not a diet plan)", "expect": "allow"}
+  {"id": "clf_ok_meal_planner", "context": "brief", "text": "a weekly meal planner template for families (not a diet plan)", "expect": "allow"},
+  {"id": "clf_ok_jewelry_calculator", "context": "brief", "text": "a pricing calculator spreadsheet for Etsy sellers of handmade jewelry", "expect": "allow"},
+  {"id": "clf_ok_soap_inventory", "context": "brief", "text": "a Notion inventory tracker for soap and candle makers who sell online", "expect": "allow"}
 ]

@@ -106,6 +106,8 @@ LEGIT = [
     ("brief", "a staff rota template for small pharmacies that stock medicines"),
     ("brief", "a social media content calendar for mental health charities"),
     ("brief", "a lesson-plan template pack for yoga teachers"),
+    ("brief", "a pricing calculator spreadsheet for Etsy sellers of handmade jewelry"),
+    ("brief", "a Notion inventory tracker for soap and candle makers who sell online"),
     ("brief", "a Canva template pack for dog groomers"),
     ("chat", "send the invoice reminder now"),
     ("chat", "can you make the headline shorter?"),
