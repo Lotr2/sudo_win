@@ -149,11 +149,12 @@ def explain_version(v: Variant, s: VariantScore, weights: dict, g1: dict, profil
         if (missing or learnable) and not i.get("help_affordable") and i.get("skill_coverage", 1) < 0.5:
             blockers.append(f"needs skills you don't list yet: {_list(missing or learnable)}")
     if s.score < g1["min_score"]:
-        blockers.append(f"scores {s.score * 100:.0f} out of 100; {g1['min_score'] * 100:.0f} is needed")
+        blockers.append(f"scores {labels.points(s.score, g1['min_score'])} out of 100; "
+                        f"{labels.points(g1['min_score'])} is needed")
     strengths = [f["name"].lower() for f in factors if f["max"] and f["points"] >= 0.8 * f["max"]]
     verdict = ("Passes every check." if not blockers else "Held back because it " + "; it ".join(blockers) + ".")
     return {"id": v.id, "name": v.name, "customer": v.target_customer, "problem": v.problem, "form": form,
-            "total": round(s.score * 100), "factors": factors, "blockers": blockers, "strengths": strengths,
+            "total": float(labels.points(s.score, g1["min_score"])), "factors": factors, "blockers": blockers, "strengths": strengths,
             "verdict": verdict}
 
 

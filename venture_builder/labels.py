@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 
 PHASES = {
@@ -199,13 +200,23 @@ def detail_name(key: str) -> str:
     return DETAIL_NAMES.get(key, human(key))
 
 
+def points(score: float, need: float | None = None) -> str:
+    """A 0-1 score as points out of 100, to one decimal (0.7 -> "70", 0.724 -> "72.4"). With a threshold, the
+    shown number never lands on the other side of it: 0.5996 against 0.6 is "59.9", never "60"."""
+    v, n = score * 100, None if need is None else need * 100
+    shown = round(v, 1)
+    if n is not None and (v < n) != (shown < n):
+        shown = math.floor(v * 10) / 10 if v < n else math.ceil(v * 10) / 10
+    return f"{shown:g}"
+
+
 def detail_value(key: str, value):
     """Format one gate input for people: 0.47 score -> 47; ratios and rates -> percentages."""
     if isinstance(value, bool) or value is None:
         return value
     try:
         if key == "score":
-            return f"{float(value) * 100:.0f}"
+            return points(float(value))
         if key in {"conversion", "refund_rate"}:
             return f"{float(value):.1%}"
         if key in {"ratio", "min_conversion", "max_refund_rate"}:
@@ -266,7 +277,7 @@ def _shortfall(s: dict) -> str:
     if s["kind"] == "pain_domains":
         return f"examples from only {plural(s['have'], 'website')} (needs {s['need']})"
     if s["kind"] == "score":
-        return f"a score of {s['have'] * 100:.0f} out of 100 (needs {s['need'] * 100:.0f})"
+        return f"a score of {points(s['have'], s['need'])} out of 100 (needs {points(s['need'])})"
     return "it doesn't fit your budget, time or skills well enough"
 
 
@@ -299,13 +310,13 @@ GATE_REASONS = {
     "top_version_passes": lambda f: (
         f"The best version, {_version(f['top'])}, looks promising: "
         f"the team found {plural(f['top']['pain_signals'], 'real example')} of people struggling with this problem "
-        f"on {plural(f['top']['pain_domains'], 'different website')}, it scores {f['top']['score'] * 100:.0f} out of "
-        f"100 (needs {f['min_score'] * 100:.0f}), and it fits your skills, budget and time."),
+        f"on {plural(f['top']['pain_domains'], 'different website')}, it scores {points(f['top']['score'], f['min_score'])} out of "
+        f"100 (needs {points(f['min_score'])}), and it fits your skills, budget and time."),
     "other_version_passes": lambda f: (
         f"The top-scoring version, {_version(f['top'])}, falls short, but {_version(f['other'])} passes: "
         f"{plural(f['other']['pain_signals'], 'real example')} of the problem on "
         f"{plural(f['other']['pain_domains'], 'website')}, scoring "
-        f"{f['other']['score'] * 100:.0f} out of 100. Switching to it is the better bet."),
+        f"{points(f['other']['score'], f['min_score'])} out of 100. Switching to it is the better bet."),
     "no_pain_found": lambda f: (
         "The team hasn't yet found real people online describing this problem, so the need is still a "
         "guess. Another round of research, ideally with a narrower customer group, may find it."),

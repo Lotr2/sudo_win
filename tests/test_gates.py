@@ -259,3 +259,31 @@ def test_each_run_has_its_own_graph_and_context(make_runtime):
     with pytest.raises(RuntimeError):
         a.graph.invoke({"run_id": b.run_id, "next": "p1_parse", "pending": None, "answer": None},
                        {"configurable": {"thread_id": "other"}})
+
+
+# ---- scores near the threshold are never shown on the wrong side of it ----
+
+def test_score_just_below_the_bar_is_not_shown_as_meeting_it():
+    """Regression: 0.597 was shown as "a score of 60 out of 100 (needs 60)" and treated as a shortfall."""
+    from venture_builder import labels
+    from venture_builder.schemas import VariantScore
+    assert labels.points(0.597, 0.6) == "59.7"
+    assert labels.points(0.59996, 0.6) == "59.9"            # one decimal would still say 60: round down instead
+    assert labels.points(0.6, 0.6) == "60" and labels.points(0.7) == "70" and labels.points(0.724) == "72.4"
+    s = VariantScore(variant_id="v1", pain=0, founder_fit=0, reachability=0, buildability=0, competition_gap=0,
+                     score=0.597, pain_signals=1, pain_domains=1, fit_rules_pass=True)
+    reason = gates.gate1([s], excluded=None, search_failed=False, repeats=0, t=T, names={"v1": "Kit"}).reasons[0]
+    assert "a score of 59.7 out of 100 (needs 60)" in reason and "60 out of 100 (needs 60)" not in reason
+
+
+def test_breakdown_total_and_blocker_agree_with_the_gate():
+    from venture_builder.explain import explain_version
+    from venture_builder.schemas import Variant, VariantScore
+    v = Variant(id="v1", name="Kit", target_customer="c", problem="p", product_form="guide", est_build_hours=5,
+                budget_needed_usd=0)
+    s = VariantScore(variant_id="v1", pain=0.2, founder_fit=1, reachability=1, buildability=1, competition_gap=0.5,
+                     score=0.597, pain_signals=1, pain_domains=1, fit_rules_pass=True)
+    w = {"pain": .3, "founder_fit": .25, "reachability": .2, "buildability": .15, "competition_gap": .1}
+    e = explain_version(v, s, w, {"min_pain_signals": 3, "min_source_domains": 2, "min_score": 0.6}, {})
+    assert e["total"] == 59.7
+    assert any("scores 59.7 out of 100; 60 is needed" in b for b in e["blockers"])
