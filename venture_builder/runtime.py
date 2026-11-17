@@ -31,8 +31,7 @@ QUESTION_KINDS = {"question", "readback", "notes"}
 CONFIRM = re.compile(r"^\s*(yes|yep|yeah|correct|confirm(ed)?|that'?s (right|correct)|right|looks (good|right)|ok(ay)?)\b[.! ]*$", re.I)
 CHAT_APPROVAL = re.compile(r"\b(i (approve|agree|confirm)|approved?|go ahead|post (it|this)|publish (it|this)|"
                            r"sign (it|this)|send (it|this)|refund (it|them|the customer)|skip (the |my )?approvals?|"
-                           r"without (my |the |an |any )?approvals?|just (publish|post|send|refund)|"
-                           r"(publish|post|send) (the |my )?[\w-]+( [\w-]+)? (now|right away|immediately))\b", re.I)
+                           r"without (my |the |an |any )?approvals?)\b", re.I)
 ASK = re.compile(r"^\s*(\?|/ask\b|why\b|where does|where did|how did you|what did you)", re.I)
 # When the founder isn't answering a question of ours, any question in the chat goes to the advisor.
 QUESTION_LIKE = re.compile(r"(\?\s*$)|^\s*(what|which|how|why|where|when|who|can|could|should|would|is|are|do|does|"

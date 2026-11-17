@@ -44,17 +44,19 @@ RULES: list[tuple[str, str, str]] = [
                              r"\bfrom (a|an) (happy|satisfied|real) (customer|user|buyer|client)\b"),
     ("R22", "credentials", r"\b(store|save|keep|collect|ask|request|remember)\b[^.]{0,40}\b(passwords?|card (details|numbers?|"
                            r"info(rmation)?)|credit cards?|cvv|login details)\b"),
-    ("R23", "excluded_product", r"\b(index funds?|etfs?|stock market|how to invest|invest(ing|ment)s? (in|course|guide|tips|strateg(y|ies)|plan)|"
-                                r"real estate investing|tax[- ](saving|advice|strateg(y|ies)|planning|tips)|retirement planning|"
-                                r"wealth management|financial advice|trading course)\b"),
-    ("R24", "excluded_product", r"\b(medications?|medicines?|dose|doses|dosing|painkillers?|anxiety|depression|mental health|"
-                                r"(without|instead of) (a |seeing a |going to a )?doctor|keto|diet (plan|ebook|e-book|program)|"
-                                r"lose \d+\s?(kg|kilos?|lbs?|pounds)|weight[- ]loss|treatment plan)\b"),
-    ("R25", "excluded_product", r"\b((rental|lease|tenancy|employment|partnership|prenup(tial)?|settlement) (agreements?|contracts?)|"
-                                r"ndas?|non[- ]disclosure agreements?|divorce|last will|wills and trusts|estate planning|"
-                                r"contract templates?|legal (documents?|templates?|forms?|guide)|visa applications?)\b"),
-    ("R26", "excluded_product", r"\b(candles?|soaps?|handmade|hand-made|print[- ]on[- ]demand|printed (posters?|books?|planners?)|"
-                                r"apparel|clothing|jewell?ery|etsy shop|ship(ped|ping)? to (customers|buyers))\b"),
+    # Excluded products, narrowly: the product itself gives the advice or ships the goods. A product FOR people or
+    # businesses in these areas (captions for a clothing shop, a pharmacy rota) is not excluded, so topic words
+    # alone never block here; anything less clear-cut is left to the classifier.
+    ("R23", "excluded_product", r"\bhow to invest\b|\binvest(ing|ment) (advice|tips|signals|picks)\b|"
+                                r"\b(which|what) (stocks?|shares?|coins?|crypto(currency|currencies)?) to (buy|sell)\b"),
+    ("R24", "excluded_product", r"\b(which|what) (medications?|medicines?|pills?|drugs?)\b[^.]{0,20}\bto (take|give)\b|"
+                                r"\b(medication|medicine|drug) (doses?|dosage|dosing)\b|\bhow much (medication|medicine) to (take|give)\b|"
+                                r"\b(without|instead of) (a |seeing a |going to a )?doctor\b|\blose \d+\s?(kg|kilos?|lbs?|pounds)\b|"
+                                r"\bweight[- ]loss (plan|program|programme|e-?book|course)\b"),
+    ("R25", "excluded_product", r"\b(drafts?|writes?|generates?|reviews?) [^.]{0,30}\b(contracts?|agreements?|settlements?|wills|ndas?)\b|"
+                                r"\b(rental|lease|tenancy|prenup(tial)?|divorce|custody) (agreements?|contracts?|settlements?|papers)\b"),
+    ("R26", "excluded_product", r"\bprint[- ]on[- ]demand\b|\bship(ped|ping)? (it |them )?to (customers|buyers)\b|"
+                                r"\b(sell|selling|make|making) handmade\b|\bhandmade (candles|soaps?|crafts)\b"),
 ]
 _COMPILED = [(rid, cat, re.compile(p, re.I)) for rid, cat, p in RULES]
 
