@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITLE}}</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #1b1b1b; }
+    label { display: block; margin-top: 1rem; font-weight: 600; }
+    input { width: 100%; padding: .5rem; font-size: 1rem; }
+    button { margin-top: 1.5rem; padding: .6rem 1.2rem; font-size: 1rem; }
+    #result { margin-top: 1.5rem; padding: 1rem; background: #f2f2f2; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>{{TITLE}}</h1>
+  <p>{{DESCRIPTION}}</p>
+  <form id="tool" onsubmit="return false">
+{{INPUTS}}
+    <button id="calculate" type="button">Calculate</button>
+  </form>
+  <h2>{{RESULT_LABEL}}</h2>
+  <div id="result" aria-live="polite"></div>
+  <script>
+    const INPUT_IDS = {{INPUT_IDS}};
+    function compute(v) {
+{{COMPUTE_BODY}}
+    }
+    document.getElementById("calculate").addEventListener("click", () => {
+      const v = {};
+      for (const id of INPUT_IDS) { v[id] = parseFloat(document.getElementById(id).value) || 0; }
+      document.getElementById("result").textContent = String(compute(v));
+    });
+  </script>
+</body>
+</html>

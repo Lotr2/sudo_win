@@ -1,0 +1,3 @@
+Task: draft three short policies for this digital product: terms of service, privacy policy and refund policy.
+
+Return {terms, privacy, refunds, refund_window_days}. Each document is markdown and its first line is exactly "DRAFT: not legal advice". Terms must cover the licence to use the product, refunds (point to the refund policy) and contact. Privacy must say what is collected, how it is used, and contact; say that passwords and card numbers are never collected or stored by the seller. Refunds must state the refund window as a number of days (the same number as refund_window_days) and how to request a refund. No guarantees of results, no income claims. If violations_to_fix are given, fix every one.
