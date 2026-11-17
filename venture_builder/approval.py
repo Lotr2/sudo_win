@@ -5,15 +5,22 @@
 - Approval records and gate decisions are created only from a `FounderConfirmation`, which the CLI makes
   after an interactive TTY confirmation and the web UI makes from a button press. Chat text never reaches
   this module, and there is no auto-approve path.
-- `publish()` raises `NotApproved` without a valid record. Every publish adapter is MOCKED.
+- `publish()` raises `NotApproved` without a valid record. An approval is used once: the item moves from
+  approved to published in one conditional update, so a second call raises `AlreadyExecuted`.
+- Gate decisions are confirmed with a random one-time code issued when the gate is presented (not derivable
+  from the gate number), stored here and spent by the decision.
+- Every publish adapter is MOCKED.
 """
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
+import secrets
 import sqlite3
 import threading
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,6 +46,10 @@ def allowed_channels() -> set[str]:
 
 class NotApproved(PermissionError):
     pass
+
+
+class AlreadyExecuted(NotApproved):
+    """The approval was already used: an approved item runs at most once."""
 
 
 class InvalidConfirmation(PermissionError):
@@ -75,6 +86,8 @@ CREATE TABLE IF NOT EXISTS gate_decisions (
   override INTEGER, decided_by TEXT, channel TEXT, timestamp TEXT, note TEXT);
 CREATE TABLE IF NOT EXISTS publish_log (
   id INTEGER PRIMARY KEY AUTOINCREMENT, item_id TEXT, approval_id TEXT, adapter TEXT, timestamp TEXT);
+CREATE TABLE IF NOT EXISTS gate_codes (
+  gate INTEGER, attempt INTEGER, code TEXT, issued_at TEXT, used_at TEXT, PRIMARY KEY (gate, attempt));
 """
 
 
@@ -86,16 +99,30 @@ class Outbox:
         self._db.row_factory = sqlite3.Row
         self._db.executescript(SCHEMA)
 
+    @contextlib.contextmanager
+    def _write(self):
+        """One write transaction holding SQLite's write lock from the start (BEGIN IMMEDIATE)."""
+        if self._db.in_transaction:
+            self._db.commit()
+        self._db.execute("BEGIN IMMEDIATE")
+        try:
+            yield
+        except BaseException:
+            self._db.rollback()
+            raise
+        self._db.commit()
+
     # ---- items ----
     def propose(self, *, kind: str, action: str, title: str, content, phase: int) -> dict:
-        with self._lock:
+        with self._lock, self._write():
+            # BEGIN IMMEDIATE holds SQLite's write lock, so a CLI and the web UI on the same run can't pick
+            # the same id.
             n = self._db.execute("SELECT COUNT(*) FROM items").fetchone()[0] + 1
             item_id = f"ob_{n:02d}"
             self._db.execute(
                 "INSERT INTO items VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                 (item_id, kind, action, title, json.dumps(content, ensure_ascii=False), content_hash(content),
                  "pending", None, now_iso(), None, phase))
-            self._db.commit()
         log_action("approval_outbox", f"queue_{kind}", item_id=item_id)
         return self.get(item_id)
 
@@ -132,24 +159,34 @@ class Outbox:
             raise InvalidConfirmation("the typed hash does not match the item; it may have changed")
         if item["status"] not in {"pending"}:
             raise InvalidConfirmation(f"item is {item['status']}")
-        record = {"approval_id": f"ap_{item_id}_{now_iso()}", "item_id": item_id, "item_hash": item["content_hash"],
+        record = {"approval_id": f"ap_{uuid.uuid4().hex[:16]}", "item_id": item_id, "item_hash": item["content_hash"],
                   "action": item["action"], "approved_by": "founder", "channel": confirmation.channel,
                   "timestamp": now_iso()}
-        with self._lock:
+        with self._lock, self._write():
+            cur = self._db.execute("UPDATE items SET status='approved' WHERE id=? AND status='pending' AND content_hash=?",
+                                   (item_id, item["content_hash"]))
+            if cur.rowcount == 0:
+                raise InvalidConfirmation("the item changed or was decided while you were confirming")
             self._db.execute("INSERT INTO approvals VALUES (?,?,?,?,?,?,?)", tuple(record.values()))
-            self._db.execute("UPDATE items SET status='approved' WHERE id=?", (item_id,))
-            self._db.commit()
         log_action("founder", f"approve_{item['kind']}", approved_by="founder", item_id=item_id,
                    channel=confirmation.channel)
         return record
 
-    def reject(self, item_id: str, note: str, channel: str) -> None:
-        if channel not in allowed_channels():
-            raise InvalidConfirmation("rejections come only from the CLI or the UI")
+    def reject(self, item_id: str, note: str, confirmation: FounderConfirmation) -> None:
+        """Ask for changes. Same confirmation as an approval, so it is tied to the version the founder saw."""
+        item = self.get(item_id)
+        if confirmation.item_ref != item_id:
+            raise InvalidConfirmation("confirmation is for a different item")
+        if not item["content_hash"].removeprefix("sha256:").startswith(confirmation.typed_hash_prefix.lower()):
+            raise InvalidConfirmation("the hash does not match the item; it may have changed")
         with self._lock:
-            self._db.execute("UPDATE items SET status='rejected', note=? WHERE id=?", (note, item_id))
+            cur = self._db.execute("UPDATE items SET status='rejected', note=? WHERE id=? AND status IN "
+                                   "('pending','approved')", (note, item_id))
             self._db.commit()
-        log_action("founder", "reject_item", approved_by="founder", item_id=item_id, note=note[:200])
+        if cur.rowcount == 0:
+            raise InvalidConfirmation(f"item is {item['status']}")
+        log_action("founder", "reject_item", approved_by="founder", item_id=item_id, note=note[:200],
+                   channel=confirmation.channel)
 
     def valid_approval(self, item_id: str) -> dict | None:
         item = self.get(item_id)
@@ -164,11 +201,19 @@ class Outbox:
         if record is None:
             log_action("publish_adapter", "publish_refused", item_id=item_id, reason="no valid approval record")
             raise NotApproved(f"{item_id}: no founder approval record for the current content")
-        with self._lock:
-            self._db.execute("INSERT INTO publish_log (item_id, approval_id, adapter, timestamp) VALUES (?,?,?,?)",
-                             (item_id, record["approval_id"], adapter, now_iso()))
-            self._db.execute("UPDATE items SET status='published', executed_at=? WHERE id=?", (now_iso(), item_id))
-            self._db.commit()
+        with self._lock, self._write():
+            # Spend the approval: only one caller can move the item from approved to published.
+            cur = self._db.execute("UPDATE items SET status='published', executed_at=? WHERE id=? AND status='approved' "
+                                   "AND content_hash=?", (now_iso(), item_id, record["item_hash"]))
+            if cur.rowcount == 0:
+                executed = True
+            else:
+                executed = False
+                self._db.execute("INSERT INTO publish_log (item_id, approval_id, adapter, timestamp) VALUES (?,?,?,?)",
+                                 (item_id, record["approval_id"], adapter, now_iso()))
+        if executed:
+            log_action("publish_adapter", "publish_refused", item_id=item_id, reason="approval already used")
+            raise AlreadyExecuted(f"{item_id}: already executed; an approval is used once")
         log_action("publish_adapter", "publish_MOCKED", approved_by="founder", item_id=item_id,
                    adapter=adapter)
         return self.get(item_id)
@@ -183,14 +228,17 @@ class Outbox:
         expected = f"gate{gate}-{attempt}"
         if confirmation.item_ref != expected:
             raise InvalidConfirmation(f"confirmation is for {confirmation.item_ref}, not {expected}")
-        if not gate_token(gate, attempt).startswith(confirmation.typed_hash_prefix.lower()):
-            raise InvalidConfirmation("the typed code does not match this gate")
         row = {"id": f"gd_{gate}_{attempt}", "gate": gate, "attempt": attempt, "decision": decision,
                "recommended": recommended, "variant_id": variant_id, "override": int(decision != recommended),
                "decided_by": "founder", "channel": confirmation.channel, "timestamp": now_iso(), "note": note}
-        with self._lock:
-            self._db.execute("INSERT OR REPLACE INTO gate_decisions VALUES (?,?,?,?,?,?,?,?,?,?,?)", tuple(row.values()))
-            self._db.commit()
+        with self._lock, self._write():
+            # Spend the one-time code; a wrong, unknown or already-used code changes nothing.
+            cur = self._db.execute("UPDATE gate_codes SET used_at=? WHERE gate=? AND attempt=? AND code=? "
+                                   "AND used_at IS NULL", (now_iso(), gate, attempt,
+                                                           confirmation.typed_hash_prefix.lower()))
+            if cur.rowcount == 0:
+                raise InvalidConfirmation("the typed code does not match this decision, or was already used")
+            self._db.execute("INSERT INTO gate_decisions VALUES (?,?,?,?,?,?,?,?,?,?,?)", tuple(row.values()))
         log_action("founder", f"gate{gate}_decision", approved_by="founder", decision=decision,
                    recommended=recommended, override=bool(row["override"]), channel=confirmation.channel)
         return row
@@ -200,6 +248,10 @@ class Outbox:
         return dict(row) if row else None
 
 
-def gate_token(gate: int, attempt: int) -> str:
-    """Short code the founder types to confirm a gate decision (like an item hash prefix)."""
-    return hashlib.sha256(f"gate{gate}-{attempt}".encode()).hexdigest()
+    def issue_gate_code(self, gate: int, attempt: int) -> str:
+        """A random one-time code the founder types to confirm this gate decision. Issued when the gate is
+        presented; presenting the same attempt again replaces the code."""
+        code = secrets.token_hex(3)
+        with self._lock, self._write():
+            self._db.execute("INSERT OR REPLACE INTO gate_codes VALUES (?,?,?,?,NULL)", (gate, attempt, code, now_iso()))
+        return code

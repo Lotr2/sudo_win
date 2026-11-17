@@ -15,7 +15,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 
-from ..approval import FounderConfirmation, gate_token
+from ..approval import FounderConfirmation
 from .. import labels
 from . import readable
 from ..config import Settings
@@ -76,6 +76,7 @@ class ApproveIn(BaseModel):
 
 class RejectIn(BaseModel):
     note: str
+    hash_prefix: str
 
 
 class GateIn(BaseModel):
@@ -229,7 +230,8 @@ def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | Non
     @app.post("/api/runs/{run_id}/items/{item_id}/reject")
     def reject(run_id: str, item_id: str, body: RejectIn):
         h = handle(run_id)
-        h.run(h.rt.reject, item_id, body.note or "(no note)", "ui")
+        conf = FounderConfirmation(channel="ui", item_ref=item_id, typed_hash_prefix=body.hash_prefix)
+        h.run(h.rt.reject, item_id, body.note or "(no note)", conf)
         return {"ok": True}
 
     @app.post("/api/runs/{run_id}/gate")
@@ -238,7 +240,7 @@ def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | Non
         p = h.rt.pending()
         if not p or p["kind"] != "gate":
             raise HTTPException(409, "There is no decision waiting right now.")
-        if body.code != gate_token(p["gate"], p["attempt"])[:6]:
+        if body.code.lower() != p["code"]:
             raise HTTPException(400, "That confirmation didn't match. Please reload the page and try again.")
         crit = [a.field for a in h.rt.ctx.assumptions.critical_unconfirmed(f"gate{p['gate']}")]
         if body.decision == "go" and crit:

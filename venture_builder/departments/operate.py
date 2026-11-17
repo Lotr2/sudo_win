@@ -104,13 +104,16 @@ def p6_support(ctx: Context, answer) -> Next | Ask:
     passages = _passages(ctx)
     ids = []
     d.support = []
+    refund_targets: set[str] = set()   # one refund request per order, even if several tickets ask
     for t in tickets:
         hit = ctx.guard.check(t, context="chat", use_classifier=False, subject="support_ticket")
         reply = support_agent.run(ctx, t, _retrieve(passages, t))
         if reply.is_refund_request or re.search(r"\brefund", t, re.I):
-            orders = store.rows("SELECT order_id FROM orders WHERE status='paid' ORDER BY order_id")
+            orders = [o["order_id"] for o in store.rows("SELECT order_id FROM orders WHERE status='paid' ORDER BY order_id")
+                      if o["order_id"] not in refund_targets]
             if orders:
-                item = request_refund(ctx.outbox, orders[0]["order_id"], f"Support ticket: {t[:120]}", phase=6)
+                refund_targets.add(orders[0])
+                item = request_refund(ctx.outbox, orders[0], f"Support ticket: {t[:120]}", phase=6)
                 ids.append(item["id"])
         if not reply.cited_doc_ids:
             reply.escalate = True
@@ -148,14 +151,19 @@ def p6_support_send(ctx: Context, answer) -> Next:
         item = ctx.outbox.get(i)
         if item["status"] == "approved":
             if item["kind"] == "refund":
-                from ..refunds import execute_refund
-                execute_refund(ctx.outbox, _events(ctx), i)
+                from ..refunds import RefundNotAllowed, execute_refund
+                try:
+                    execute_refund(ctx.outbox, _events(ctx), i)
+                except RefundNotAllowed:
+                    pass   # logged by refunds.py; the item stays approved and is shown as not possible
             else:
                 ctx.outbox.publish(i, adapter="MOCKED email sender")
             item = ctx.outbox.get(i)
         status = {"published": "approved and recorded (sending MOCKED)", "approved": "approved",
                   "rejected": "changes requested", "refunded": "refund approved and recorded (MOCKED)",
                   "pending": "waiting for the founder"}.get(item["status"], item["status"])
+        if item["kind"] == "refund" and item["status"] == "approved":
+            status = "approved, but not possible: the order isn't paid or was already refunded (MOCKED)"
         md.append(f"- {item['title']}: **{status}**" + (f" (note: {item['note']})" if item["note"] else ""))
     ctx.store.write_output("phase6_step2_support_log.md", "\n".join(md) + "\n")
     return Next("p6_memo")

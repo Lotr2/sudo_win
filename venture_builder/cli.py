@@ -37,7 +37,7 @@ import time
 from pathlib import Path
 
 from . import labels
-from .approval import FounderConfirmation, gate_token
+from .approval import FounderConfirmation
 from .config import load_settings
 from .router import doctor
 
@@ -357,8 +357,14 @@ def confirm_item(rt, item_id: str) -> FounderConfirmation | None:
     return FounderConfirmation(channel="cli", item_ref=item_id, typed_hash_prefix=typed)
 
 
+def reject_confirmation(rt, item_id: str) -> FounderConfirmation:
+    """Asking for changes sends nothing, so no code is typed; it is still tied to the version shown."""
+    h = rt.ctx.outbox.get(item_id)["content_hash"].removeprefix("sha256:")
+    return FounderConfirmation(channel="cli", item_ref=item_id, typed_hash_prefix=h[:12])
+
+
 def confirm_gate(p: dict, decision: str) -> FounderConfirmation | None:
-    code = gate_token(p["gate"], p["attempt"])[:6]
+    code = p["code"]
     name = labels.outcome_name(decision, p["gate"])
     typed = _ask(f"To record \"{name}\", type the code {bold(code)}:")
     if typed.lower() != code:
@@ -455,7 +461,7 @@ def interactive(rt) -> None:
                     elif choice in {"c", "r", "reject", "change", "changes"}:
                         note = _ask("What should change?")
                         if note:
-                            work(rt, rt.reject, it["id"], note, "cli")
+                            work(rt, rt.reject, it["id"], note, reject_confirmation(rt, it["id"]))
                             _print(green("  Thanks. The team will take your feedback into account."))
                         else:
                             _print(yellow("  No feedback given, so nothing was changed."))
@@ -694,7 +700,7 @@ def _project_command(args, settings, rt) -> int:
             work(rt, rt.approve, args.item_id, conf)
         render_pending(rt, rt.pending())
     elif args.cmd == "reject":
-        work(rt, rt.reject, args.item_id, args.note, "cli")
+        work(rt, rt.reject, args.item_id, args.note, reject_confirmation(rt, args.item_id))
         _print(green("  Thanks. The team will take your feedback into account."))
         render_pending(rt, rt.pending())
     elif args.cmd == "gate":

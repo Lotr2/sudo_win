@@ -10,7 +10,8 @@ from .events import EventStore
 def reconcile(store: EventStore) -> dict:
     r = store.rows
     paid = {x["order_id"]: x for x in r("SELECT * FROM events WHERE type='payment.succeeded'")}
-    refunded = {x["order_id"] for x in r("SELECT * FROM events WHERE type='refund.succeeded'")}
+    refund_rows = r("SELECT * FROM events WHERE type='refund.succeeded'")
+    refunded = {x["order_id"] for x in refund_rows}
     deliveries = {x["order_id"]: x for x in r("SELECT * FROM deliveries")}
     orders = {x["order_id"]: x for x in r("SELECT * FROM orders")}
     mismatches: list[str] = []
@@ -26,6 +27,17 @@ def reconcile(store: EventStore) -> dict:
             mismatches.append(f"{oid}: delivery with no payment")
         if oid in refunded and d["status"] != "revoked":
             mismatches.append(f"{oid}: refunded but access not revoked")
+    refund_total: dict[str, float] = {}
+    for x in refund_rows:
+        refund_total[x["order_id"]] = refund_total.get(x["order_id"], 0) - x["amount"]
+    for oid, total in refund_total.items():
+        n = sum(1 for x in refund_rows if x["order_id"] == oid)
+        if oid not in paid:
+            mismatches.append(f"{oid}: refund with no payment")
+        elif total - paid[oid]["amount"] > 0.005:
+            mismatches.append(f"{oid}: refunded {total:.2f}, more than the {paid[oid]['amount']:.2f} paid")
+        if n > 1:
+            mismatches.append(f"{oid}: {n} refunds for one order")
     gross = sum(p["amount"] for p in paid.values())
     fees = sum(p["fee"] for p in paid.values())
     refunds = -sum(x["amount"] for x in r("SELECT amount FROM events WHERE type='refund.succeeded'"))

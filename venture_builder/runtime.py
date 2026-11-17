@@ -222,9 +222,9 @@ class Runtime:
             self.ctx.outbox.approve(item_id, confirmation)
         return self._resume_if_items_decided()
 
-    def reject(self, item_id: str, note: str, channel: str) -> dict | None:
+    def reject(self, item_id: str, note: str, confirmation: FounderConfirmation) -> dict | None:
         with self.ctx.bound():
-            self.ctx.outbox.reject(item_id, note, channel)
+            self.ctx.outbox.reject(item_id, note, confirmation)
         return self._resume_if_items_decided()
 
     def decide_gate(self, decision: str, confirmation: FounderConfirmation, *, variant_id: str | None = None,

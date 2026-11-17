@@ -39,7 +39,7 @@ os.environ["VENTURE_SIMULATED_FOUNDER"] = "1"
 os.environ.setdefault("RUN_MODE", "demo")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from venture_builder.approval import SIMULATION_CHANNEL, FounderConfirmation, gate_token  # noqa: E402
+from venture_builder.approval import SIMULATION_CHANNEL, FounderConfirmation  # noqa: E402
 from venture_builder.config import load_settings  # noqa: E402
 from venture_builder.runtime import Runtime  # noqa: E402
 
@@ -67,7 +67,7 @@ def confirm_item(rt, item_id: str) -> FounderConfirmation:
 
 def confirm_gate(p: dict) -> FounderConfirmation:
     return FounderConfirmation(channel=SIMULATION_CHANNEL, item_ref=f"gate{p['gate']}-{p['attempt']}",
-                               typed_hash_prefix=gate_token(p["gate"], p["attempt"])[:8])
+                               typed_hash_prefix=p["code"])
 
 
 def say(msg: str) -> None:

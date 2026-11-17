@@ -469,7 +469,7 @@ function renderTurnBody(st) {
         <span class="status ${esc(it.status)}">${esc({pending:"Waiting for you", approved:"Approved", rejected:"Changes requested"}[it.status] || it.status)}</span></div>
         <div class="content" ${it.content && typeof it.content.html === "string" ? 'style="max-height:none;background:none;padding:0"' : ""}>${renderValue(it.content)}</div>
         ${it.status === "pending" ? `<div class="row"><button onclick="approve('${esc(it.id)}','${esc(it.hash)}','${esc(it.title).replace(/'/g, "&#39;")}')">Approve</button>
-        <button class="danger" onclick="reject('${esc(it.id)}')">Ask for changes</button></div>` : ""}</div>`).join("");
+        <button class="danger" onclick="reject('${esc(it.id)}','${esc(it.hash)}')">Ask for changes</button></div>` : ""}</div>`).join("");
   if (k === "gate") {
     const opts = ["go", "repeat", "pivot", "stop"];
     let h = `${head}<h2>The team recommends: <span class="pill ${esc(p.recommended)}">${esc(outcomeName(p.label, p.gate))}</span></h2>
@@ -532,9 +532,9 @@ window.approve = async (id, hash, title) => {
   const ok = await ask({title: "Approve this item?", ok: "Approve",
     body: `<p><b>${title}</b></p><p class="muted">In practice mode this is recorded only: nothing is posted, published or sent (MOCKED).</p>`});
   if (ok) { await api(`/api/runs/${RUN}/items/${id}/approve`, {hash_prefix: hash}); toast("Approved."); refresh(true); } };
-window.reject = async id => {
+window.reject = async (id, hash) => {
   const note = await ask({title: "What should change?", field: {label: "Your feedback for the team", required: true}, ok: "Send feedback"});
-  if (note) { await api(`/api/runs/${RUN}/items/${id}/reject`, {note}); toast("Thanks. The team will take your feedback into account."); refresh(true); } };
+  if (note) { await api(`/api/runs/${RUN}/items/${id}/reject`, {note, hash_prefix: hash}); toast("Thanks. The team will take your feedback into account."); refresh(true); } };
 window.decide = async (d, code, rec) => {
   const name = OUTCOME[d];
   let note = "";

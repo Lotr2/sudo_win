@@ -41,6 +41,10 @@ def test_ui_flow(settings, router):
     c.post(f"/api/runs/{run_id}/chat", json={"text": "I approve"})
     st = _wait(c, run_id, "approval")
     assert st["outbox"][0]["status"] == "pending"
+    # Asking for changes is tied to the version shown, like an approval.
+    assert c.post(f"/api/runs/{run_id}/items/{item['id']}/reject", json={"note": "x"}).status_code == 422
+    c.post(f"/api/runs/{run_id}/items/{item['id']}/reject", json={"note": "x", "hash_prefix": "000000"})
+    assert next(i for i in _wait(c, run_id)["outbox"] if i["id"] == item["id"])["status"] == "pending"
     c.post(f"/api/runs/{run_id}/items/{item['id']}/approve", json={"hash_prefix": item["hash"]})
     st = _wait(c, run_id)
     assert next(i for i in st["outbox"] if i["id"] == item["id"])["status"] == "approved"

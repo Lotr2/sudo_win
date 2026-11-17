@@ -50,9 +50,8 @@ def confirm_item(rt, item_id):
 
 def confirm_gate(p):
     """TEST-ONLY founder fixture for a gate decision."""
-    from venture_builder.approval import gate_token
     return FounderConfirmation(channel="cli", item_ref=f"gate{p['gate']}-{p['attempt']}",
-                               typed_hash_prefix=gate_token(p["gate"], p["attempt"])[:8])
+                               typed_hash_prefix=p["code"])
 
 
 def drive(rt, *, gate_choice=None, mocked=None, max_steps=200, stop_at_gate=None):

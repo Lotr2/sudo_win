@@ -18,9 +18,8 @@ class MockPaymentProvider:
         self.store = store
 
     def create_checkout(self, product: str, amount: float) -> str:
-        with self.store.lock:
-            n = self.store.db.execute("SELECT COUNT(*) FROM orders").fetchone()[0] + 1
-            order_id = f"ord_{n:03d}"
+        with self.store.transaction():
+            order_id = self.store.next_id("orders", "ord_", 3)
             self.store.db.execute("INSERT INTO orders VALUES (?,?,?,?,?)", (order_id, product, amount, "pending", now_iso()))
         self.store.append("checkout.created", order_id, amount)
         log_action("payments", "mock_checkout_created", order_id=order_id, amount=amount, label=LABEL)
@@ -33,9 +32,11 @@ class MockPaymentProvider:
         log_action("payments", "mock_payment_succeeded", order_id=order_id, event_id=ev["event_id"], label=LABEL)
         return ev
 
-    def refund_event(self, order_id: str) -> dict:
+    def refund_event(self, order_id: str, refund_id: str) -> dict:
+        """Emit a mock refund.succeeded event. `refund_id` (the outbox item) fixes the event id, so emitting the
+        same refund again returns the first event instead of creating a second one."""
         amount = self.store.rows("SELECT amount FROM orders WHERE order_id=?", (order_id,))[0]["amount"]
-        return self.store.append("refund.succeeded", order_id, -amount)
+        return self.store.append("refund.succeeded", order_id, -amount, event_id=f"evt_refund_{refund_id}")
 
     def payout(self) -> dict:
         """Mock payout of everything paid, net of fees and refunds."""
@@ -43,9 +44,9 @@ class MockPaymentProvider:
             "SELECT COALESCE(SUM(amount - fee), 0) AS net FROM events WHERE type IN ('payment.succeeded','refund.succeeded')")[0]["net"]
         paid_out = self.store.rows("SELECT COALESCE(SUM(amount),0) AS s FROM payouts")[0]["s"]
         amount = round(net - paid_out, 2)
-        with self.store.lock:
-            n = self.store.db.execute("SELECT COUNT(*) FROM payouts").fetchone()[0] + 1
-            self.store.db.execute("INSERT INTO payouts VALUES (?,?,?)", (f"po_{n:03d}", amount, now_iso()))
+        with self.store.transaction():
+            self.store.db.execute("INSERT INTO payouts VALUES (?,?,?)",
+                                  (self.store.next_id("payouts", "po_", 3), amount, now_iso()))
         ev = self.store.append("payout.paid", None, amount)
         log_action("payments", "mock_payout", amount=amount, label=LABEL)
         return ev

@@ -96,7 +96,7 @@ def test_rejected_item_note_reaches_the_writer(make_runtime, models):
     rt.approve(p["items"][0]["id"], confirm_item(rt, p["items"][0]["id"]))  # experiment targets
     p = rt.pending()
     assert p["kind"] == "approval" and p["items"][0]["kind"] == "landing_page"
-    rt.reject(p["items"][0]["id"], "Say who it is for in the headline", "cli")
+    rt.reject(p["items"][0]["id"], "Say who it is for in the headline", confirm_item(rt, p["items"][0]["id"]))
     assert seen[-1] == "Say who it is for in the headline"
     assert rt.pending()["kind"] == "approval"
 
@@ -122,13 +122,88 @@ def test_web_ui_never_starts_with_a_simulated_founder(settings, monkeypatch):
 def test_simulated_founder_decisions_are_labelled_in_the_log(make_runtime, monkeypatch):
     import json
     from conftest import drive
-    from venture_builder.approval import FounderConfirmation, gate_token
+    from venture_builder.approval import FounderConfirmation
     monkeypatch.setenv("VENTURE_SIMULATED_FOUNDER", "1")
     rt = make_runtime()
     p = drive(rt, stop_at_gate=1)
     rt.decide_gate(p["recommended"], FounderConfirmation(channel="simulation", item_ref=f"gate1-{p['attempt']}",
-                   typed_hash_prefix=gate_token(1, p["attempt"])[:8]), variant_id=p.get("suggested_variant"))
+                   typed_hash_prefix=p["code"]), variant_id=p.get("suggested_variant"))
     log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
     decision = [e for e in log if e["action"] == "gate1_decision"][-1]
     assert decision["approved_by"] == "founder" and decision["simulated_founder"] is True
     assert decision["channel"] == "simulation"
+
+
+# ---- approvals are single use; gate codes are random and one-time; rejections need a confirmation ----
+
+def test_an_approval_publishes_only_once():
+    from venture_builder.approval import AlreadyExecuted
+    ob = Outbox()
+    item = ob.propose(kind="post", action="publish", title="t", content={"text": "hi"}, phase=5)
+    h = item["content_hash"].removeprefix("sha256:")[:8]
+    ob.approve(item["id"], FounderConfirmation(channel="cli", item_ref=item["id"], typed_hash_prefix=h))
+    ob.publish(item["id"])
+    with pytest.raises(AlreadyExecuted):
+        ob.publish(item["id"])
+    assert len(ob.publish_log()) == 1
+    # A revised version needs, and gets, its own approval.
+    item = ob.update_content(item["id"], {"text": "hello"})
+    with pytest.raises(NotApproved):
+        ob.publish(item["id"])
+    h = item["content_hash"].removeprefix("sha256:")[:8]
+    ob.approve(item["id"], FounderConfirmation(channel="cli", item_ref=item["id"], typed_hash_prefix=h))
+    ob.publish(item["id"])
+    assert len(ob.publish_log()) == 2
+
+
+def test_approving_twice_in_the_same_second_gets_distinct_ids():
+    ob = Outbox()
+    item = ob.propose(kind="post", action="publish", title="t", content={"v": 1}, phase=5)
+    ids = []
+    for v in (1, 2):
+        item = ob.update_content(item["id"], {"v": v})
+        h = item["content_hash"].removeprefix("sha256:")[:8]
+        ids.append(ob.approve(item["id"], FounderConfirmation(channel="cli", item_ref=item["id"],
+                                                               typed_hash_prefix=h))["approval_id"])
+    assert len(set(ids)) == 2
+
+
+def _gate_conf(code, gate=2, attempt=1):
+    return FounderConfirmation(channel="cli", item_ref=f"gate{gate}-{attempt}", typed_hash_prefix=code)
+
+
+def test_gate_codes_are_random_and_used_once():
+    a, b = Outbox(), Outbox()
+    ca = a.issue_gate_code(2, 1)
+    assert re.fullmatch(r"[0-9a-f]{6}", ca)
+    assert len({b.issue_gate_code(2, n) for n in range(20)}) > 1     # random, not a function of gate and attempt
+    wrong = "000000" if ca != "000000" else "111111"
+    with pytest.raises(InvalidConfirmation):
+        a.record_gate_decision(gate=2, attempt=1, decision="go", recommended="go", confirmation=_gate_conf(wrong))
+    a.record_gate_decision(gate=2, attempt=1, decision="go", recommended="go", confirmation=_gate_conf(ca))
+    with pytest.raises(InvalidConfirmation):
+        a.record_gate_decision(gate=2, attempt=1, decision="stop", recommended="go", confirmation=_gate_conf(ca))
+    assert a.gate_decision(2, 1)["decision"] == "go"
+
+
+def test_gate_code_cannot_be_derived_from_the_gate_number():
+    import hashlib
+    ob = Outbox()
+    old_style = hashlib.sha256(b"gate1-1").hexdigest()[:6]
+    code = ob.issue_gate_code(1, 1)
+    if code != old_style:
+        with pytest.raises(InvalidConfirmation):
+            ob.record_gate_decision(gate=1, attempt=1, decision="go", recommended="go",
+                                    confirmation=_gate_conf(old_style, gate=1))
+
+
+def test_rejection_needs_a_confirmation_for_the_current_version():
+    ob = Outbox()
+    item = ob.propose(kind="post", action="publish", title="t", content={"text": "hi"}, phase=5)
+    with pytest.raises(InvalidConfirmation):
+        ob.reject(item["id"], "no", FounderConfirmation(channel="cli", item_ref=item["id"], typed_hash_prefix="000000"))
+    with pytest.raises(InvalidConfirmation):
+        ob.reject(item["id"], "no", FounderConfirmation(channel="cli", item_ref="ob_99", typed_hash_prefix="000000"))
+    h = item["content_hash"].removeprefix("sha256:")[:8]
+    ob.reject(item["id"], "no", FounderConfirmation(channel="cli", item_ref=item["id"], typed_hash_prefix=h))
+    assert ob.get(item["id"])["status"] == "rejected"

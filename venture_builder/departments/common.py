@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 from .. import labels
-from ..approval import gate_token
 from ..context import END, Ask, Context
 from ..schemas import GateResult
 
@@ -120,7 +119,7 @@ def present_gate(ctx: Context, result: GateResult, markdown: str, resume_to: str
     walkthrough(ctx, result, explain)
     return Ask("gate", {"gate": n, "attempt": attempt, "recommended": result.outcome, "label": result.label,
                         "reasons": result.reasons, "memo_file": f"phase{n}_gate_decision.md",
-                        "critical_unconfirmed": crit, "code": gate_token(n, attempt)[:6], **(extra or {})},
+                        "critical_unconfirmed": crit, "code": ctx.outbox.issue_gate_code(n, attempt), **(extra or {})},
                resume_to=resume_to)
 
 

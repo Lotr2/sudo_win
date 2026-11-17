@@ -3,6 +3,7 @@ there is no payment provider, no card data and no real money."""
 
 from __future__ import annotations
 
+import contextlib
 import json
 import sqlite3
 import threading
@@ -35,12 +36,39 @@ class EventStore:
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
 
+    @contextlib.contextmanager
+    def transaction(self):
+        """A write transaction holding SQLite's write lock from the start, so sequential ids (ord_001, evt_0001)
+        stay unique even when two processes share the event store. Nested use joins the outer transaction."""
+        with self.lock:
+            if self.db.in_transaction:
+                yield self.db
+                return
+            self.db.execute("BEGIN IMMEDIATE")
+            try:
+                yield self.db
+            except BaseException:
+                self.db.execute("ROLLBACK")
+                raise
+            self.db.execute("COMMIT")
+
+    def next_id(self, table: str, prefix: str, width: int) -> str:
+        """Next sequential id for `table`; call inside `transaction()`."""
+        n = self.db.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0] + 1
+        return f"{prefix}{n:0{width}d}"
+
     def append(self, type_: str, order_id: str | None, amount: float = 0, fee: float = 0, payload: dict | None = None,
                event_id: str | None = None) -> dict:
-        with self.lock:
-            n = self.db.execute("SELECT COUNT(*) FROM events").fetchone()[0] + 1
-            ev = {"event_id": event_id or f"evt_{n:04d}", "type": type_, "order_id": order_id, "amount": amount,
-                  "fee": fee, "payload": json.dumps(payload or {}), "created_at": now_iso(), "mocked": 1}
+        """Append an event. With an explicit `event_id` that already exists, the stored event is returned
+        unchanged (idempotent producer), so a retried emit can't create a second event."""
+        with self.transaction():
+            if event_id:
+                row = self.db.execute("SELECT * FROM events WHERE event_id=?", (event_id,)).fetchone()
+                if row:
+                    return dict(row)
+            ev = {"event_id": event_id or self.next_id("events", "evt_", 4), "type": type_, "order_id": order_id,
+                  "amount": amount, "fee": fee, "payload": json.dumps(payload or {}), "created_at": now_iso(),
+                  "mocked": 1}
             self.db.execute("INSERT INTO events VALUES (:event_id,:type,:order_id,:amount,:fee,:payload,:created_at,:mocked)", ev)
             return ev
 
