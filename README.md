@@ -41,16 +41,16 @@ Open **http://localhost:8000**, describe your idea (or press "Fill in an example
 | 1 Discover | Customer interviews | **STUBBED**: the founder runs them and pastes notes; interviews are never simulated |
 | 2 Validate | Lean Canvas debate, experiment design, threshold lock with hash, landing page (founder's brand, three layouts), Gate 2 | Working |
 | 2 Validate | Publishing the landing page | **MOCKED**: no hosting; the founder hosts the page |
-| 2 Validate | Sign-up counts | Entered by the founder: recorded as founder-reported in a real project, **MOCKED** when marked as practice numbers |
+| 2 Validate | Sign-up counts | **MOCKED** in a practice run, including the committed demo run (the founder types practice numbers); in a real project the founder enters real counts, recorded as founder-reported |
 | 3 Build | Product plan checked per product type, three templates (guide, template pack, web tool) with acceptance tests, build–test loop in a no-network sandbox, self-review, user docs, Gate 3 | Working |
 | 3 Build | Web tool behaviour in a browser | **STUBBED**: structure and safety are tested; the founder tries the preview |
 | 4 Commercial setup | Pricing from sourced anchors, policy drafts, Compliance Linter, Gate 4 | Working |
 | 4 Commercial setup | Legal review | **STUBBED**: drafts are marked "DRAFT: not legal advice" |
 | 5 Launch | Store page and posts through the Approval Outbox; the founder approves or rejects each item | Working |
 | 5 Launch | Posting, publishing | **MOCKED**: a publish adapter logs the approved item; nothing goes online |
-| 5 Launch | Sale to cash: payment triggers delivery once, founder-approved refunds revoke access, reconciliation | Working, against **MOCKED** payment events (no provider, no sandbox, no keys) |
+| 5 Launch | Sale to cash: payments, deliveries, refunds, payouts | **MOCKED**: every payment, refund and payout event is simulated (no provider, no sandbox, no keys, no money). The code that turns those events into one delivery per order, revokes access on a founder-approved refund and reconciles the books is real and covered by tests |
 | 6 Operate | Metrics Engine, Support Agent (answers only from the user docs), review memo with a fact-checking critic, Gate 6 | Working |
-| 6 Operate | Activity (visitors, orders, refunds, questions) | Entered by the founder: founder-reported in a real project, **MOCKED** in a practice run; the app never collects it itself |
+| 6 Operate | Activity (visitors, orders, refunds, questions) | **MOCKED** in a practice run, including the committed demo run; in a real project the founder enters real numbers, recorded as founder-reported. The app never collects them itself |
 | 6 Operate | Sending support replies | **MOCKED**: approved replies are recorded, not sent |
 
 ## Architecture
