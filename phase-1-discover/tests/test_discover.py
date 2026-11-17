@@ -12,11 +12,12 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from agents.evaluator import CRITERIA  # noqa: E402
 from gates import discover_gate  # noqa: E402
-from guardrails import screen_category, screen_request  # noqa: E402
-from llm import LLMResult, extract_json  # noqa: E402
+from common.guardrails import screen_category, screen_request  # noqa: E402
+from common.llm import LLMResult, extract_json  # noqa: E402
 from orchestrator import DiscoverPipeline  # noqa: E402
 
 BRIEF = {

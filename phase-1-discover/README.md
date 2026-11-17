@@ -63,7 +63,7 @@ The thresholds are fixed in code before anything is scored. The outcome is the *
 
 Missing or garbled model output counts as weak, so it leads to STOP. On STOP the founder is only offered "new idea" or "stop". Approving to continue is offered only when the gate passes.
 
-## Safety (`guardrails.py`, `approval.py`)
+## Safety (`common/guardrails.py`, `common/approval.py`)
 
 Founder input is checked in code before it reaches the model. Requests for fake reviews, testimonials, sign-ups or urgency, income promises, impersonation, or storing credentials are refused and logged, and are never sent to the model. Every gate decision needs an explicit founder choice, and there is no default.
 

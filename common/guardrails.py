@@ -32,6 +32,20 @@ def screen_category(text: str) -> list[str]:
     return [name for name, pat in EXCLUDED_CATEGORIES.items() if re.search(pat, text, re.IGNORECASE)]
 
 
+# Patterns that must never appear in public-facing copy the system writes (landing pages, posts).
+FORBIDDEN_COPY = {
+    "testimonial or review": r"(“|\")[^\"”]{10,}(”|\")\s*[-–—]\s*[A-Z]|\b(testimonials?|5[- ]star|five[- ]star|rated \d)\b|\bwhat (our )?(users|customers|people) (are )?say",
+    "fake social proof": r"\b(join|trusted by|used by|loved by)\s+(over\s+)?\d[\d,.]*\+?\s*(k\b|people|users|customers|teams|founders|businesses|others)|\b\d[\d,]*\+?\s+(people|users|customers) (have )?(already )?(joined|signed up)",
+    "fake urgency or scarcity": r"\b(only \d+ (spots?|seats?|places?) (left|remaining)|limited (time|spots|seats)|(offer )?ends (soon|tonight|today)|hurry|act now|don'?t miss out|last chance|countdown)\b",
+    "income or success promise": r"\b(guarantee\w*|risk[- ]free|you will (earn|make)|make \$?\d+|double your (income|revenue|sales))\b",
+}
+
+
+def screen_copy(text: str) -> list[str]:
+    """Return the names of any forbidden patterns found in public-facing copy."""
+    return [name for name, pat in FORBIDDEN_COPY.items() if re.search(pat, text, re.IGNORECASE)]
+
+
 REFUSAL = (
     "I can't help with that. This system never creates fake reviews, testimonials, sign-ups or urgency, "
     "never promises income or success, never impersonates anyone, and never stores passwords or card details."

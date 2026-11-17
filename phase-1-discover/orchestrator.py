@@ -21,11 +21,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agents.evaluator import CRITERIA, Evaluator  # noqa: E402
 from agents.interviewer import Interviewer  # noqa: E402
-from approval import FounderQuit, ask, choose  # noqa: E402
-from decision_log import DecisionLog  # noqa: E402
+from common.approval import FounderQuit, ask, choose  # noqa: E402
+from common.decision_log import DecisionLog  # noqa: E402
 from gates import (  # noqa: E402
     GO_REQUIRES_AVERAGE_AT_LEAST,
     GO_REQUIRES_EVERY_SCORE_AT_LEAST,
@@ -33,8 +34,8 @@ from gates import (  # noqa: E402
     STOP_IF_AVERAGE_BELOW,
     discover_gate,
 )
-from guardrails import REFUSAL, screen_category, screen_request  # noqa: E402
-from llm import LLMClient, LLMError  # noqa: E402
+from common.guardrails import REFUSAL, screen_category, screen_request  # noqa: E402
+from common.llm import LLMClient, LLMError  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BRIEF_FIELDS = {
