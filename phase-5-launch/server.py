@@ -17,7 +17,7 @@ import refunds
 import store_page
 import webhooks
 from checkout import CheckoutError, start_checkout
-from store_db import one
+from store_db import now, one
 
 POLICY_TITLES = {"terms": "Terms of service", "privacy": "Privacy policy", "refunds": "Refund policy"}
 
@@ -58,7 +58,13 @@ def make_handler(store: Store):
             with store.lock:
                 try:
                     if path == "/":
-                        return self._send(200, store_page.approved_store(store.store_dir))
+                        page = store_page.approved_store(store.store_dir)
+                        headers = {}
+                        if "sv=1" not in (self.headers.get("Cookie") or ""):
+                            # one per browser; no IP or fingerprint stored
+                            store.db.execute("INSERT INTO visits (at) VALUES (?)", (now(),))
+                            headers["Set-Cookie"] = "sv=1; Max-Age=2592000; Path=/; SameSite=Lax; HttpOnly"
+                        return self._send(200, page, headers=headers)
                     if path.startswith("/policies/"):
                         name = path.split("/")[2]
                         f = store.policy_files.get(name)

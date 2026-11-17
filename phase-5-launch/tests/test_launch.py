@@ -211,6 +211,8 @@ class LiveStoreTest(Base):
 
     def test_buy_open_refund_revoke_over_http(self):
         self.assertIn("MOCKED CHECKOUT", self.req("GET", "/")[2])
+        self.req("GET", "/", headers={"Cookie": "sv=1"})  # returning visitor is not counted again
+        self.assertEqual(self.store.db.execute("SELECT COUNT(*) FROM visits").fetchone()[0], 1)
         order_id = self.buy()
         _, _, order_page = self.req("GET", f"/order/{order_id}")
         self.assertIn("Open the product", order_page)
