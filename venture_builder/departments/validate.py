@@ -196,21 +196,35 @@ def p2_signups(ctx: Context, answer) -> Ask:
     ctx.say(f"When your {t['window_days']}-day test is done, enter how many {t['metric']} you really got: it is "
             "recorded as your own (founder-reported) result. If you're only trying the app out, mark it as a practice "
             "number instead: it's labelled MOCKED and never counts as real proof.", kind="question")
+    mocked_field = {"name": "mocked", "label": "Is this a practice number (MOCKED) rather than real sign-ups?",
+                    "type": "bool", "default": not real}
+    if t.get("kind") == "conversion":
+        # The target is a share of visitors: ask for two counts and let code work out the share.
+        return Ask("mocked_input", {"question": f"How many people visited, and how many of them signed up or bought? "
+                                                f"(The target is {t['target']:.0%} for {t['metric']}.)", "fields": [
+            {"name": "visitors", "label": "Number of visitors", "type": "number"},
+            {"name": "signups", "label": "Number who signed up or bought", "type": "number"},
+            mocked_field]}, resume_to="p2_gate")
     return Ask("mocked_input", {"question": f"How many {t['metric']} did you get?", "fields": [
-        {"name": "result", "label": f"Number of {t['metric']}", "type": "number"},
-        {"name": "mocked", "label": "Is this a practice number (MOCKED) rather than real sign-ups?", "type": "bool",
-         "default": not real}]},
+        {"name": "result", "label": f"Number of {t['metric']}", "type": "number"}, mocked_field]},
                resume_to="p2_gate")
 
 
 def p2_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     if answer is not None:
-        d.signups = {"result": float(answer["result"]),
-                     "mocked": bool(answer.get("mocked", d.data_mode != "real"))}
+        mocked = bool(answer.get("mocked", d.data_mode != "real"))
+        if "visitors" in answer:
+            visitors, signups = float(answer["visitors"]), float(answer["signups"])
+            result = signups / visitors if visitors > 0 else None
+            d.signups = {"result": result, "visitors": visitors, "signups": signups, "mocked": mocked}
+            shown = f"{signups:g} of {visitors:g} visitors" + (f" ({result:.1%})" if result is not None else "")
+        else:
+            d.signups = {"result": float(answer["result"]), "mocked": mocked}
+            shown = f"{d.signups['result']:g}"
         etype = "mocked" if d.signups["mocked"] else "founder_reported"
         ctx.ledger.add(tool="founder_input_form", type=etype,
-                       snippet=f"{d.locked_targets['metric']}: {d.signups['result']:g} ({etype})")
+                       snippet=f"{d.locked_targets['metric']}: {shown} ({etype})")
         log_action("founder", "enter_experiment_result", approved_by="founder", **d.signups)
     fatal_answered = bool(d.objection_answers)
     res = gates.gate2(d.review, locked=gates.LockedTargets(d.locked_targets, d.lock_hash), result=d.signups["result"],

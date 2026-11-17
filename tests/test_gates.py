@@ -310,3 +310,41 @@ def test_gate_memo_never_claims_demand_from_mocked_numbers(make_runtime, models,
         assert any(e["action"] == "removed_mocked_demand_claim" for e in rt.ctx.store.log.entries)
     else:
         assert "showing demand" in memo.summary                            # real numbers: left as written
+
+
+# ---- Gate 2 never compares a count with a rate ----
+
+def _conversion_lock(target=0.08):
+    return gates.LockedTargets.lock({"kind": "conversion", "metric": "premium purchase rate", "target": target,
+                                     "window_days": 30})
+
+
+def test_gate2_refuses_a_count_against_a_rate_target():
+    """Regression: a count of 12 against an 8% target gave GO ("12, which is 15000% of the target of 0.08")."""
+    res = gates.gate2(_review(), locked=_conversion_lock(), result=12, mocked=True, repeats=0, fatal_answered=True,
+                      alternative_supported=False, t=T)
+    assert res.outcome != "go" and res.codes == ["result_unit_mismatch"]
+    assert "15000%" not in res.reasons[0] and "share of visitors" in res.reasons[0]
+
+
+def test_gate2_compares_rates_as_rates():
+    low = gates.gate2(_review(), locked=_conversion_lock(), result=0.012, mocked=True, repeats=0, fatal_answered=True,
+                      alternative_supported=False, t=T)
+    assert low.outcome == "stop" and low.codes == ["far_below_target"]
+    assert "1.2%" in low.reasons[0] and "8%" in low.reasons[0]
+    met = gates.gate2(_review(), locked=_conversion_lock(), result=0.09, mocked=True, repeats=0, fatal_answered=True,
+                      alternative_supported=False, t=T)
+    assert met.outcome == "go" and "9%" in met.reasons[0]
+
+
+def test_stage2_form_asks_for_visitors_and_signups_when_the_target_is_a_rate(make_runtime):
+    from conftest import drive
+    rt = make_runtime()
+    drive(rt, stop_at_gate=1)
+    rt.dossier.locked_targets = {"kind": "conversion", "metric": "premium purchase rate", "target": 0.08,
+                                 "window_days": 30}
+    from venture_builder.departments.validate import p2_signups
+    with rt.ctx.bound():
+        ask = p2_signups(rt.ctx, None)
+    names = [f["name"] for f in ask.payload["fields"]]
+    assert "visitors" in names and "signups" in names and "result" not in names

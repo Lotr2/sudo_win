@@ -114,18 +114,27 @@ def gate1(scores: list[VariantScore], *, excluded: str | None, search_failed: bo
 
 
 @logged("gate", "gate2_validate")
-def gate2(review: InvestorReview, *, locked: LockedTargets, result: float, mocked: bool,
+def gate2(review: InvestorReview, *, locked: LockedTargets, result: float | None, mocked: bool,
           repeats: int, fatal_answered: bool, alternative_supported: bool, t: dict) -> GateResult:
     targets = locked.verify("Gate 2 targets")
     g = t["gate2"]
     target = float(targets["target"])
-    ratio = result / target if target else 0.0
+    rate = targets.get("kind") == "conversion"     # the target is a share of visitors (0-1), not a count
     fatal = [r.assumption for r in review.risks if r.fatal]
+    if fatal and not fatal_answered:
+        return _result(2, "stop", "fatal_risk_unanswered", {"risk": fatal[0]},
+                       {"target": target, "result": result, "metric": targets.get("metric"), "fatal_risks": fatal},
+                       mocked)
+    # Never compare a count with a rate: ask for the numbers again instead of producing a meaningless ratio.
+    unit = {"target": target, "result": result, "metric": targets.get("metric"), "rate": rate}
+    if result is None:
+        return _result(2, "repeat", "no_visitors", unit, unit | {"fatal_risks": fatal}, mocked)
+    if rate and not (0 <= result <= 1 and 0 < target <= 1):
+        return _result(2, "repeat", "result_unit_mismatch", unit, unit | {"fatal_risks": fatal}, mocked)
+    ratio = result / target if target else 0.0
     detail = {"target": target, "result": result, "ratio": round(ratio, 3), "metric": targets.get("metric"),
               "fatal_risks": fatal}
-    facts = {"target": target, "result": result, "ratio": ratio}
-    if fatal and not fatal_answered:
-        return _result(2, "stop", "fatal_risk_unanswered", {"risk": fatal[0]}, detail, mocked)
+    facts = {"target": target, "result": result, "ratio": ratio, "rate": rate}
     if ratio >= g["go_ratio"]:
         return _result(2, "go", "target_met", facts, detail, mocked)
     if ratio >= g["repeat_ratio"]:

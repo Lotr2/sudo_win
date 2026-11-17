@@ -298,6 +298,11 @@ def _launch_not_ready(f: dict) -> str:
     return ("; ".join(why) + ".").capitalize()
 
 
+def _amount(f: dict, value: float) -> str:
+    """A demand-test number: a share of visitors as a percentage ("1.2%", "8%"), a count as itself."""
+    return f"{value:.1%}".replace(".0%", "%") if f.get("rate") else f"{value:g}"
+
+
 GATE_REASONS = {
     # Gate 1
     "excluded_category": lambda f: (
@@ -333,17 +338,27 @@ GATE_REASONS = {
     "fatal_risk_unanswered": lambda f: (
         f"There's a risk that could sink the business, and it hasn't been answered yet: {f['risk']}"),
     "target_met": lambda f: (
-        f"The demand test reached {f['result']:g}, which is {f['ratio']:.0%} of the target of {f['target']:g} set in advance."),
+        f"The demand test reached {_amount(f, f['result'])}, which is {f['ratio']:.0%} of the target of "
+        f"{_amount(f, f['target'])} set in advance."),
     "close_to_target": lambda f: (
-        f"The demand test reached {f['result']:g}, which is {f['ratio']:.0%} of the target of {f['target']:g}. That's "
-        "close, so it's worth running the test once more."),
+        f"The demand test reached {_amount(f, f['result'])}, which is {f['ratio']:.0%} of the target of "
+        f"{_amount(f, f['target'])}. That's close, so it's worth running the test once more."),
     "close_after_retry": lambda f: f"After a second try the test still only reached {f['ratio']:.0%} of the target.",
     "far_below_target_alternative": lambda f: (
-        f"The demand test reached {f['result']:g}, only {f['ratio']:.0%} of the target of {f['target']:g}. But the "
-        "research points to a different customer group that may want it more."),
+        f"The demand test reached {_amount(f, f['result'])}, only {f['ratio']:.0%} of the target of "
+        f"{_amount(f, f['target'])}. But the research points to a different customer group that may want it more."),
     "far_below_target": lambda f: (
-        f"The demand test reached {f['result']:g}, only {f['ratio']:.0%} of the target of {f['target']:g} set in "
-        "advance: less than half. It's better to stop or change direction than to move the goalposts."),
+        f"The demand test reached {_amount(f, f['result'])}, only {f['ratio']:.0%} of the target of "
+        f"{_amount(f, f['target'])} set in advance: less than half. It's better to stop or change direction than to "
+        "move the goalposts."),
+    "result_unit_mismatch": lambda f: (
+        f"The result entered ({f['result']:g}) can't be compared with the target set in advance, which is a share of "
+        f"visitors ({_amount(f | {'rate': True}, f['target'])} for {f['metric']}). Comparing a count with a share would "
+        "give a meaningless answer, so please enter how many people visited and how many signed up or bought, and "
+        "the team will work out the share."),
+    "no_visitors": lambda f: (
+        "No visitors were entered, so there is no share to compare with the target yet. Enter how many people visited "
+        "and how many signed up or bought."),
     # Gate 3
     "promise_unmeetable": lambda f: (
         "The product as planned can't deliver what the landing page promises with the formats the team can build."),

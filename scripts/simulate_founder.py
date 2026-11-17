@@ -113,6 +113,8 @@ def fill_form(rt, p: dict, demand_result: float | None = None) -> None:
             values[name] = True                      # practice numbers: MOCKED
         elif name == "result":
             values[name] = float(demand_result if demand_result is not None else (locked.get("target") or 30))
+        elif name == "signups":     # a rate target: sign-ups out of 400 practice visitors
+            values[name] = float(demand_result if demand_result is not None else round(400 * float(locked.get("target") or 0.05)))
         elif name == "tickets" or f["type"] == "text":
             values[name] = TICKETS
         else:
