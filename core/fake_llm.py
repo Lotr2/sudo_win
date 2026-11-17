@@ -54,6 +54,9 @@ class FakeTransport:
             content = f"<think>Drafting. {DECOY}</think>\n{final}"
         else:
             content = final
+        limit = int(body.get("max_tokens") or 0)
+        if limit and len(content) // 4 > limit:          # honour max_tokens like a real server
+            content, finish = content[: limit * 4], "length"
         return {"choices": [{"message": {"content": content}, "finish_reason": finish}],
                 "usage": {"prompt_tokens": len(prompt) // 4, "completion_tokens": len(content) // 4}}
 

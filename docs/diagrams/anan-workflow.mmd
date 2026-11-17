@@ -1,0 +1,125 @@
+flowchart TB
+  FB(["📝 <b>Founder brief</b><br/>idea · skills · budget · time · market · values"]):::founder
+  RS{{"🛡️ <b>Request screen</b><br/>rules + verifier"}}:::check
+  REF(["⛔ Refused and logged"]):::stop
+  FB --> RS
+  RS -- "trick prompt" --> REF
+  RS -- "accepted" --> P1
+
+  subgraph P1["PHASE 1 · DISCOVER — find opportunities"]
+    direction LR
+    S11["① <b>Brief</b><br/>intake"]:::intake
+    S12["② <b>Opportunities</b><br/>researcher · web sources"]:::researcher
+    S13["③ <b>Alternatives</b><br/>analyst"]:::analyst
+    S14["④ <b>Market + prices</b><br/>researcher · web sources"]:::researcher
+    S15["⑤ <b>Mom Test kit</b><br/>analyst · ✋ send"]:::analyst
+    S11 --> S12 --> S13 & S14 & S15
+  end
+  P1 --> G1{"<b>Gate 1</b><br/>allowed category<br/>≥ 1 verified pain"}:::gate
+
+  G1 -- "go" --> P2
+  subgraph P2["PHASE 2 · VALIDATE — design the business"]
+    direction LR
+    S21["① <b>Lean Canvas</b><br/>analyst"]:::analyst
+    S22["② <b>Landing page</b><br/>marketer · ✋ publish"]:::marketer
+    S23["③ <b>Demand test</b><br/>analyst · target only"]:::analyst
+    S24["④ <b>Evidence scorecard</b><br/>code"]:::code
+    S21 --> S22 & S23 --> S24
+  end
+  P2 --> G2{"<b>Gate 2 · evidence</b><br/>≥ 3 verified sources<br/>≤ 50% assumptions"}:::gate
+  G2 -. "STOP" .-> PV(["↩️ <b>Founder pivots</b><br/>new brief re-enters at the top"]):::founder
+
+  G2 -- "go" --> P3
+  subgraph P3["PHASE 3 · BUILD — build the product"]
+    direction LR
+    S31["① <b>MVP spec</b><br/>builder · 3-5 features"]:::builder
+    S32["② <b>MVP</b><br/>builder · one call per feature ∥"]:::builder
+    S33["③ <b>User docs</b><br/>builder"]:::builder
+    S34["④ <b>MVP tests</b><br/>code"]:::code
+    S31 --> S32 & S33 --> S34
+  end
+  P3 --> G3{"<b>Gate 3</b><br/>tests pass"}:::gate
+
+  G3 -- "go" --> P4
+  subgraph P4["PHASE 4 · COMMERCIAL SETUP — price and policies"]
+    direction LR
+    S41["① <b>Price</b><br/>analyst · anchored on sourced prices"]:::analyst
+    S42["② <b>Terms</b><br/>template"]:::code
+    S43["③ <b>Privacy</b><br/>template"]:::code
+    S44["④ <b>Refund policy</b><br/>template"]:::code
+    S41 --> S42 & S43 & S44
+  end
+  P4 --> G4{"<b>Gate 4</b><br/>price in sourced range<br/>policies present"}:::gate
+
+  G4 -- "go" --> P5
+  subgraph P5["PHASE 5 · LAUNCH — open the store, deliver automatically (all MOCKED)"]
+    direction LR
+    S51["① <b>Store page</b><br/>marketer · ✋ open store"]:::marketer
+    S52["② <b>Launch posts</b><br/>marketer · ✋ publish"]:::marketer
+    S53["③ <b>Delivery test</b><br/>code · paid → delivered once"]:::code
+    S54["④ <b>Refund test</b><br/>code · ✋ refund → access revoked"]:::code
+    S55["⑤ <b>Reconciliation</b><br/>code"]:::code
+    S51 --> S53 --> S54 --> S55
+  end
+  P5 --> G5{"<b>Gate 5</b><br/>sale-to-cash checks pass"}:::gate
+
+  G5 -- "go" --> P6
+  subgraph P6["PHASE 6 · OPERATE AND LEARN"]
+    direction LR
+    S61["① <b>Support playbook</b><br/>marketer · ✋ send"]:::marketer
+    S62["② <b>Metrics</b><br/>code · MOCKED orders"]:::code
+    S63["③ <b>Persevere or pivot memo</b><br/>analyst · no real customers yet"]:::analyst
+    S62 --> S63
+  end
+  P6 --> G6{"<b>Gate 6</b><br/>real customer evidence?"}:::gate
+  G6 -- "not yet → repeat recommended" --> DONE(["✅ <b>Run complete</b><br/>outputs · decision log · outbox"]):::done
+
+  subgraph INFRA["BEHIND EVERY STEP"]
+    direction LR
+    R["🔀 <b>Router</b><br/>least busy · failover"]:::infra
+    PC1["🖥️ <b>PC1</b><br/>llama-server · gpt-oss-20b"]:::infra
+    PC2["🖥️ <b>PC2</b><br/>llama-server · gpt-oss-20b"]:::infra
+    ST[("💾 <b>state.json</b><br/>resume point")]:::infra
+    V["🛡️ <b>Verifier</b><br/>claims · outward text"]:::check
+    R --> PC1 & PC2
+  end
+
+  subgraph LEGEND["LEGEND"]
+    direction LR
+    L1["intake"]:::intake
+    L2["researcher"]:::researcher
+    L3["analyst"]:::analyst
+    L4["builder"]:::builder
+    L5["marketer"]:::marketer
+    L6["code step"]:::code
+    L7{"phase gate<br/>founder decides ✋"}:::gate
+    L8["∥ runs in parallel"]:::legend
+  end
+
+  LEGEND ~~~ FB
+  INFRA ~~~ FB
+
+  classDef founder fill:#FFF1F2,stroke:#E11D48,stroke-width:2px,color:#881337
+  classDef check fill:#E0E7FF,stroke:#4F46E5,stroke-width:1.5px,color:#1E1B4B
+  classDef stop fill:#FEE2E2,stroke:#DC2626,stroke-width:1.5px,color:#7F1D1D
+  classDef done fill:#D1FAE5,stroke:#059669,stroke-width:2px,color:#064E3B
+  classDef intake fill:#E0F2FE,stroke:#0284C7,stroke-width:1.5px,color:#0C4A6E
+  classDef researcher fill:#DCFCE7,stroke:#16A34A,stroke-width:1.5px,color:#14532D
+  classDef analyst fill:#EDE9FE,stroke:#7C3AED,stroke-width:1.5px,color:#3B0764
+  classDef builder fill:#FFEDD5,stroke:#EA580C,stroke-width:1.5px,color:#7C2D12
+  classDef marketer fill:#FCE7F3,stroke:#DB2777,stroke-width:1.5px,color:#831843
+  classDef code fill:#F1F5F9,stroke:#64748B,stroke-width:1.5px,color:#0F172A
+  classDef gate fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#78350F
+  classDef infra fill:#EEF2FF,stroke:#6366F1,stroke-width:1.5px,color:#1E1B4B
+  classDef legend fill:#FFFFFF,stroke:#94A3B8,stroke-dasharray:4 3,color:#334155
+
+  style P1 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+  style P2 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+  style P3 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+  style P4 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+  style P5 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+  style P6 fill:#F8FAFC,stroke:#CBD5E1,stroke-width:1.5px,color:#0F172A
+  style INFRA fill:#F5F7FF,stroke:#A5B4FC,stroke-width:1.5px,stroke-dasharray:6 4,color:#312E81
+  style LEGEND fill:#FFFFFF,stroke:#CBD5E1,stroke-width:1px,stroke-dasharray:4 3,color:#334155
+  linkStyle default stroke:#94A3B8,stroke-width:1.6px
+  linkStyle 37,38 stroke:transparent,stroke-width:0px
