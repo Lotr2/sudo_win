@@ -20,7 +20,7 @@ from .config import ROOT, Settings
 from .context import Context
 from .decision_log import log_action
 from .dossier import Dossier, RunStore, new_run_id
-from .orchestrator import CONTEXTS, FIRST_NODE, build_graph, sqlite_checkpointer
+from .orchestrator import CONTEXTS, FIRST_NODE, NO_ANSWER, build_graph, sqlite_checkpointer
 from .router import Router
 from .tools.fetch import PageFetcher
 from .tools.search import SearxSearch
@@ -71,7 +71,7 @@ class Runtime:
         if not self.started():
             self.graph.invoke({"run_id": self.run_id, "next": FIRST_NODE, "pending": None, "answer": None}, self.config)
         else:
-            self.graph.invoke(Command(resume=resume), self.config)
+            self.graph.invoke(Command(resume=NO_ANSWER if resume is None else resume), self.config)
         return self.pending()
 
     def pending(self) -> dict | None:

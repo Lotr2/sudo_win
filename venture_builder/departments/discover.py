@@ -69,8 +69,8 @@ def p1_parse(ctx: Context, answer) -> Next:
         return Next("p1_gate")
     for f in ["idea", "skills", "budget_usd", "hours_per_week", "market", "values"]:
         v = getattr(d.profile, f)
-        if v not in (None, "", []):
-            ctx.assumptions.add(f, v, status="assumed", source="founder_reported")
+        if v not in (None, "", []):  # stated by the founder in the brief: a founder_reported fact
+            ctx.assumptions.confirm(f, v, answer="stated in the brief")
     if not ctx.settings.single_model:
         ctx.say("Before we start: the drafting and conversation roles run on Gemma 4 31B through Google's Gemini "
                 "API, so what you type here is sent to Google. Never share passwords or card numbers. "

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venture Builder</title>
+<style>
+  :root { --bg:#f7f7f5; --panel:#fff; --ink:#1d1d1b; --muted:#6b6b66; --line:#e2e2dc; --accent:#2f5d50;
+          --warn:#8a5a00; --warnbg:#fff4dc; --bad:#9b2c2c; --good:#2f6b3a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161615; --panel:#1f1f1d; --ink:#ececea; --muted:#a3a39c;
+          --line:#33332f; --accent:#7fb8a5; --warn:#f0c674; --warnbg:#3a2f12; --bad:#f08080; --good:#8fd19e; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:12px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; }
+  .tag { font-size:12px; padding:2px 8px; border-radius:99px; background:var(--warnbg); color:var(--warn); font-weight:600; }
+  main { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; padding:16px; max-width:1400px; margin:auto; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; min-width:0; }
+  h2 { font-size:15px; margin:0 0 8px; }
+  textarea, input, select { width:100%; font:inherit; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); }
+  button { font:inherit; padding:7px 14px; border-radius:6px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; }
+  button.secondary { background:transparent; color:var(--accent); }
+  button.danger { background:transparent; color:var(--bad); border-color:var(--bad); }
+  button:disabled { opacity:.5; cursor:default; }
+  #progress { height:260px; overflow:auto; font:13px/1.45 ui-monospace, monospace; color:var(--muted); white-space:pre-wrap; }
+  #chat { height:420px; overflow:auto; display:flex; flex-direction:column; gap:8px; }
+  .msg { padding:8px 10px; border-radius:8px; max-width:92%; white-space:pre-wrap; }
+  .liaison { background:var(--bg); border:1px solid var(--line); align-self:flex-start; }
+  .founder { background:var(--accent); color:#fff; align-self:flex-end; }
+  .pending { border:2px solid var(--accent); border-radius:10px; padding:12px; margin-top:12px; }
+  .item { border:1px solid var(--line); border-radius:8px; padding:10px; margin:8px 0; }
+  .item pre { max-height:180px; overflow:auto; font-size:12px; background:var(--bg); padding:8px; white-space:pre-wrap; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+  .gates span { display:inline-block; margin:2px 6px 2px 0; padding:2px 8px; border-radius:6px; border:1px solid var(--line); font-size:13px; }
+  .go { color:var(--good); } .stop { color:var(--bad); } .repeat, .pivot { color:var(--warn); }
+  a { color:var(--accent); }
+  .muted { color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Venture Builder</h1>
+  <span id="models" class="muted"></span>
+  <span class="tag">Payments MOCKED</span><span class="tag">Publishing MOCKED</span><span class="tag">Emails MOCKED</span>
+  <span class="tag">Phase 6 events MOCKED</span><span class="tag">Legal review STUBBED</span>
+  <span id="single" class="tag" hidden>Single-model mode</span>
+  <select id="runs" aria-label="Runs" style="width:auto;margin-left:auto"></select>
+</header>
+<main>
+  <div>
+    <section id="start">
+      <h2>New run</h2>
+      <textarea id="brief" rows="5" placeholder="Your idea, your skills, budget, hours per week, target market and values."></textarea>
+      <div class="row"><button id="go">Start</button><span class="muted">What you write goes to the models listed above.</span></div>
+    </section>
+    <section style="margin-top:16px">
+      <h2>Progress <span id="phase" class="muted"></span> <span id="busy" class="muted"></span></h2>
+      <div class="gates" id="gates"></div>
+      <div id="progress" aria-live="polite"></div>
+      <div id="pending"></div>
+      <div id="error" style="color:var(--bad)"></div>
+    </section>
+    <section style="margin-top:16px">
+      <h2>Outputs</h2><div id="outputs" class="muted">None yet.</div>
+    </section>
+  </div>
+  <section>
+    <h2>Founder Liaison</h2>
+    <div id="chat"></div>
+    <div class="row">
+      <input id="say" placeholder="Reply, or ask “why …?” about the run" aria-label="Message">
+      <button id="send">Send</button>
+    </div>
+    <p class="muted">Chat never approves anything: approvals and gate decisions use the buttons.</p>
+  </section>
+</main>
+<script>
+let RUN = new URLSearchParams(location.search).get("run");
+let lastPendingKey = "";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function api(path, body) {
+  const r = await fetch(path, body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {});
+  if (!r.ok) { const t = await r.json().catch(() => ({detail:r.statusText})); alert(t.detail || "Error"); throw new Error(t.detail); }
+  return r.json();
+}
+async function loadInfo() {
+  const i = await api("/api/info");
+  $("models").textContent = i.single_model ? `Model: ${i.model_oss} (local)` : `Models: ${i.model_oss} (local) + ${i.model_gemma} (Gemini API)`;
+  $("single").hidden = !i.single_model;
+  const runs = await api("/api/runs");
+  $("runs").innerHTML = `<option value="">Runs…</option>` + runs.map(r => `<option value="${r.run_id}" ${r.run_id===RUN?"selected":""}>${r.run_id} · phase ${r.phase} · ${r.status}</option>`).join("");
+}
+$("runs").onchange = e => { if (e.target.value) location.search = "?run=" + e.target.value; };
+$("go").onclick = async () => { const r = await api("/api/runs", {brief: $("brief").value}); location.search = "?run=" + r.run_id; };
+$("send").onclick = async () => { const t = $("say").value.trim(); if (!t || !RUN) return; $("say").value = ""; await api(`/api/runs/${RUN}/chat`, {text:t}); refresh(); };
+$("say").addEventListener("keydown", e => { if (e.key === "Enter") $("send").click(); });
+
+function renderPending(p, st) {
+  if (!p) return st.status !== "running" ? `<div class="pending">Run ${esc(st.status)}.</div>` : "";
+  const k = p.kind;
+  let h = `<div class="pending"><b>Waiting for you</b> (phase ${p.phase}): `;
+  if (k === "question" || k === "notes") h += `${esc(p.question)}<br><span class="muted">Answer in the chat${p.timeout ? ` (demo: ${p.timeout}s timeout keeps it an assumption)` : ""}.</span>`;
+  if (k === "readback") h += `<p>${esc(p.summary)}</p><p class="muted">Open assumptions: ${esc((p.open_assumptions||[]).join("; "))}</p>
+     <div class="row"><button onclick="chatSay('yes')">Confirm</button><span class="muted">or type a correction in the chat</span></div>`;
+  if (k === "approval") h += `review each item. Publishing is MOCKED.` + p.items.map(it => `
+     <div class="item"><b>${esc(it.title)}</b> <span class="muted">${esc(it.id)} · hash ${esc(it.hash)} · ${esc(it.status)}</span>
+     <pre>${esc(JSON.stringify(it.content, null, 1)).slice(0, 4000)}</pre>
+     ${it.status === "pending" ? `<div class="row"><button onclick="approve('${it.id}','${it.hash}')">Approve</button>
+     <button class="danger" onclick="reject('${it.id}')">Reject…</button></div>` : ""}</div>`).join("");
+  if (k === "gate") {
+    h += `Gate ${p.gate} recommends <b class="${p.recommended}">${esc(p.label.toUpperCase())}</b><ul>${p.reasons.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+      <a href="/api/runs/${RUN}/outputs/${p.memo_file}" target="_blank">Read the gate memo</a>`;
+    if (p.critical_unconfirmed?.length) h += `<p style="color:var(--warn)">GO needs these decision-critical assumptions confirmed first: ${p.critical_unconfirmed.map(f => `<button class="secondary" onclick="confirmA('${f}')">confirm ${esc(f)}</button>`).join(" ")}</p>`;
+    if (p.variants) h += `<label class="muted">Variant</label><select id="variant">${p.variants.map(v => `<option value="${v.id}" ${v.id===p.suggested_variant?"selected":""}>${esc(v.id)}: ${esc(v.name)}</option>`).join("")}</select>`;
+    h += `<div class="row">${["go","repeat","pivot","stop"].map(d => `<button class="${d===p.recommended?"":"secondary"}" onclick="decide('${d}','${p.code}','${p.recommended}')">${d === "go" && p.gate === 6 ? "persevere" : d}</button>`).join("")}</div>`;
+  }
+  if (k === "mocked_input") h += `${esc(p.question)}` + p.fields.map(f => `<label class="muted">${esc(f.label)}</label>` +
+      (f.type === "text" ? `<textarea data-f="${f.name}" rows="3"></textarea>` : f.type === "bool" ? `<select data-f="${f.name}"><option value="true">yes (MOCKED)</option><option value="false">no (real, founder-reported)</option></select>` : `<input data-f="${f.name}" type="number" min="0" step="any">`)).join("") +
+      `<div class="row"><button onclick="submitForm()">Submit</button></div>`;
+  return h + `</div>`;
+}
+window.chatSay = async t => { await api(`/api/runs/${RUN}/chat`, {text:t}); refresh(); };
+window.approve = async (id, hash) => { if (confirm(`Approve ${id}? It is executed by a MOCKED adapter.`)) { await api(`/api/runs/${RUN}/items/${id}/approve`, {hash_prefix: hash}); refresh(); } };
+window.reject = async id => { const note = prompt("What should change?"); if (note !== null) { await api(`/api/runs/${RUN}/items/${id}/reject`, {note}); refresh(); } };
+window.decide = async (d, code, rec) => {
+  let note = ""; if (d !== rec) { note = prompt(`You are overriding the recommendation (${rec}). Why?`); if (note === null) return; }
+  if (!confirm(`Record decision "${d}"?`)) return;
+  await api(`/api/runs/${RUN}/gate`, {decision:d, code, variant_id: $("variant")?.value || null, note}); refresh(); };
+window.confirmA = async f => { await api(`/api/runs/${RUN}/confirm`, {field:f}); refresh(); };
+window.submitForm = async () => { const v = {}; document.querySelectorAll("[data-f]").forEach(e => v[e.dataset.f] = e.value); await api(`/api/runs/${RUN}/form`, {values:v}); refresh(); };
+
+async function refresh() {
+  if (!RUN) return;
+  const st = await api(`/api/runs/${RUN}`);
+  $("start").hidden = true;
+  $("phase").textContent = `· phase ${st.phase} · ${st.status} · ${st.mode}`;
+  $("busy").textContent = st.busy ? "· working…" : "";
+  $("error").textContent = st.error || "";
+  $("gates").innerHTML = Object.entries(st.gates).map(([n, g]) => `<span class="${g.outcome}">Gate ${n}: ${esc(g.label)}</span>`).join("");
+  const key = JSON.stringify([st.pending, st.busy]);
+  if (key !== lastPendingKey) { $("pending").innerHTML = st.busy ? "" : renderPending(st.pending, st); lastPendingKey = key; }
+  $("outputs").innerHTML = st.outputs.length ? st.outputs.map(o => `<a target="_blank" href="/api/runs/${RUN}/outputs/${o}">${esc(o)}</a>`).join("<br>") : "None yet.";
+  $("chat").innerHTML = st.conversation.map(t => `<div class="msg ${t.speaker === "founder" ? "founder" : "liaison"}">${esc(t.text)}</div>`).join("");
+  $("chat").scrollTop = $("chat").scrollHeight;
+}
+function stream() {
+  if (!RUN) return;
+  const es = new EventSource(`/api/runs/${RUN}/events`);
+  es.onmessage = e => { const r = JSON.parse(e.data); if (r.kind === "chat") return;
+    $("progress").textContent += `${r.timestamp.slice(11,19)}  ${r.message}\n`; $("progress").scrollTop = $("progress").scrollHeight; };
+}
+loadInfo(); stream(); refresh(); setInterval(refresh, 2500);
+</script>
+</body>
+</html>

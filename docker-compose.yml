@@ -1,12 +1,11 @@
-# One-command setup: `docker compose up`
-#   ollama   serves GPT-OSS-20B locally (no paid API, no key)
-#   models   pulls gpt-oss:20b once, then exits
-#   searxng  self-hosted search for the research agents (free, no key)
-#   app      the venture builder; open it with `docker compose exec app python -m venture_builder.cli`
-# The repo is mounted into the app, so outputs/ and decision_log.json land in the repo.
-# Gemma 4 31B is called through Google's Gemini API: set GEMINI_API_KEY in .env (free tier).
-# Without a key every role runs on GPT-OSS-20B.
-# To use an Ollama already running on this machine: OLLAMA_HOST=http://host.docker.internal:11434 and SKIP_MODEL_PULL=1.
+# One-command setup: `docker compose up`, then open http://localhost:8000
+#   ollama      serves GPT-OSS-20B locally (no paid API, no key)
+#   model-init  pulls gpt-oss:20b once if it is missing, then exits
+#   searxng     self-hosted search for the research agents (free, no key)
+#   app         web UI + API (and the `venture` CLI: docker compose exec app venture --help)
+# Gemma 4 31B is called through Google's Gemini API: put GEMINI_API_KEY in .env (free tier).
+# Without a key every role runs on GPT-OSS-20B (single-model mode, shown in the UI).
+# Ollama on another machine: docker compose -f docker-compose.yml -f compose.remote-ollama.yaml up
 
 services:
   ollama:
@@ -19,7 +18,7 @@ services:
       timeout: 5s
       retries: 60
 
-  models:
+  model-init:
     image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
     depends_on:
       ollama:
@@ -27,8 +26,7 @@ services:
     environment:
       OLLAMA_HOST: http://ollama:11434
       MODEL_OSS: ${MODEL_OSS:-gpt-oss:20b}
-      SKIP_MODEL_PULL: ${SKIP_MODEL_PULL:-0}
-    entrypoint: ["/bin/sh", "-c", "[ \"$$SKIP_MODEL_PULL\" = 1 ] && exit 0; ollama pull \"$$MODEL_OSS\""]
+    entrypoint: ["/bin/sh", "-c", "ollama show \"$$MODEL_OSS\" >/dev/null 2>&1 || ollama pull \"$$MODEL_OSS\""]
     restart: "no"
 
   searxng:
@@ -41,25 +39,27 @@ services:
   app:
     build: .
     depends_on:
-      models:
+      model-init:
         condition: service_completed_successfully
       searxng:
         condition: service_started
-    environment:
-      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
-      SEARXNG_URL: http://searxng:8080
     env_file:
       - path: .env
         required: false
-    extra_hosts:
-      - "host.docker.internal:host-gateway"   # lets OLLAMA_HOST reach an Ollama on this machine
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      SEARXNG_URL: http://searxng:8080
+      RUNS_DIR: /app/runs
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
-      - ./:/app
+      - runs:/app/runs
+      - ./outputs:/app/outputs
+      - ./decision_log.json:/app/decision_log.json
     ports:
-      - "8000:8000"   # web UI
+      - "8000:8000"
     stdin_open: true
     tty: true
 
 volumes:
   ollama:
+  runs:

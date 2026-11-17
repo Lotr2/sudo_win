@@ -1,0 +1,14 @@
+# Use an Ollama running on another machine instead of the bundled one:
+#   docker compose -f docker-compose.yml -f compose.remote-ollama.yaml up
+# Set OLLAMA_HOST in .env, e.g. OLLAMA_HOST=http://192.168.1.50:11434
+services:
+  ollama:
+    profiles: ["bundled-ollama"]   # never activated: the bundled Ollama is not started
+  model-init:
+    profiles: ["bundled-ollama"]
+  app:
+    depends_on: !override
+      searxng:
+        condition: service_started
+    environment:
+      OLLAMA_HOST: ${OLLAMA_HOST:?set OLLAMA_HOST in .env to the machine running Ollama}

@@ -24,6 +24,7 @@ for _mod in (discover, validate, build, commercial, launch, operate):
     NODES.update(_mod.NODES)
 
 FIRST_NODE = "p1_parse"
+NO_ANSWER = {"no_answer": True}  # LangGraph cannot resume with None
 
 # Live contexts, by run id. Graph state holds only small, serialisable control fields.
 CONTEXTS: dict[str, Context] = {}
@@ -60,6 +61,8 @@ def _wrap(name: str, fn):
 def founder(state: State) -> State:
     """The only place the graph waits: the founder's reply arrives as the resume value."""
     reply = interrupt(state["pending"])
+    if reply == NO_ANSWER:
+        reply = None  # demo-mode timeout: the question stays a labelled assumption
     return {"answer": reply, "pending": None}
 
 
