@@ -1,0 +1,19 @@
+# anan: tuned baseline for gpt-oss-20b. Smaller prompts than the template so prompt + output stay well inside
+# one 8192-token llama-server slot, even with gpt-oss's (low-effort) reasoning tokens. Keep every key.
+models:
+  default: gpt-oss-20b
+  roles: {}
+retries: 1
+verifier:
+  enabled: true
+  points: [request, claims, outward]
+budgets:
+  default: {max_prompt_tokens: 4000, max_output_tokens: 1800}
+  roles:
+    builder: {max_prompt_tokens: 4500, max_output_tokens: 2800}
+    verifier: {max_prompt_tokens: 2000, max_output_tokens: 400}
+temperature: 0
+seed: 42
+digest_chars: 600
+max_phase_repeats: 1
+max_parallel_steps: 4

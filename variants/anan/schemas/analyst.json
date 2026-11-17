@@ -1,0 +1,48 @@
+{
+ "type": "object",
+ "properties": {
+  "title": {
+   "type": "string"
+  },
+  "summary": {
+   "type": "string"
+  },
+  "claims": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "alternatives": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "price_usd": {
+   "type": "number"
+  },
+  "demand_target_metric": {
+   "type": "string"
+  },
+  "demand_target_value": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "demand_target_days": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "evidence_gaps": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ },
+ "required": [
+  "title",
+  "summary",
+  "claims"
+ ]
+}

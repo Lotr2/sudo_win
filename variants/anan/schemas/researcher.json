@@ -1,0 +1,34 @@
+{
+ "type": "object",
+ "properties": {
+  "title": {
+   "type": "string"
+  },
+  "summary": {
+   "type": "string"
+  },
+  "claims": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "competitor_prices_usd": {
+   "type": "array",
+   "items": {
+    "type": "number"
+   }
+  },
+  "evidence_gaps": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ },
+ "required": [
+  "title",
+  "summary",
+  "claims"
+ ]
+}

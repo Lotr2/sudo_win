@@ -38,7 +38,8 @@ Update this file when a task changes state (`[ ]` open, `[~]` in progress, `[x]`
 ## Tasks by person
 
 ### anan
-- [ ] Create `variants/anan/` from the template (tuned baseline); contract green by 14:30
+- [x] Create `variants/anan/` from the template (tuned baseline for gpt-oss-20b); contract green — on branch `anans-approach`
+- [ ] Real run of `anan` on gpt-oss-20b: check word limits, budgets, `trimmed_prompts`, JSON retries and truncations
 - [ ] Founder: review and sign off `demo/founder_brief_idea1.md`, `founder_brief_idea2.md`, `founder_decisions.yaml` (drafts)
 - [ ] Runner: let the UI pass a pivot brief when the founder picks "pivot" without a decisions file
 - [ ] 17:15: promote the winner to the root layout (`orchestrator.py`, `agents/`, `prompts/`, `schemas/`, `config.yaml`); make the runner load the root layout; remove other variants; summarize them in `ARCHITECTURE.md`

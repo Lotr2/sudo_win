@@ -1,0 +1,28 @@
+{
+ "type": "object",
+ "properties": {
+  "title": {
+   "type": "string"
+  },
+  "summary": {
+   "type": "string"
+  },
+  "claims": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "features": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  }
+ },
+ "required": [
+  "title",
+  "summary",
+  "claims"
+ ]
+}
