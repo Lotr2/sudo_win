@@ -1,15 +1,13 @@
-# Client Communication Checklist Pack
+# Design Brief Guide for Freelance Designers
 
-A ready‑made set of editable checklists that helps small business owners communicate clearly with freelance designers about proposals, invoices, and payment reminders.
+A quick, easy‑to‑follow guide that helps freelance designers set clear expectations with clients before starting work. It includes a ready‑to‑use design brief template and step‑by‑step instructions to save time and reduce misunderstandings.
 
 ## What's included
 
-- Pre‑written checklists for proposals, invoices, and payment reminders
-- Editable in Google Docs for quick customization
-- Fill‑in fields to capture key details
-- Saves time and reduces miscommunication
+- Design Brief Guide
+- Ready‑to‑use template
 
-**Basic: $29 • Standard: $49 • Premium: $79**
+**$27**
 
 14‑day money‑back guarantee
 

@@ -2,102 +2,65 @@
  "how_scores_work": "Each version gets up to 100 points: evidence that people have this problem (30 points), fit with your skills, budget and time (25 points), places to reach these customers (20 points), can be built as a first version (15 points), room next to existing options (10 points). These weights are design choices, not facts (config/scoring.toml).",
  "versions": [
   {
-   "name": "Client Communication Checklist Pack",
-   "total_out_of_100": 60,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1); it scores 60 out of 100; 60 is needed.",
+   "name": "Design Brief Guide",
+   "total_out_of_100": 80.0,
+   "verdict": "Passes every check.",
    "points": {
-    "Evidence that people have this problem": "5 of 30: Found 1 real example of people describing this problem or looking for help with it, on linkedin.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 1 of 1 is about your market. For example: “Business owners find it difficult to negotiate and set expectations with freelance designers”.",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing, graphic design and google docs; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).",
-    "Places to reach these customers": "13 of 20: These customers can be found on linkedin.com and upwork.com.",
-    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "2 of 10: Found 3 existing options but no complaints about them. Complaints show where you could do better."
+    "Evidence that people have this problem": "19 of 30: Found 4 real examples of people describing this problem or looking for help with it, on graphicdesignforum.com, jenniferbourn.com, rasmussen.edu and webflow.com. Full marks need 5. Of these, 2 are people describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 3 of 4 are about your market (the others count less). For example: “Freelance designers often feel frustrated when clients send last‑minute changes and ask why work isn’t finished yet” / “Freelance designers feel confused when clients keep changing their mind and add work, making it hard to set clear expectations”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing clear client emails and graphic design; it needs about 8 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Places to reach these customers": "20 of 20: These customers can be found on freelancer.com, graphicdesignforum.com and upwork.com.",
+    "Can be built as a first version": "15 of 15: It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "1 of 10: Found 4 existing options but no complaints about them. Complaints show where you could do better."
    }
   },
   {
-   "name": "Polite Reminder Pack",
-   "total_out_of_100": 50,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1); it scores 50 out of 100; 60 is needed.",
+   "name": "Contract Template Pack",
+   "total_out_of_100": 77.9,
+   "verdict": "Passes every check.",
    "points": {
-    "Evidence that people have this problem": "3 of 30: Found 1 real example of people describing this problem or looking for help with it, on microfreelancehub.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Graphic designers often struggle to draft polite, effective late‑payment reminder emails that keep clients happy”.",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for email writing, graphic design and figma; it needs about 8 hours (you have about 24 a month) and about $0 (your budget is $150).",
-    "Places to reach these customers": "7 of 20: These customers can be found on graphicdesign.stackexchange.com.",
+    "Evidence that people have this problem": "28 of 30: Found 7 real examples of people describing this problem or looking for help with it, on examples.com, in.pinterest.com, manyrequests.com and template.net and 2 more. Full marks need 5. Of these, 5 are people describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 2 of 7 are about your market (the others count less). For example: “Freelance designers are looking for free contract templates that protect both designers and clients” / “Freelance designers struggle with scope creep, making it hard to finish on time and get paid properly”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing clear client emails and google docs; it needs about 18 hours (you have about 24 a month) and about $30 (your budget is $150).",
+    "Places to reach these customers": "7 of 20: These customers can be found on hellobonsai.com.",
+    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "3 of 10: Found 1 existing option but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Client Onboarding Kit",
+   "total_out_of_100": 69.6,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 2).",
+   "points": {
+    "Evidence that people have this problem": "10 of 30: Found 2 real examples of people describing this problem or looking for help with it, on paperform.co and taskip.net. Full marks need 5. Of these, 2 are articles or other pages (these count a little less); 2 of 2 are about your market. For example: “Freelance graphic designers make common onboarding mistakes such as unclear briefs and contracts” / “Freelancers are looking for step‑by‑step onboarding templates to streamline new client setup”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for graphic design, writing clear client emails and google docs; it needs about 14 hours (you have about 24 a month) and about $25 (your budget is $150).",
+    "Places to reach these customers": "20 of 20: These customers can be found on agensi.io, dribbble.com, laborx.com and pinterest.com and 2 more.",
     "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
     "Room next to existing options": "0 of 10: Found 6 existing options but no complaints about them. Complaints show where you could do better."
    }
   },
   {
-   "name": "Timing Guide",
-   "total_out_of_100": 40,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.",
+   "name": "Client Communication Guide",
+   "total_out_of_100": 41.6,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 41.6 out of 100; 60 is needed.",
    "points": {
     "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing, graphic design and google docs; it needs about 12 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing clear client emails and figma; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).",
     "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
     "Can be built as a first version": "15 of 15: It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "0 of 10: Found 5 existing options but no complaints about them. Complaints show where you could do better."
+    "Room next to existing options": "2 of 10: Found 3 existing options but no complaints about them. Complaints show where you could do better."
    }
   }
  ],
  "raw_scores": [
   {
    "variant_id": "v1",
-   "pain": 0.096,
+   "pain": 0.0,
    "founder_fit": 1.0,
-   "reachability": 0.333,
-   "buildability": 1.0,
-   "competition_gap": 0.0,
-   "score": 0.495,
-   "pain_signals": 1,
-   "pain_domains": 1,
-   "fit_rules_pass": true,
-   "inputs": {
-    "hours_per_week": 6.0,
-    "budget_usd": 150.0,
-    "skill_coverage": 1.0,
-    "budget_ok": true,
-    "build_hours": 8.0,
-    "complaints": 0,
-    "alternatives": 6,
-    "channels": 1,
-    "skills_covered": [
-     "email writing",
-     "graphic design",
-     "Figma"
-    ],
-    "skills_learnable": [],
-    "skills_missing": [],
-    "help_affordable": false,
-    "budget_needed": 0.0,
-    "month_hours": 24.0,
-    "channel_sites": [
-     "graphicdesign.stackexchange.com"
-    ],
-    "problem_sites": [
-     "microfreelancehub.com"
-    ],
-    "in_templates": true,
-    "problem_claims": [
-     "Graphic designers often struggle to draft polite, effective late‑payment reminder emails that keep clients happy."
-    ],
-    "problem_grades": {
-     "article": 1
-    },
-    "problem_on_market": 0,
-    "problem_urls": [
-     "https://www.microfreelancehub.com/templates/graphic-designer-late-payment-demand-letter"
-    ]
-   }
-  },
-  {
-   "variant_id": "v2",
-   "pain": 0.16,
-   "founder_fit": 1.0,
-   "reachability": 0.667,
+   "reachability": 0.0,
    "buildability": 1.0,
    "competition_gap": 0.16,
-   "score": 0.597,
-   "pain_signals": 1,
-   "pain_domains": 1,
+   "score": 0.416,
+   "pain_signals": 0,
+   "pain_domains": 0,
    "fit_rules_pass": true,
    "inputs": {
     "hours_per_week": 6.0,
@@ -107,61 +70,10 @@
     "build_hours": 10.0,
     "complaints": 0,
     "alternatives": 3,
-    "channels": 2,
-    "skills_covered": [
-     "writing",
-     "graphic design",
-     "Google Docs"
-    ],
-    "skills_learnable": [],
-    "skills_missing": [],
-    "help_affordable": false,
-    "budget_needed": 0.0,
-    "month_hours": 24.0,
-    "channel_sites": [
-     "linkedin.com",
-     "upwork.com"
-    ],
-    "problem_sites": [
-     "linkedin.com"
-    ],
-    "in_templates": true,
-    "problem_claims": [
-     "Business owners find it difficult to negotiate and set expectations with freelance designers."
-    ],
-    "problem_grades": {
-     "article": 1
-    },
-    "problem_on_market": 1,
-    "problem_urls": [
-     "https://www.linkedin.com/posts/nikki-sanz_nobody-teaches-you-how-to-freelance-which-activity-7506400354704609281-Uc6-"
-    ]
-   }
-  },
-  {
-   "variant_id": "v3",
-   "pain": 0.0,
-   "founder_fit": 1.0,
-   "reachability": 0.0,
-   "buildability": 1.0,
-   "competition_gap": 0.0,
-   "score": 0.4,
-   "pain_signals": 0,
-   "pain_domains": 0,
-   "fit_rules_pass": true,
-   "inputs": {
-    "hours_per_week": 6.0,
-    "budget_usd": 150.0,
-    "skill_coverage": 1.0,
-    "budget_ok": true,
-    "build_hours": 12.0,
-    "complaints": 0,
-    "alternatives": 5,
     "channels": 0,
     "skills_covered": [
-     "writing",
-     "graphic design",
-     "Google Docs"
+     "writing clear client emails",
+     "Figma"
     ],
     "skills_learnable": [],
     "skills_missing": [],
@@ -175,6 +87,183 @@
     "problem_grades": {},
     "problem_on_market": 0,
     "problem_urls": []
+   }
+  },
+  {
+   "variant_id": "v2",
+   "pain": 0.936,
+   "founder_fit": 1.0,
+   "reachability": 0.333,
+   "buildability": 1.0,
+   "competition_gap": 0.32,
+   "score": 0.779,
+   "pain_signals": 7,
+   "pain_domains": 6,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 18.0,
+    "complaints": 0,
+    "alternatives": 1,
+    "channels": 1,
+    "skills_covered": [
+     "writing clear client emails",
+     "Google Docs"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 30.0,
+    "month_hours": 24.0,
+    "channel_sites": [
+     "hellobonsai.com"
+    ],
+    "problem_sites": [
+     "examples.com",
+     "in.pinterest.com",
+     "manyrequests.com",
+     "template.net",
+     "venngage.com",
+     "weareindy.com"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Freelance designers are looking for free contract templates that protect both designers and clients.",
+     "Freelance designers struggle with scope creep, making it hard to finish on time and get paid properly.",
+     "Freelance designers need a contract to protect their rights and ensure payment"
+    ],
+    "problem_grades": {
+     "question": 5,
+     "article": 2
+    },
+    "problem_on_market": 2,
+    "problem_urls": [
+     "https://in.pinterest.com/ideas/freelance-web-design-contract-template/899410777358/",
+     "https://manyrequests.com/templates/graphic-designer-contract-template",
+     "https://venngage.com/templates/contracts/employment",
+     "https://venngage.com/templates/contracts/freelance-job-contract-template-c5c32efe-6f5b-4958-96b8-075a48ae9912",
+     "https://weareindy.com/contract-templates/freelance-fashion-designer-contract-template"
+    ]
+   }
+  },
+  {
+   "variant_id": "v3",
+   "pain": 0.64,
+   "founder_fit": 1.0,
+   "reachability": 1.0,
+   "buildability": 1.0,
+   "competition_gap": 0.08,
+   "score": 0.8,
+   "pain_signals": 4,
+   "pain_domains": 4,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 8.0,
+    "complaints": 0,
+    "alternatives": 4,
+    "channels": 3,
+    "skills_covered": [
+     "writing clear client emails",
+     "graphic design"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 0.0,
+    "month_hours": 24.0,
+    "channel_sites": [
+     "freelancer.com",
+     "graphicdesignforum.com",
+     "upwork.com"
+    ],
+    "problem_sites": [
+     "graphicdesignforum.com",
+     "jenniferbourn.com",
+     "rasmussen.edu",
+     "webflow.com"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Freelance designers often feel frustrated when clients send last‑minute changes and ask why work isn’t finished yet.",
+     "Freelance designers feel confused when clients keep changing their mind and add work, making it hard to set clear expectations.",
+     "Designers worry that without a clear vision of client expectations they cannot tell if they are meeting client needs."
+    ],
+    "problem_grades": {
+     "first_hand": 1,
+     "question": 1,
+     "article": 2
+    },
+    "problem_on_market": 3,
+    "problem_urls": [
+     "https://jenniferbourn.com/expectation-setting-email-template/",
+     "https://webflow.com/blog/10-ways-freelance-designers-can-better-manage-client-expectations",
+     "https://www.graphicdesignforum.com/t/freelance-designer-dilemma/15243/7",
+     "https://www.rasmussen.edu/degrees/design/blog/communicating-with-design-clients/"
+    ]
+   }
+  },
+  {
+   "variant_id": "v4",
+   "pain": 0.32,
+   "founder_fit": 1.0,
+   "reachability": 1.0,
+   "buildability": 1.0,
+   "competition_gap": 0.0,
+   "score": 0.696,
+   "pain_signals": 2,
+   "pain_domains": 2,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 14.0,
+    "complaints": 0,
+    "alternatives": 6,
+    "channels": 6,
+    "skills_covered": [
+     "graphic design",
+     "writing clear client emails",
+     "Google Docs"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 25.0,
+    "month_hours": 24.0,
+    "channel_sites": [
+     "agensi.io",
+     "dribbble.com",
+     "laborx.com",
+     "pinterest.com",
+     "tiktok.com",
+     "youtube.com"
+    ],
+    "problem_sites": [
+     "paperform.co",
+     "taskip.net"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Freelance graphic designers make common onboarding mistakes such as unclear briefs and contracts.",
+     "Freelancers are looking for step‑by‑step onboarding templates to streamline new client setup."
+    ],
+    "problem_grades": {
+     "article": 2
+    },
+    "problem_on_market": 2,
+    "problem_urls": [
+     "https://paperform.co/blog/client-onboarding-scope-creep/",
+     "https://taskip.net/templates/freelancer-client-onboarding/"
+    ]
    }
   }
  ]

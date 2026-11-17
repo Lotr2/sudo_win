@@ -6,7 +6,7 @@
 
 ## In short
 
-Stop the idea because it involves medical advice, which we cannot support.
+Stop here – the idea is in a category we can't help with.
 
 ## Why
 
@@ -14,23 +14,23 @@ Stop the idea because it involves medical advice, which we cannot support.
 
 ## What the team found
 
-The review found that your AI meal coach would give advice on eating for people with type 2 diabetes, which is medical advice. That falls outside the scope of products we can help with. The team’s policy says we must avoid any product that could influence medical decisions. Because of that rule, the idea cannot move forward. Stopping early saves you time and money that would otherwise be spent on a product that is not allowed.
+We checked the category of the idea. The idea is about giving medical advice for type 2 diabetes, which falls under health advice. The team needs licensed experts to ensure safety and cannot support this. Because of that, we recommend stopping the current idea. This saves you time and money and lets you focus on a different digital product.
 
 ## What you can do next
 
-- Reframe the product to give general meal suggestions for healthy living without diagnosing or treating diabetes.
-- Focus on a broader audience such as people looking to improve nutrition or manage weight, removing any reference to blood‑sugar readings.
-- Remove any medical claims and instead provide educational content about balanced meals and portion sizes.
+- Look for a meal planning idea that does not promise medical outcomes, such as a general healthy eating guide for anyone.
+- Create a grocery list generator that turns a weekly meal plan into a shopping list based on user preferences.
+- Build a recipe recommendation engine that suggests dishes based on taste and dietary restrictions, not medical conditions.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Create an AI recipe planner that suggests weekly menus based on dietary preferences, avoiding medical claims. *It uses the same AI and spreadsheet skills but stays in the general nutrition space.*
-- **Product idea:** Build a grocery list generator that optimizes for cost and nutrition for families. *It leverages spreadsheet skills and is a purely digital tool.*
-- **Product idea:** Offer a calorie tracker app for weight management. *It requires no medical expertise and can be built quickly.*
-- **Product idea:** Develop a meal prep scheduling tool for busy professionals. *It uses your writing and spreadsheet strengths and stays outside medical advice.*
-- **Customer group:** Target fitness enthusiasts with a meal planning app that supports workout nutrition. *The same technology can serve a different audience that does not need medical guidance.*
+- **Product idea:** Develop a general healthy meal planner that offers daily recipes for anyone looking to eat balanced meals. *It uses your writing and spreadsheet skills and avoids medical claims.*
+- **Product idea:** Create a grocery list generator that turns a weekly meal plan into a shopping list. *It builds on your spreadsheet skills and meets a common need.*
+- **Product idea:** Build a recipe recommendation app that filters recipes by taste preferences and dietary restrictions. *It leverages your writing ability and appeals to a broad audience.*
+- **Product idea:** Launch a cooking tutorial platform that teaches basic cooking techniques. *It uses your writing skills and can be monetized with a subscription.*
+- **Product idea:** Offer a nutrition guide for people with specific dietary needs (e.g., vegetarian, gluten‑free) without medical claims. *It stays within digital products and uses your strengths.*
 
 ## What this is based on
 

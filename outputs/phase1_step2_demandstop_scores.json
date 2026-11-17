@@ -1,0 +1,237 @@
+{
+ "how_scores_work": "Each version gets up to 100 points: evidence that people have this problem (30 points), fit with your skills, budget and time (25 points), places to reach these customers (20 points), can be built as a first version (15 points), room next to existing options (10 points). These weights are design choices, not facts (config/scoring.toml).",
+ "versions": [
+  {
+   "name": "Agency Payment Workflow Tool",
+   "total_out_of_100": 66.4,
+   "verdict": "Passes every check.",
+   "points": {
+    "Evidence that people have this problem": "16 of 30: Found 3 real examples of people describing this problem or looking for help with it, on painonsocial.com, proz.com and vulta.one. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 3 of 3 are about your market. For example: “Designers report clients who disappear after receiving files, dispute invoices, or drag out payment for months” / “Many designers start projects without formal contracts, leading to unclear deliverables, payment disputes, and no legal protection when things go wrong”.",
+    "Fit with your skills, budget and time": "21 of 25: You already have what it takes for ux; you'd need help with web development; it needs about 20 hours (you have about 24 a month) and about $80 (your budget is $150).",
+    "Places to reach these customers": "13 of 20: These customers can be found on warriorforum.com and webflow.com.",
+    "Can be built as a first version": "15 of 15: It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "2 of 10: Found 3 existing options but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Proposal Template Pack",
+   "total_out_of_100": 43.2,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 43.2 out of 100; 60 is needed.",
+   "points": {
+    "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing and design; it needs about 8 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
+    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "3 of 10: Found 1 existing option but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Client Communication Toolkit",
+   "total_out_of_100": 43.2,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 43.2 out of 100; 60 is needed.",
+   "points": {
+    "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing and design; it needs about 7 hours (you have about 24 a month) and about $0 (your budget is $150).",
+    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
+    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "3 of 10: Found 1 existing option but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Freelance Designer Payment Planner",
+   "total_out_of_100": 41.5,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1); it scores 41.5 out of 100; 60 is needed.",
+   "points": {
+    "Evidence that people have this problem": "3 of 30: Found 1 real example of people describing this problem or looking for help with it, on imagetotable.ai. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Freelancers feel overwhelmed by scattered invoice records across multiple platforms during tax season preparation” / “The lack of a single tool to track invoices creates a structural problem for freelancers with multiple clients”.",
+    "Fit with your skills, budget and time": "24 of 25: You already have what it takes for figma and ux; basic web development can be learned quickly; it needs about 12 hours (you have about 24 a month) and about $50 (your budget is $150).",
+    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
+    "Can be built as a first version": "15 of 15: It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "0 of 10: Found 5 existing options but no complaints about them. Complaints show where you could do better."
+   }
+  }
+ ],
+ "raw_scores": [
+  {
+   "variant_id": "v1",
+   "pain": 0.0,
+   "founder_fit": 1.0,
+   "reachability": 0.0,
+   "buildability": 1.0,
+   "competition_gap": 0.32,
+   "score": 0.432,
+   "pain_signals": 0,
+   "pain_domains": 0,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 8.0,
+    "complaints": 0,
+    "alternatives": 1,
+    "channels": 0,
+    "skills_covered": [
+     "writing",
+     "design"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 0.0,
+    "month_hours": 24.0,
+    "channel_sites": [],
+    "problem_sites": [],
+    "in_templates": true,
+    "problem_claims": [],
+    "problem_grades": {},
+    "problem_on_market": 0,
+    "problem_urls": []
+   }
+  },
+  {
+   "variant_id": "v2",
+   "pain": 0.0,
+   "founder_fit": 1.0,
+   "reachability": 0.0,
+   "buildability": 1.0,
+   "competition_gap": 0.32,
+   "score": 0.432,
+   "pain_signals": 0,
+   "pain_domains": 0,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 7.0,
+    "complaints": 0,
+    "alternatives": 1,
+    "channels": 0,
+    "skills_covered": [
+     "writing",
+     "design"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 0.0,
+    "month_hours": 24.0,
+    "channel_sites": [],
+    "problem_sites": [],
+    "in_templates": true,
+    "problem_claims": [],
+    "problem_grades": {},
+    "problem_on_market": 0,
+    "problem_urls": []
+   }
+  },
+  {
+   "variant_id": "v3",
+   "pain": 0.096,
+   "founder_fit": 0.944,
+   "reachability": 0.0,
+   "buildability": 1.0,
+   "competition_gap": 0.0,
+   "score": 0.415,
+   "pain_signals": 1,
+   "pain_domains": 1,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 0.83,
+    "budget_ok": true,
+    "build_hours": 12.0,
+    "complaints": 0,
+    "alternatives": 5,
+    "channels": 0,
+    "skills_covered": [
+     "Figma",
+     "UX"
+    ],
+    "skills_learnable": [
+     "basic web development"
+    ],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 50.0,
+    "month_hours": 24.0,
+    "channel_sites": [],
+    "problem_sites": [
+     "imagetotable.ai"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Freelancers feel overwhelmed by scattered invoice records across multiple platforms during tax season preparation.",
+     "The lack of a single tool to track invoices creates a structural problem for freelancers with multiple clients."
+    ],
+    "problem_grades": {
+     "article": 1
+    },
+    "problem_on_market": 0,
+    "problem_urls": [
+     "https://imagetotable.ai/blog/freelancer-invoice-tracking-tax-problem"
+    ]
+   }
+  },
+  {
+   "variant_id": "v4",
+   "pain": 0.52,
+   "founder_fit": 0.833,
+   "reachability": 0.667,
+   "buildability": 1.0,
+   "competition_gap": 0.16,
+   "score": 0.664,
+   "pain_signals": 3,
+   "pain_domains": 3,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 0.5,
+    "budget_ok": true,
+    "build_hours": 20.0,
+    "complaints": 0,
+    "alternatives": 3,
+    "channels": 2,
+    "skills_covered": [
+     "UX"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [
+     "web development"
+    ],
+    "help_affordable": false,
+    "budget_needed": 80.0,
+    "month_hours": 24.0,
+    "channel_sites": [
+     "warriorforum.com",
+     "webflow.com"
+    ],
+    "problem_sites": [
+     "painonsocial.com",
+     "proz.com",
+     "vulta.one"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Designers report clients who disappear after receiving files, dispute invoices, or drag out payment for months.",
+     "Many designers start projects without formal contracts, leading to unclear deliverables, payment disputes, and no legal protection when things go wrong.",
+     "Agencies and freelance teams need a system to manage multiple client payments, team access, and payment infrastructure for their whole business."
+    ],
+    "problem_grades": {
+     "article": 2,
+     "first_hand": 1
+    },
+    "problem_on_market": 3,
+    "problem_urls": [
+     "https://painonsocial.com/blog/designer-client-problems-reddit",
+     "https://vulta.one/en/blog/vulta-for-agencies-managing-multiple-client-payments",
+     "https://www.proz.com/forum/business_issues/130687-vat_ue_invoice_problem-page2.html"
+    ]
+   }
+  }
+ ]
+}

@@ -6,37 +6,37 @@
 
 ## In short
 
-Go ahead – the checklist pack meets all quality checks, so you can move forward.
+Go ahead – the guide meets all quality checks, so you can launch it.
 
 ## Why
 
-- The product passes all 5 quality checks (after 2 build round(s)).
+- The product passes all 4 quality checks (after 1 build round(s)).
 
 ## What the team found
 
-We checked five quality criteria for the Client Communication Checklist Pack. The product passed all five after two build rounds, showing it is ready. The final version includes pre‑written checklists for proposals, invoices, and payment reminders that are editable in Google Docs. It also has fill‑in fields to capture key details, which saves time and reduces miscommunication. Because it meets every requirement, you can proceed to launch.
+We checked the guide for clear steps, a usable template, helpful tips, and a checklist. All four quality checks were passed after one build round. The guide is ready for your freelance designer audience. The main reason to move forward is that it meets every quality standard we set. Now you can focus on marketing and collecting user feedback.
 
 ## What you can do next
 
-- Finalize pricing and create a simple landing page to showcase the pack.
-- Test the pack with a small group of small business owners to gather early feedback.
-- Set up a distribution channel, such as a marketplace or your own website, to sell the pack.
+- Launch the guide on your website and offer it for free to start building a user base.
+- Promote the guide on freelance platforms and design communities to reach your target audience.
+- Collect early feedback from a few designers and use it to make quick improvements.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Customer group:** Offer a similar checklist pack for other freelancer types, like developers or writers, to broaden the audience. *The same idea works for any freelancer communication need and expands your market.*
-- **Product idea:** Create a short guide on how to communicate effectively with freelancers, using the same templates as examples. *A cheaper, smaller product tests the same need and can be sold quickly.*
-- **Market:** Build a digital directory of vetted freelancers for small business owners, leveraging the communication templates as onboarding tools. *Your skills in creating templates can help curate a useful resource for a related market.*
-- **Customer group:** Develop a community forum for small business owners to share best practices on freelancer communication. *The same skill set can support a community that grows around the checklist concept.*
-- **Product idea:** Offer a paid coaching service that walks owners through the checklist pack and helps them customize it for their projects. *It upsells the core idea while providing personalized support.*
+- **Product idea:** Create a short video walkthrough of the guide for YouTube and social media. *It uses the same content but reaches people who prefer visual learning and can drive traffic back to the guide.*
+- **Customer group:** Offer the guide to design agencies as a resource for their in-house designers. *Agencies need clear briefs for multiple projects, so the guide fits their workflow and expands your market.*
+- **Product idea:** Bundle the guide with a set of editable brief templates for popular design tools. *Adding templates increases value for designers who want ready‑to‑use files and can be sold as a premium add‑on.*
+- **Market:** Adapt the guide for copywriters and content creators who also need brief templates. *Copywriters face similar brief challenges, and your existing structure can be reused with minimal changes.*
+- **Product idea:** Turn the guide into an interactive checklist app for mobile devices. *An app makes it easy for designers to use the checklist on the go and can attract a tech‑savvy audience.*
 
 ## Key numbers
 
-- Quality checks passed: 5
-- Quality checks in total: 5
-- Build rounds: 2
+- Quality checks passed: 4
+- Quality checks in total: 4
+- Build rounds: 1
 
 ## What this is based on
 
@@ -46,4 +46,4 @@ If this version doesn't work out, these grow out of your original idea and skill
 
 You make the final call, using the options on screen (or `venture gate` in the terminal). If you choose differently from the recommendation, your choice and reason are recorded next to it.
 
-Preview the product in `runs/20261117-170621-da2d/product/` before approving the MVP.
+Preview the product in `runs/20261117-200601-ad63/product/` before approving the MVP.

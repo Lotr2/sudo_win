@@ -1,27 +1,22 @@
 # Phase 3 · Step 2: Quality check report
 
-**Result: 5 of 5 quality checks pass** (all of them), after 2 build rounds.
+**Result: 4 of 4 quality checks pass** (all of them), after 1 build round.
 
 The product was built and checked in a sealed sandbox with no internet access (audit hook (sockets, DNS and subprocesses blocked)).
 
 ## Quality review
 
-A reviewer scored the first version **3 out of 5** against a rubric (specific, practical, complete against the plan and the landing page, no filler). The builder revised it once to address:
-- The 'When to Use' sections in all four checklists are under 80 words; each needs more detail to meet the minimum word requirement.
-- The 'Checklist' sections in all four checklists are under 80 words; each bullet list and accompanying sentence should be expanded to reach the minimum word count.
-
-After the revision the reviewer scored it **4 out of 5**. Still to improve:
-- The pack does not mention that the checklists can be edited in Google Docs, even though the landing page says so.
-- The pack does not say that the checklists have fill‑in fields to capture key details, which is part of the promised features.
-- The pack does not explicitly state that it saves time and reduces miscommunication, though it is implied.
-- The pack includes a Project Kickoff Checklist that was not mentioned in the landing promise, which could confuse buyers.
-- The pack does not highlight that the checklists are ready‑made or pre‑written, a key selling point.
-- The pack does not provide a clear summary or tagline that matches the landing promise, making the overall value proposition less obvious.
+A reviewer scored the first version **4 out of 5** against a rubric (specific, practical, complete against the plan and the landing page, no filler).
+- The ready‑to‑use design brief template is incomplete; it only shows headings with no example content, so buyers cannot copy and paste a finished template.
+- The template snippet appears only in the "Defining the Project Scope" section; a separate, full brief template (including sections like Scope, Timeline, Budget, Approval) would be clearer.
+- The "Checklist" sections are repeated verbatim; while helpful, they could be consolidated or made more specific to each section to avoid redundancy.
+- The content includes a "Word count" note at the end of each section; this is unnecessary for buyers and could be removed.
+- The "Tips" in the "Establishing Timelines and Milestones" section mention using a shared calendar or project board, but no concrete example or tool recommendation is given; a brief example would add value.
+- The "Clarifying Budget and Payment Terms" section provides a sample clause but does not include a ready‑to‑copy payment terms template; adding a full clause template would meet the spec.
 
 ## Each check
 
-- Passed: every item has required fields
-- Passed: index lists all items
-- Passed: item count
-- Passed: items not empty
+- Passed: has title
 - Passed: no forbidden claims
+- Passed: required sections present
+- Passed: sections long enough

@@ -3,6 +3,7 @@
 A founder brings a short brief: an idea plus skills, budget, time, target market and values. Six departments, one per phase, take it through **Discover → Validate → Build → Commercial setup → Launch (sell, deliver, get paid) → Operate and learn**, and the system says **"don't launch this"** when the evidence is weak. Plain code (a LangGraph state machine) runs the pipeline, the gates, approvals and the money path; agents on open-weight models do the work inside each department; a Founder Liaison talks with the founder throughout. It is the open, honest alternative to closed AI business tools: no income promises, sourced evidence, the founder in control, and $0 to run.
 
 - **Every phase ends in a gate** decided by code against thresholds fixed in advance: go, repeat, pivot or **stop**. Gate 2's target is hashed into the log before any result exists. Every recommendation comes with a points breakdown, the evidence behind it, and other directions to try.
+- **It says STOP when the evidence is weak.** In the committed demo run, a practice demand test (MOCKED) reached 12 sign-ups against a target of 50 locked in advance, so Stage 2 recommends stopping: [`outputs/phase2_gate_demandstop_decision.md`](outputs/phase2_gate_demandstop_decision.md). An excluded product (a medical meal coach) is stopped at Stage 1: [`outputs/phase1_gate_weak_decision.md`](outputs/phase1_gate_weak_decision.md). The main idea passes all six stage checks on the team's own recommendations, with no override (`outputs/phase1_…` to `phase6_…`).
 - **Nothing is published, sent, spent, signed or refunded** without a founder approval record bound to the item's content hash, created only by a button in the web UI or an interactive terminal confirmation.
 - **Every market claim cites a source URL or is labelled `ASSUMPTION`**: agents cite evidence IDs that only the search tools can create, and any number must appear word for word in the cited quote.
 - **Payments, publishing, emails and the Phase 6 event log are MOCKED.** No payment provider, sandbox or keys exist anywhere in the code.
@@ -67,7 +68,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Cost per run
 
-**$0.00 per run** (GPT-OSS-20B local; Gemma 4 31B, if used, on the Gemini API free tier). The committed demo run (`decision_log.json`) took the main idea through all six stages with about 251,000 tokens and the weak idea to its STOP with about 5,000 tokens, all on GPT-OSS-20B locally. In the evals, Stage 1 takes 40–70 seconds and 55,000–75,000 tokens per idea, and an excluded idea is stopped in about 10 seconds and 5,000 tokens (`evals/results.md`). Tokens are logged per call, so other setups can be costed from the log.
+**$0.00 per run** (GPT-OSS-20B local; Gemma 4 31B, if used, on the Gemini API free tier). The committed demo run (`decision_log.json`, all on GPT-OSS-20B locally) took the main idea through all six stages in about 9 minutes and 300,000 tokens, the demand-test STOP in about 4 minutes and 196,000 tokens, and the excluded idea to its STOP in about 11 seconds and 6,000 tokens. In the evals, Stage 1 takes 40–70 seconds and 55,000–75,000 tokens per idea, and an excluded idea is stopped in about 10 seconds and 5,000 tokens (`evals/results.md`). Tokens are logged per call, so other setups can be costed from the log.
 
 ## Demo video
 

@@ -7,39 +7,35 @@ The numbers here are practice data (MOCKED), so they don't count as real validat
 
 ## In short
 
-Go ahead – you hit the target of 50 sign‑ups, showing demand.
+Go ahead to the next stage, but remember the conversion rate was based on mock data – you need real numbers before you can be sure people want this.
 
 ## Why
 
-- The demand test reached 50, which is 100% of the target of 50 set in advance.
+- The demand test reached 10%, which is 100% of the target of 10% set in advance.
 
 ## What the team found
 
-We ran a 30‑day waitlist test and got 50 sign‑ups, exactly the 50 we set as the target. The evidence is mocked, so it doesn’t prove real demand yet. The review shows we have no evidence that the problem really exists or that the right customers are signing up – those areas scored 2. The solution score is high because we have editable templates. To move forward, we need to confirm the problem and the right customer segment.
+The test checked how many visitors who signed up for the free guide also bought the paid add‑on. The mock result hit the 10% target, so the code says "go". However, because the data were simulated, it does not prove that real users will pay. The idea scores well on problem, unique value, solution and channels, but it is weak on knowing who the customers are, how much they will pay, what the costs are, what key metrics matter, and whether it has a first‑mover edge. To move forward you need to confirm the customer segment, test a real price, estimate costs, decide on key metrics, and find a unique advantage.
 
-## What you can do next
+What_would_change_it:
+- Reach out to 10 freelance designers and ask if they would buy a concise brief template and how much.
+- Run a small paid test on a platform like Upwork to see how many actually purchase the add‑on at a set price.
+- Draft a simple cost sheet for hosting, content updates and marketing to see if the numbers look realistic.
 
-- Ask 10 small‑business owners in your network if they use checklists for proposals, invoices, and payment reminders.
-- Post a short survey in freelancer forums asking if they outsource design work and need templates.
-- Interview 5 owners to confirm the problem and the value of a free checklist pack.
-
-## Other directions worth considering
-
-If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
-
-- **Customer group:** Target freelancers instead of business owners, offering them a free checklist pack to help them manage clients. *Freelancers are already in the same online groups and may need the same tools.*
-- **Product idea:** Create a paid checklist subscription for agencies that manage many freelancers. *It builds on the same templates but adds recurring revenue.*
-- **Product idea:** Build a simple checklist generator app that auto‑fills fields for proposals and invoices. *It tests the same need in a more automated format.*
-- **Market:** Apply the checklist idea to startup founders in tech who outsource design work. *The same problem exists in a new customer group with similar online habits.*
-- **Product idea:** Publish a guide on writing effective proposals for freelancers, bundled with sample templates. *It offers a low‑cost entry point that tests the problem before building a full product.*
+other_directions:
+- Target design agencies instead of freelancers: they may have larger budgets for brief templates.
+- Offer a free checklist of brief questions as a smaller product to test interest before the full guide.
+- Apply the brief‑template idea to copywriters who also struggle with client briefs.
+- Build a community forum for designers to discuss brief challenges, then sell the template as a premium add‑on.
+- Create a quick video series explaining brief best practices and upsell the full guide to viewers.
 
 ## Key numbers
 
-- Goal set in advance: 50
-- Result: 50
+- Goal set in advance: 0.1
+- Result: 0.1
 - Share of the goal reached: 100%
-- What was measured: waitlist sign-ups
-- Risks that could sink the business: problem, customer_segments
+- What was measured: paid add‑on conversion rate
+- Risks that could sink the business: revenue
 
 ## What this is based on
 

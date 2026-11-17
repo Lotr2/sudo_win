@@ -1,56 +1,56 @@
-# Phase 2 · Step 1: Lean Canvas (Client Communication Checklist Pack)
+# Phase 2 · Step 1: Lean Canvas (Design Brief Guide)
 
 ## Problem
 
-Business owners who hire freelance designers often lack a clear checklist for communicating about proposals, invoices, and payment reminders.
+Freelance designers often struggle to set clear expectations with clients, leading to confusion and late payments.
 
-Source: ASSUMPTION
+Source: https://webflow.com/blog/10-ways-freelance-designers-can-better-manage-client-expectations, https://www.rasmussen.edu/degrees/design/blog/communicating-with-design-clients/
 
 ## Customer Segments
 
-Small business owners in English‑speaking countries who outsource design work to freelancers.
+Freelance graphic designers and other creative professionals who work independently.
 
 Source: ASSUMPTION
 
 ## Unique Value
 
-A ready‑made set of checklists that saves time, reduces miscommunication, and helps owners stay organized when working with designers.
+A concise guide with a ready‑to‑use design brief template that saves time and reduces misunderstandings.
 
-Source: ASSUMPTION
+Source: https://jenniferbourn.com/expectation-setting-email-template/, https://templatelab.com/design-brief/, https://www.hellobonsai.com/brief-template/design, https://www.themattbio.com/store/notion-design-brief
 
 ## Solution
 
-A downloadable template pack of editable, fillable checklists for proposals, invoices, and payment reminders.
+An easy‑to‑follow guide that includes a design brief template and step‑by‑step instructions.
 
-Source: https://www.checkli.com/, https://www.template.net/edit-online/438220/digital-marketing-client-onboarding-checklist
+Source: https://templatelab.com/design-brief/, https://www.hellobonsai.com/brief-template/design, https://www.pinterest.com/ideas/freelancer-project-brief-template/939964425691/, https://www.themattbio.com/store/notion-design-brief
 
 ## Channels
 
-Online distribution through freelance platforms, design‑related forums, and social media groups for small business owners.
+Promote through freelance marketplaces like Upwork and Freelancer, design blogs, and social media groups.
 
-Source: https://www.linkedin.com/posts/nikki-sanz_nobody-teaches-you-how-to-freelance-which-activity-7506400354704609281-Uc6-, https://www.upwork.com/hire/graphic-designers/
+Source: https://www.freelancer.com/, https://www.upwork.com/hire/graphic-designers/
 
 ## Revenue
 
-The product will be offered for free to encourage adoption and gather feedback.
+Offer the guide for free, with optional paid add‑ons or consulting.
 
 Source: ASSUMPTION
 
 ## Costs
 
-Estimated build time is about 10 hours with no monetary cost.
+Estimated 8 hours of work, no upfront cost.
 
 Source: ASSUMPTION
 
 ## Key Metrics
 
-Number of downloads, user feedback on usefulness, and repeat usage of the checklists.
+Downloads, time to complete brief, user feedback.
 
 Source: ASSUMPTION
 
 ## Unfair Advantage
 
-Quick development time and the founder’s familiarity with freelance design workflows give a slight edge in creating relevant content.
+First mover in providing a concise, ready‑to‑use brief template for freelance designers.
 
 Source: ASSUMPTION
 
@@ -58,21 +58,21 @@ Source: ASSUMPTION
 
 | Box | Score | Comment |
 |---|---|---|
-| problem | 2 | No evidence for problem statement. |
-| customer_segments | 2 | No evidence for customer segment. |
-| unique_value | 2 | No evidence for unique value proposition. |
-| solution | 5 | Evidence shows free editable checklist templates available. |
-| channels | 4 | Evidence shows Upwork and LinkedIn as distribution channels. |
-| revenue | 2 | No evidence for free revenue model. |
-| costs | 2 | No evidence for build time estimate. |
+| problem | 5 | Evidence shows designers struggle with client expectations. |
+| customer_segments | 2 | No evidence provided for target segment. |
+| unique_value | 5 | Evidence supports concise brief template value. |
+| solution | 5 | Evidence supports guide and template solution. |
+| channels | 5 | Evidence supports marketplace promotion. |
+| revenue | 2 | No evidence for revenue model. |
+| costs | 2 | No evidence for cost estimate. |
 | key_metrics | 2 | No evidence for key metrics. |
-| unfair_advantage | 2 | No evidence for unfair advantage. |
+| unfair_advantage | 2 | No evidence for first mover advantage. |
 
 ### Riskiest assumptions
 
-- problem (risk 5 of 5; could sink the business if wrong)
-- customer_segments (risk 5 of 5; could sink the business if wrong)
-- unique_value (risk 4 of 5)
+- revenue (risk 5 of 5; could sink the business if wrong)
+- customer_segments (risk 4 of 5)
+- unfair_advantage (risk 3 of 5)
 
 ### Your answers to the reviewer's questions
 

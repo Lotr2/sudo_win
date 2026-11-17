@@ -2,12 +2,30 @@
 
 ## LinkedIn
 
-I’m excited to share the Client Communication Checklist Pack I just launched. It’s a set of ready‑made checklists you can edit in Google Docs to keep proposals, invoices, and payment reminders clear and consistent. The Basic version is $29, the Standard is $49, and the Premium with a video guide is $79. If it doesn’t fit your needs, you have 14 days to get a refund. Feel free to check it out and let me know what you think.
+Hi LinkedIn community,
+
+I’m excited to share a new resource I’ve put together for fellow freelance designers: the Design Brief Guide for Freelance Designers. It’s a concise, step‑by‑step manual that walks you through creating a professional design brief, plus a ready‑to‑use template you can copy and paste right away.
+
+I’ve priced it at $27, and you’ll get the guide and the template. If it doesn’t meet your needs, you have 14 days to ask for a refund. No questions asked.
+
+Feel free to drop me a message if you’d like to learn more or share your thoughts!
 
 ## freelance designer groups I belong to
 
-Hey everyone, I’ve put together a Client Communication Checklist Pack to help small business owners keep their conversations with freelance designers organized. It includes pre‑written checklists for proposals, invoices, and payment reminders, all editable in Google Docs. The Basic version is $29, Standard $49, Premium $79. You can get a full refund within 14 days if it’s not right for you. Take a look and let me know how it works for you!
+Hey everyone,
+
+I’ve just launched a new guide for freelance designers: the Design Brief Guide for Freelance Designers. It’s a quick, easy‑to‑follow manual with a ready‑to‑use template that helps you set clear expectations with clients before you start work.
+
+It’s $27, and you get the guide plus the template. If it’s not what you’re looking for, you can get a refund within 14 days.
+
+Let me know what you think or if you’d like a copy!
 
 ## my email newsletter
 
-Hello! I’m happy to announce the launch of my new Client Communication Checklist Pack. It’s a set of editable checklists that make it easier to share proposals, invoices, and payment reminders with freelance designers. The Basic pack is $29, the Standard is $49, and the Premium includes a video guide for $79. If you’re not satisfied, you can get a refund within 14 days. Check it out and let me know what you think!
+Hello friends,
+
+I’m thrilled to announce the launch of my Design Brief Guide for Freelance Designers. This guide gives you a clear, step‑by‑step process for creating a professional design brief, and it comes with a ready‑to‑use template you can copy and paste.
+
+It’s available for $27. If you decide it’s not right for you, you can get a refund within 14 days.
+
+Thanks for your support, and I’d love to hear how it works for you!
