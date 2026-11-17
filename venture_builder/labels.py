@@ -234,7 +234,9 @@ def detail_value(key: str, value):
 
 POLICY_AREAS = {
     "R11": "financial, investment or crypto products", "R12": "health or medical advice products",
-    "R13": "physical goods", "fake_social_proof": "fake reviews, ratings or user counts",
+    "R13": "physical goods", "R23": "financial, investment or crypto products",
+    "R24": "health or medical advice products", "R25": "legal advice products", "R26": "physical goods",
+    "fake_social_proof": "fake reviews, ratings or user counts",
     "fake_urgency": "fake urgency or countdowns", "income_promise": "promises of income",
     "impersonation": "posing as someone else", "money_movement": "moving money automatically",
     "credentials": "handling passwords, card numbers or other people's accounts",

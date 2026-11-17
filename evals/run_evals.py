@@ -77,6 +77,30 @@ def run_case(case: dict, settings, factory) -> dict:
             "run_id": rt.run_id}
 
 
+def run_classifier_cases(settings) -> list[dict]:
+    """The model classifier on texts the rules provably miss: excluded products and trick requests must be
+    blocked, ordinary ones allowed. A case the rules already catch is reported as invalid, so this eval keeps
+    exercising the classifier as the rules grow."""
+    from venture_builder.policy_guard import PolicyGuard, check_rules
+    from venture_builder.router import Router
+    guard = PolicyGuard(Router.from_settings(settings))
+    out = []
+    for case in json.loads((ROOT / "evals" / "classifier_cases.json").read_text()):
+        started = time.time()
+        problems = []
+        if check_rules(case["text"], case["context"]):
+            problems.append("invalid case: the rules already catch it, so it doesn't test the classifier")
+        res = guard.check(case["text"], context=case["context"])
+        got = "allow" if res.allowed else "block"
+        if res.rule not in (None, "classifier"):
+            problems.append(f"decided by rule {res.rule}, not the classifier")
+        if got != case["expect"]:
+            problems.append(f"expected {case['expect']}, the classifier said {got} ({res.category}: {res.reason[:120]})")
+        out.append({"id": case["id"], "context": case["context"], "expected": case["expect"], "got": got,
+                    "category": res.category, "problems": problems, "seconds": round(time.time() - started)})
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Run the evals in evals/cases.json")
     ap.add_argument("--fake", action="store_true", help="use the test fakes instead of real models")
@@ -118,6 +142,10 @@ def main(argv=None) -> int:
             results.append({"id": case["id"], "outcome": None, "expected": case["expect"]["gate1_in"],
                             "problems": [f"crashed: {type(exc).__name__}: {exc}"], "seconds": 0, "tokens": 0,
                             "run_id": None})
+    if args.fake or (args.only and "classifier" not in args.only.split(",")):
+        clf = None    # needs a real model; the fake classifier only recognises a test marker
+    else:
+        clf = run_classifier_cases(settings)
     passed = sum(1 for r in results if not r["problems"])
     lines = [f"# Eval results ({'fake models' if args.fake else 'real models, demo mode'})", "",
              f"{passed} of {len(results)} cases pass.", "", "| Case | Stage 1 | Expected | Result | Time | Tokens |",
@@ -128,11 +156,24 @@ def main(argv=None) -> int:
     for r in results:
         if r["problems"]:
             lines += ["", f"## {r['id']} (run {r['run_id']})", ""] + [f"- {p}" for p in r["problems"]]
+    lines += ["", "## Policy classifier on texts the rules miss", ""]
+    if clf is None:
+        lines.append("Skipped: needs a real model (the fake classifier only recognises a test marker).")
+    else:
+        ok = sum(1 for r in clf if not r["problems"])
+        lines += [f"{ok} of {len(clf)} cases pass.", "", "| Case | Context | Expected | Classifier | Category | Result |",
+                  "|---|---|---|---|---|---|"]
+        lines += [f"| {r['id']} | {r['context']} | {r['expected']} | {r['got']} | {r['category']} | "
+                  f"{'pass' if not r['problems'] else 'FAIL'} |" for r in clf]
+        for r in clf:
+            if r["problems"]:
+                lines += ["", f"### {r['id']}", ""] + [f"- {p}" for p in r["problems"]]
     report = "\n".join(lines) + "\n"
     print(report)
     if args.save and not args.fake:
         (ROOT / "evals" / "results.md").write_text(report)
-    return 0 if passed == len(results) else 1
+    clf_ok = clf is None or all(not r["problems"] for r in clf)
+    return 0 if passed == len(results) and clf_ok else 1
 
 
 if __name__ == "__main__":
