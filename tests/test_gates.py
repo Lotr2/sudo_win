@@ -19,7 +19,7 @@ def test_gate1_stops_an_excluded_product(make_runtime):
     rt = make_runtime(brief="I want to build a crypto trading bot and sell signals to retail investors.")
     p = drive(rt, stop_at_gate=1)
     assert p["gate"] == 1 and p["recommended"] == "stop"
-    assert "outside what the team can help with" in p["reasons"][0]
+    assert "which the team doesn't help with" in p["reasons"][0]
     assert "opportunity_scout" not in rt.ctx.router.clients["oss"].responder.calls
 
 

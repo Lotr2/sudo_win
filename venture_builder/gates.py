@@ -32,7 +32,9 @@ def gate1(scores: list[VariantScore], *, excluded: str | None, search_failed: bo
         return f"\"{names[vid]}\"" if vid in names else f"version {vid}"
 
     if excluded:
-        return GateResult(gate=1, outcome="stop", reasons=[f"This kind of product is outside what the team can help with ({excluded})."])
+        return GateResult(gate=1, outcome="stop", reasons=[
+            f"This idea falls under {excluded}, which the team doesn't help with: these products can cause real harm "
+            "if the advice is wrong, and they need licensed experts. Consider a related idea outside that area."])
     if search_failed:
         return GateResult(gate=1, outcome="repeat", reasons=[
             "Web search wasn't working, so the team couldn't check the market and everything is still a guess "

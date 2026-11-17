@@ -146,6 +146,8 @@ def explain_all(variants: list[Variant], scores: list[VariantScore], weights: di
 
 
 def markdown(explained: list[dict], heading: str = "## How each version scored") -> list[str]:
+    if not explained:
+        return []
     lines = [heading, "",
              "Each version gets up to 100 points from five things. 60 points, plus enough real evidence and a good "
              "fit with you, are needed to go ahead.", ""]

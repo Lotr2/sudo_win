@@ -66,7 +66,7 @@ def p1_parse(ctx: Context, answer) -> Next:
     hit = ctx.guard.check(d.brief, context="brief", use_classifier=False, subject="brief")
     d.profile = brief_parser.run(ctx, d.brief)
     if not hit.allowed:
-        d.policy_block = f"{hit.category} ({hit.reason})"
+        d.policy_block = labels.policy_reason(hit)
         return Next("p1_gate")
     for f in ["idea", "skills", "budget_usd", "hours_per_week", "market", "values"]:
         v = getattr(d.profile, f)
@@ -169,7 +169,7 @@ def p1_policy(ctx: Context, answer) -> Next:
     text = json.dumps(d.profile.model_dump(), ensure_ascii=False)
     hit = ctx.guard.check(text, context="brief", author_family=ctx.author_family("brief_parser"), subject="profile")
     if not hit.allowed:
-        d.policy_block = f"{hit.category} ({hit.reason})"
+        d.policy_block = labels.policy_reason(hit)
         return Next("p1_gate")
     return Next("p1_scout")
 

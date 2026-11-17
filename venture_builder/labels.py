@@ -212,3 +212,22 @@ def detail_value(key: str, value):
     except (TypeError, ValueError):
         pass
     return value
+
+
+# ---- policy blocks in plain words ----
+
+POLICY_AREAS = {
+    "R11": "financial, investment or crypto products", "R12": "health or medical advice products",
+    "R13": "physical goods", "fake_social_proof": "fake reviews, ratings or user counts",
+    "fake_urgency": "fake urgency or countdowns", "income_promise": "promises of income",
+    "impersonation": "posing as someone else", "money_movement": "moving money automatically",
+    "credentials": "handling passwords, card numbers or other people's accounts",
+    "excluded_product": "the kinds of products the team doesn't build",
+}
+
+
+def policy_reason(hit) -> str:
+    """'health or medical advice products (your brief mentions "medical")' from a GuardResult."""
+    area = POLICY_AREAS.get(hit.rule or "", POLICY_AREAS.get(hit.category, hit.category.replace("_", " ")))
+    m = re.search(r": '([^']+)'", hit.reason or "")
+    return area + (f" (your idea mentions “{m.group(1)}”)" if m else "")
