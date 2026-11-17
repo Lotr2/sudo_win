@@ -21,7 +21,7 @@ The full design behind [ARCHITECTURE.md](../ARCHITECTURE.md): every step of ever
 | Blackboard (shared state) | Venture Dossier | Agents read and write one structured record instead of chatting |
 | Router | `router.py` | Sends each role to the right model and reasoning effort |
 | Middleware / decorator | `decision_log.py` | Every agent, tool and gate call is logged without relying on the agent |
-| Append-only event log | `decision_log.json`, event log | A history that is never rewritten |
+| Append-only event log | decision log (`decision_log.jsonl` per run), event log | A history that is never rewritten |
 | Schema-constrained output + retry | `router.py` | JSON that validates, or a visible failure |
 | Policy as code | `policy_guard.py`, Compliance Linter | Safety rules that behave the same every time |
 | Human in the loop | Gates, approval records | The founder decides every gate and every outside action |
@@ -40,7 +40,7 @@ All code lives in the `venture_builder/` package; thresholds and scoring weights
 | Orchestration | `orchestrator.py` (LangGraph state machine: one node per department step, one `founder` node that interrupts), `runtime.py` (drives a run for the CLI and the UI), `context.py`, `dossier.py` (Venture Dossier and the per-run store) |
 | Departments | `departments/discover.py`, `validate.py`, `build.py`, `commercial.py`, `launch.py`, `operate.py` (the steps of each phase), `departments/common.py` (gate presentation, STOP memos) |
 | Agents | `agents/<role>.py`, one per role; prompts in `prompts/<role>.md` plus shared rules in `prompts/_shared.md` |
-| Gates and approval | `gates.py`, `approval.py` (outbox, hash-bound approval records, gate decisions, MOCKED publish adapter) |
+| Gates and approval | `gates.py` (outcomes, reason codes, per-gate repeat limits, `LockedTargets`), `labels.py` (the wording of each reason), `approval.py` (outbox, single-use hash-bound approvals, gate decisions with one-time codes, MOCKED publish adapter) |
 | Scoring | `scoring.py` (Phase 1 weighted sum) |
 | Policy checks | `policy_guard.py` (rules, classifier, Compliance Linter) |
 | Founder conversation | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`; `runs/<id>/conversation.jsonl` |
@@ -338,6 +338,21 @@ flowchart LR
 **Step 3: Persevere-or-pivot memo** → `phase6_step3_pivot_memo.md`. Analyse and plan: the Pivot Memo Writer (Gemma 4 31B) cites metrics; the Critic (GPT-OSS-20B, high) scores whether each claim matches the data; the memo is revised at most twice.
 
 **Gate 6:** the memo must pass the critic's rubric; then the founder chooses persevere, pivot (back to Phase 1 with what was learned) or stop.
+
+## Agentic skills
+
+Each skill has its settings in `config/thresholds.toml` (`[skills]`, with smaller values in demo mode) and logs what it did.
+
+| Skill | Agent | What it does |
+|---|---|---|
+| Research loop | Market Researcher, Competitor Analyst | Plan, then search and read (top pages in full), extract findings, and compare them with the Stage 1 bar in code; while a required gap remains, write new queries aimed at it (narrower customers, local language, `site:` searches), up to `research_rounds` |
+| Evidence grading | both researchers, Scorer | Each finding says whether its source is first-hand, a question, an article or a listing, and whether it is about the founder's market; listings never count as evidence of a problem, articles count 0.8 and off-market sources 0.6 |
+| Agreement | both researchers | Findings are extracted `extraction_votes` times and kept only when most readings agree (same kind, shared evidence), which cuts run-to-run variance |
+| Idea shortlist | Opportunity Scout | Writes `scout_candidates` versions; code pre-screens each with one search and its fit, and keeps `scout_shortlist` with variety in product form |
+| Memory | researchers, scout | Per project: queries that found evidence and dead ends carry over to a retry; across projects: only the names of sites that yielded evidence (`runs/.research_sites.json`) |
+| Fact-check | Fact Checker | Before the founder reads a stage walk-through or report explanation, every factual statement is checked against the facts it came from and rewritten if unsupported; outcomes are never changed |
+| Self-review | Product Reviewer | Once the acceptance tests pass, the product is scored against a rubric; below `review_pass_score` the Builder revises it once, and the tests must pass again |
+| Evals | `evals/run_evals.py` | Eight briefs with expected Stage 1 outcomes (including excluded products and a fake-review request) plus readability checks; runs on the real models or, in the tests, on the fakes |
 
 ## Founder conversation
 

@@ -1,20 +1,25 @@
 # Gate thresholds, fixed before any evidence exists. Gate 2 targets are locked and hashed per run.
 
 [limits]
-max_repeats_per_phase = 2
+max_repeats_per_phase = 2  # default when a gate has no max_repeats of its own
 debate_rounds = 2          # Phase 2 canvas revisions
 build_loops = 3            # Phase 3 build-test loops
 memo_revisions = 2         # Phase 6 critic revisions
 max_blocking_questions = 3
 
 [gate1]
+max_repeats = 2            # extra research rounds before a weak idea becomes STOP
 min_pain_signals = 3
 min_source_domains = 2
 min_score = 0.6
 
 [gate2]
+max_repeats = 1            # a near miss (50-99%) is re-tested once, then pivot or stop
 go_ratio = 1.0             # result >= 100% of the locked target
 repeat_ratio = 0.5         # 50-99% -> repeat (once); below 50% -> stop or pivot
+
+[gate3]
+max_repeats = 1            # one retry with a smaller spec, then stop
 
 [gate2.floors]
 # Lowest targets the Experiment Designer may propose. The founder may go below a floor;

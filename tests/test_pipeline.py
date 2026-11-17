@@ -34,7 +34,7 @@ def test_full_pipeline_all_six_phases(make_runtime):
 def test_every_log_entry_has_required_keys(make_runtime):
     rt = make_runtime()
     drive(rt)
-    log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
+    log = rt.ctx.store.log.entries
     assert len(log) > 50
     for e in log:
         for k in ("timestamp", "agent", "action", "sources", "model", "cost", "approved_by"):
@@ -103,7 +103,7 @@ def test_brand_flows_from_the_api_to_the_page(settings, router):
                                     "brand": {"name": "Studio Nour", "color": "#7a3cff"}}).json()["run_id"]
     rt = Runtime(settings, rid)
     assert rt.dossier.brand == {"name": "Studio Nour", "color": "#7a3cff"}
-    log = rt.ctx.store.path("decision_log.json").read_text()
+    log = rt.ctx.store.log.path.read_text()
     assert '"set_brand"' in log
 
 
@@ -141,7 +141,7 @@ def test_research_loop_stops_when_the_bar_is_met_and_remembers_queries(make_runt
     drive(rt, stop_at_gate=1)
     log = rt.dossier.research_log
     assert log and all(entry["tried"] for entry in log.values())
-    rounds = [e for e in __import__("json").loads(rt.ctx.store.path("decision_log.json").read_text())
+    rounds = [e for e in rt.ctx.store.log.entries
               if e["action"] == "research_round"]
     assert rounds and all(e["readings"] >= 1 for e in rounds)
     # The fake evidence meets the bar in the first round, so the market research needs no second round.
@@ -183,7 +183,7 @@ def test_a_real_project_is_logged_and_labelled_as_real(make_runtime):
     d = rt.dossier
     assert d.data_mode == "real" and d.signups["mocked"] is False and d.metrics["label"] == "founder-reported"
     assert d.gates["6"].mocked_evidence is False and d.gates["2"].mocked_evidence is False
-    log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
+    log = rt.ctx.store.log.entries
     assert log[0]["action"] == "start_project" and log[0]["mode"] == "real"
     assert all(e.get("project") == "real" for e in log)
     founder = [e for e in log if e["agent"] == "founder" or e["approved_by"] == "founder"]
@@ -227,3 +227,35 @@ def test_api_records_the_project_mode(settings, router):
     assert c.post("/api/runs", json={"brief": brief, "data_mode": "pretend"}).status_code == 400
     rid = c.post("/api/runs", json={"brief": brief, "data_mode": "practice"}).json()["run_id"]
     assert Runtime(settings, rid).dossier.data_mode == "practice"
+
+
+# ---- decision log: JSON Lines per run, exported as a JSON array ----
+
+def test_run_log_is_appended_line_by_line(tmp_path):
+    import json
+    from venture_builder.decision_log import REQUIRED_KEYS, DecisionLog, read_log
+    path = tmp_path / "decision_log.jsonl"
+    log = DecisionLog(path)
+    log.append("scorer", "score_variants")
+    first_line = path.read_text().splitlines()[0]
+    log.append("gate", "gate1_discover", outcome="stop")
+    lines = path.read_text().splitlines()
+    assert len(lines) == 2 and lines[0] == first_line           # earlier entries are never rewritten
+    assert all(k in json.loads(lines[1]) for k in REQUIRED_KEYS)
+    with path.open("a") as f:
+        f.write('{"cut off by a cra')                            # a crash mid-write loses only that line
+    assert [e["id"] for e in read_log(path)] == ["log_1", "log_2"]
+    assert [e["id"] for e in DecisionLog(path).entries] == ["log_1", "log_2"]
+
+
+def test_older_run_logs_are_migrated(tmp_path):
+    import json
+    from venture_builder.decision_log import DecisionLog
+    old = [{"id": "log_1", "timestamp": "2026-11-17T09:00:00Z", "agent": "a", "action": "x", "sources": [],
+            "model": None, "cost": 0, "approved_by": None}]
+    (tmp_path / "decision_log.json").write_text(json.dumps(old))
+    log = DecisionLog(tmp_path / "decision_log.jsonl")
+    assert log.entries == old
+    log.append("b", "y")
+    assert [e["id"] for e in log.entries] == ["log_1", "log_2"]
+    assert len((tmp_path / "decision_log.jsonl").read_text().splitlines()) == 2

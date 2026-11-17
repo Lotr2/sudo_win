@@ -1,5 +1,5 @@
 """Model Router: sends each role to its model and reasoning effort, enforces JSON-schema output, and logs
-every call. Implements ARCHITECTURE.md → Model routing:
+every call. Implements docs/architecture-details.md → Model routing:
 
 1. The checker is never the maker. In single-model mode affected entries carry `same_model_check: true`.
 2. Reasoning effort per role for GPT-OSS-20B (low / medium / high).

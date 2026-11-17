@@ -260,6 +260,13 @@ class Outbox:
         return dict(row) if row else None
 
 
+    def gate_code(self, gate: int, attempt: int) -> str | None:
+        """The unused code for this gate decision, if one was issued."""
+        with self._lock:
+            row = self._db.execute("SELECT code FROM gate_codes WHERE gate=? AND attempt=? AND used_at IS NULL",
+                                   (gate, attempt)).fetchone()
+        return row[0] if row else None
+
     def issue_gate_code(self, gate: int, attempt: int) -> str:
         """A random one-time code the founder types to confirm this gate decision. Issued when the gate is
         presented; presenting the same attempt again replaces the code."""

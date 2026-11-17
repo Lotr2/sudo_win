@@ -67,7 +67,7 @@ A duplicate event delivers once, and a refund always revokes access. Because it 
 
 ## Model routing
 
-Two open-weight models split the work (GPT-OSS-20B locally, Gemma 4 31B on the Gemini API free tier) so that the model checking a piece of work is never the one that wrote it: GPT-OSS-20B researches, builds and judges; Gemma 4 31B parses, drafts, writes copy and runs the Founder Liaison. Full role table and router rules: [ARCHITECTURE.md · Model routing](../ARCHITECTURE.md#model-routing).
+Two open-weight models split the work (GPT-OSS-20B locally, Gemma 4 31B on the Gemini API free tier) so that the model checking a piece of work is never the one that wrote it: GPT-OSS-20B researches, builds and judges; Gemma 4 31B parses, drafts, writes copy and runs the Founder Liaison. Full role table and router rules: [Architecture details · Model routing](architecture-details.md#model-routing).
 
 ## Talking with the founder
 

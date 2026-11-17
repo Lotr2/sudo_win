@@ -252,3 +252,129 @@ def violation_text(v: str) -> str:
         m2 = re.match(r"^(\w+): (.*)$", v or "")
         return f"{DOCS.get(m2[1], m2[1])}: {m2[2]}" if m2 else str(v)
     return f"{DOCS.get(m[1], m[1])} says \u201c{m[3]}\u201d, which {CATEGORY_WORDS.get(m[2], m[2].replace('_', ' '))}"
+
+
+# ---- gate reasons: the founder-facing sentence for each reason code a gate returns (gates.py decides) ----
+
+def _version(v: dict) -> str:
+    return f"\"{v['name']}\"" if v.get("name") else f"version {v['id']}"
+
+
+def _shortfall(s: dict) -> str:
+    if s["kind"] == "pain_signals":
+        return f"only {plural(s['have'], 'real example')} of people with this problem (needs {s['need']})"
+    if s["kind"] == "pain_domains":
+        return f"examples from only {plural(s['have'], 'website')} (needs {s['need']})"
+    if s["kind"] == "score":
+        return f"a score of {s['have'] * 100:.0f} out of 100 (needs {s['need'] * 100:.0f})"
+    return "it doesn't fit your budget, time or skills well enough"
+
+
+def metric_miss(m: dict) -> str:
+    if m["kind"] == "conversion":
+        return f"only {m['have']:.1%} of visitors bought (target {m['need']:.1%})"
+    return f"{m['have']:.1%} of buyers asked for a refund (limit {m['limit']:.1%})"
+
+
+def _launch_not_ready(f: dict) -> str:
+    why = []
+    if f["pending"]:
+        why.append(f"{f['pending']} item(s) still waiting for your approval")
+    if f["rejected"]:
+        why.append(f"{f['rejected']} item(s) you asked to change need revising")
+    if not f["delivery_tests_passed"]:
+        why.append("the practice sale, delivery or refund checks didn't all pass")
+    return ("; ".join(why) + ".").capitalize()
+
+
+GATE_REASONS = {
+    # Gate 1
+    "excluded_category": lambda f: (
+        f"This idea falls under {f['category']}, which the team doesn't help with: these products can cause real harm "
+        "if the advice is wrong, and they need licensed experts. Consider a related idea outside that area."),
+    "search_failed": lambda f: (
+        "Web search wasn't working, so the team couldn't check the market and everything is still a guess "
+        "(ASSUMPTION). That says nothing bad about your idea: try again once search is back."),
+    "no_versions": lambda f: "The team couldn't come up with versions of the idea to test.",
+    "top_version_passes": lambda f: (
+        f"The best version, {_version(f['top'])}, looks promising: "
+        f"the team found {plural(f['top']['pain_signals'], 'real example')} of people struggling with this problem "
+        f"on {plural(f['top']['pain_domains'], 'different website')}, it scores {f['top']['score'] * 100:.0f} out of "
+        f"100 (needs {f['min_score'] * 100:.0f}), and it fits your skills, budget and time."),
+    "other_version_passes": lambda f: (
+        f"The top-scoring version, {_version(f['top'])}, falls short, but {_version(f['other'])} passes: "
+        f"{plural(f['other']['pain_signals'], 'real example')} of the problem on "
+        f"{plural(f['other']['pain_domains'], 'website')}, scoring "
+        f"{f['other']['score'] * 100:.0f} out of 100. Switching to it is the better bet."),
+    "no_pain_found": lambda f: (
+        "The team hasn't yet found real people online describing this problem, so the need is still a "
+        "guess. Another round of research, ideally with a narrower customer group, may find it."),
+    "no_pain_after_repeats": lambda f: (
+        f"After {f['repeats']} extra rounds of research, the team still found no real people describing this "
+        "problem. Without that, building it would be a gamble."),
+    "below_bar": lambda f: (
+        f"The best version so far, {_version(f['top'])}, isn't there yet: "
+        + "; ".join(_shortfall(s) for s in f["shortfalls"]) + "."),
+    "below_bar_after_repeats": lambda f: (
+        f"Even after {f['repeats']} extra rounds, the best version, {_version(f['top'])}, falls short: "
+        + "; ".join(_shortfall(s) for s in f["shortfalls"]) + "."),
+    # Gate 2
+    "fatal_risk_unanswered": lambda f: (
+        f"There's a risk that could sink the business, and it hasn't been answered yet: {f['risk']}"),
+    "target_met": lambda f: (
+        f"The demand test reached {f['result']:g}, which is {f['ratio']:.0%} of the target of {f['target']:g} set in advance."),
+    "close_to_target": lambda f: (
+        f"The demand test reached {f['result']:g}, which is {f['ratio']:.0%} of the target of {f['target']:g}. That's "
+        "close, so it's worth running the test once more."),
+    "close_after_retry": lambda f: f"After a second try the test still only reached {f['ratio']:.0%} of the target.",
+    "far_below_target_alternative": lambda f: (
+        f"The demand test reached {f['result']:g}, only {f['ratio']:.0%} of the target of {f['target']:g}. But the "
+        "research points to a different customer group that may want it more."),
+    "far_below_target": lambda f: (
+        f"The demand test reached {f['result']:g}, only {f['ratio']:.0%} of the target of {f['target']:g} set in "
+        "advance: less than half. It's better to stop or change direction than to move the goalposts."),
+    # Gate 3
+    "promise_unmeetable": lambda f: (
+        "The product as planned can't deliver what the landing page promises with the formats the team can build."),
+    "all_tests_pass": lambda f: (
+        f"The product passes all {f['total']} quality checks (after {f['loops']} build round(s))."),
+    "tests_failing": lambda f: (
+        f"{f['total'] - f['passed']} of {f['total']} quality checks still fail after {f['loops']} build rounds. "
+        "Trying once more with a smaller first version usually fixes this."),
+    "tests_failing_after_repeats": lambda f: (
+        f"Even after a smaller retry, only {f['passed']} of {f['total']} quality checks pass."),
+    # Gate 4
+    "wording_violations": lambda f: (
+        f"{plural(len(f['violations']), 'wording problem')} still need fixing before launch: "
+        + "; ".join(violation_text(v) for v in f["violations"][:3]) + "."),
+    "price_outside_range": lambda f: (
+        f"The price of ${f['price']:g} is outside what similar products charge (${f['range'][0]:g} to "
+        f"${f['range'][1]:g}), and there's no clear reason why."),
+    "clean_price_sourced": lambda f: (
+        f"The texts are clean, and the price of ${f['price']:g} is in line with similar products "
+        f"(${f['range'][0]:g} to ${f['range'][1]:g})."),
+    "clean_price_assumed": lambda f: (
+        "The texts are clean. The team couldn't find competitor prices, so the price is a reasoned guess (ASSUMPTION)."),
+    # Gate 5
+    "launch_withdrawn": lambda f: "You withdrew the launch.",
+    "launch_not_ready": _launch_not_ready,
+    "launch_ready": lambda f: (
+        f"All {f['published']} item(s) you approved were recorded (publishing MOCKED: nothing went online), and the "
+        "practice sale, delivery and refund all worked (payments MOCKED)."),
+    # Gate 6
+    "memo_fails_check": lambda f: (
+        "The review of results didn't match the numbers, so it's being rewritten before you decide."),
+    "targets_met": lambda f: (
+        "The results meet the targets set in advance" + (" (practice data, MOCKED)" if f["mocked"] else "") + ": keep going."),
+    "targets_missed_alternative": lambda f: (
+        "The results miss the targets (" + "; ".join(metric_miss(m) for m in f["misses"])
+        + "), but the research points to a promising alternative."),
+    "targets_missed": lambda f: (
+        "The results miss the targets (" + "; ".join(metric_miss(m) for m in f["misses"])
+        + "), and no alternative is backed by evidence."),
+}
+
+
+def gate_reason(code: str, facts: dict) -> str:
+    """The plain-words sentence for a gate's reason code."""
+    return GATE_REASONS[code](facts)

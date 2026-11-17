@@ -22,7 +22,7 @@ from .config import ROOT, Settings
 from .context import Context
 from .decision_log import log_action
 from .dossier import Dossier, RunStore, new_run_id
-from .orchestrator import CONTEXTS, FIRST_NODE, NO_ANSWER, build_graph, sqlite_checkpointer
+from .orchestrator import FIRST_NODE, NO_ANSWER, build_graph, sqlite_checkpointer
 from .router import Router
 from .tools.fetch import PageFetcher
 from .tools.search import SearxSearch
@@ -51,11 +51,14 @@ class Runtime:
                                          settings.searxng_engines, settings.searxng_fallback_engines)
         fetch = fetch or PageFetcher(settings.fetch_timeout)
         self.ctx = Context(settings, router, store, search, fetch)
-        CONTEXTS[run_id] = self.ctx
-        self.graph = build_graph(sqlite_checkpointer(str(store.path("checkpoints.db"))))
+        # The graph is bound to this run's context; nothing is shared between runs through module state.
+        self.graph = build_graph(self.ctx, sqlite_checkpointer(str(store.path("checkpoints.db"))))
+        self.config = {"configurable": {"thread_id": run_id}, "recursion_limit": 1000}
         if self.ctx.dossier is not None:
             store.log.tags = {"project": self.ctx.dossier.data_mode}
-        self.config = {"configurable": {"thread_id": run_id}, "recursion_limit": 1000}
+            if not self.ctx.dossier.thresholds and self.ctx.dossier.history:
+                with self.ctx.bound():   # a run started before thresholds were snapshotted
+                    self.ctx.lock_thresholds(note="snapshot taken when an older run was reopened")
 
     @classmethod
     def new(cls, settings: Settings, brief: str, data_mode: str = "real", **kw) -> "Runtime":
@@ -67,6 +70,7 @@ class Runtime:
         rt = cls(settings, run_id, **kw)
         with rt.ctx.bound():
             log_action("orchestrator", "start_project", mode=data_mode)
+            rt.ctx.lock_thresholds()
         return rt
 
     # ---- graph driving ----
@@ -122,7 +126,13 @@ class Runtime:
         snap = self.graph.get_state(self.config)
         for task in snap.tasks:
             for intr in task.interrupts:
-                return intr.value
+                p = intr.value
+                if isinstance(p, dict) and p.get("kind") == "gate":
+                    # The outbox is the only source of the one-time code. A gate paused before codes were
+                    # issued by the outbox gets one now; the old code saved in its checkpoint is never accepted.
+                    ob = self.ctx.outbox
+                    p = {**p, "code": ob.gate_code(p["gate"], p["attempt"]) or ob.issue_gate_code(p["gate"], p["attempt"])}
+                return p
         return None
 
     def finished(self) -> bool:
@@ -343,7 +353,8 @@ def export_run(settings: Settings, run_id: str, *, tag: str = "", clear: bool = 
                 name = f"{tag}_{name}"
         shutil.copy(f, outputs_dir / name)
         copied.append(name)
-    entries = json.loads(src.path("decision_log.json").read_text())
+    from .decision_log import read_log
+    entries = read_log(src.log.path)
     for e in entries:
         e["run_id"] = run_id
         e.setdefault("run_entry_id", e.get("id"))      # the entry's number within its own run

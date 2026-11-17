@@ -41,7 +41,7 @@ def _review(fatal=False):
 
 def test_gate2_stop_when_12_against_locked_100():
     locked = {"kind": "waitlist", "metric": "sign-ups", "target": 100, "window_days": 14}
-    res = gates.gate2(_review(), locked=locked, recorded_hash=gates.lock_hash(locked), result=12, mocked=True,
+    res = gates.gate2(_review(), locked=gates.LockedTargets.lock(locked), result=12, mocked=True,
                       repeats=0, fatal_answered=True, alternative_supported=False, t=T)
     assert res.outcome == "stop" and res.mocked_evidence
     assert res.label == "stop (MOCKED evidence)"
@@ -49,10 +49,10 @@ def test_gate2_stop_when_12_against_locked_100():
 
 def test_gate2_rejects_result_when_threshold_changed_after_locking():
     locked = {"kind": "waitlist", "metric": "sign-ups", "target": 100, "window_days": 14}
-    h = gates.lock_hash(locked)
-    locked["target"] = 10
+    lk = gates.LockedTargets.lock(locked)
+    lk.targets["target"] = 10
     with pytest.raises(gates.ThresholdTamperError):
-        gates.gate2(_review(), locked=locked, recorded_hash=h, result=12, mocked=False, repeats=0,
+        gates.gate2(_review(), locked=lk, result=12, mocked=False, repeats=0,
                     fatal_answered=True, alternative_supported=False, t=T)
 
 
@@ -163,7 +163,7 @@ def test_scout_generates_many_versions_and_keeps_a_varied_shortlist(make_runtime
     assert len(d.shortlist["considered"]) == 6 and len(d.variants) == 4
     assert [v.id for v in d.variants] == ["v1", "v2", "v3", "v4"]
     assert sum(1 for v in d.variants if v.product_form == "guide") <= 2          # variety in the shortlist
-    log = rt.ctx.store.path("decision_log.json").read_text()
+    log = rt.ctx.store.log.path.read_text()
     assert '"shortlist_versions"' in log
 
 
@@ -179,3 +179,83 @@ def test_fact_check_without_a_stated_problem_keeps_the_original(make_runtime, mo
     rt = make_runtime()
     p = drive(rt, stop_at_gate=1)
     assert "Something else entirely." not in (rt.ctx.store.outputs / p["memo_file"]).read_text()
+
+
+# ---- locked targets, per-gate repeat limits, reason codes, thresholds snapshot ----
+
+def test_locking_copies_the_targets_so_later_edits_are_caught():
+    source = {"min_conversion": 0.02, "max_refund_rate": 0.1}
+    lk = gates.LockedTargets.lock(source)
+    source["min_conversion"] = 0.0                       # editing the original doesn't touch the lock
+    assert lk.verify()["min_conversion"] == 0.02
+
+
+def test_gate6_rejects_targets_changed_after_locking():
+    lk = gates.LockedTargets.lock({"min_conversion": 0.02, "max_refund_rate": 0.1})
+    lk.targets["min_conversion"] = 0.0
+    with pytest.raises(gates.ThresholdTamperError):
+        gates.gate6(metrics={"conversion": 0.01}, locked=lk, memo_passes=True, alternative_supported=False, t=T)
+
+
+@pytest.mark.parametrize("gate", [1, 2, 3])
+def test_repeat_limits_come_from_config(gate):
+    import copy
+    locked = gates.LockedTargets.lock({"kind": "waitlist", "metric": "sign-ups", "target": 100, "window_days": 14})
+
+    def run(t, repeats):
+        if gate == 1:
+            return gates.gate1([], excluded=None, search_failed=False, repeats=repeats, t=t).outcome
+        if gate == 2:
+            return gates.gate2(_review(), locked=locked, result=60, mocked=False, repeats=repeats, fatal_answered=True,
+                               alternative_supported=False, t=t).outcome
+        return gates.gate3(tests_passed=1, tests_total=5, loops_used=3, repeats=repeats, promise_unmeetable=False,
+                           t=t).outcome
+
+    limit = T[f"gate{gate}"]["max_repeats"]
+    assert run(T, limit - 1) == "repeat" and run(T, limit) == "stop"
+    t = copy.deepcopy(T)
+    t[f"gate{gate}"]["max_repeats"] = limit + 1
+    assert run(t, limit) == "repeat" and run(t, limit + 1) == "stop"
+    del t[f"gate{gate}"]["max_repeats"]                          # falls back to [limits]
+    t["limits"]["max_repeats_per_phase"] = 0
+    assert run(t, 0) == "stop"
+
+
+def test_gates_return_reason_codes_and_labels_word_them():
+    from venture_builder import labels
+    res = gates.gate4(violations=[], price=50, price_range=(10, 20), price_justified=False, t=T)
+    assert res.outcome == "repeat" and res.codes == ["price_outside_range"]
+    assert res.reasons == [labels.gate_reason("price_outside_range", {"price": 50, "range": (10, 20)})]
+    assert "$50" in res.reasons[0]
+    # Every code a gate can return has wording.
+    import inspect, re
+    codes = set(re.findall(r'"([a-z_]+)"', inspect.getsource(gates)))
+    returned = {c for c in codes if c in labels.GATE_REASONS}
+    assert len(returned) == len(labels.GATE_REASONS)
+
+
+def test_run_keeps_the_thresholds_it_started_with(make_runtime, settings, monkeypatch):
+    rt = make_runtime()
+    start = rt.ctx.t["gate1"]["min_score"]
+    assert rt.dossier.thresholds_hash and rt.dossier.thresholds["gate1"]["min_score"] == start
+    changed = settings.thresholds()
+    changed["gate1"]["min_score"] = 0.99
+    monkeypatch.setattr(type(settings), "thresholds", lambda self: changed)
+    assert rt.ctx.t["gate1"]["min_score"] == start              # the config file changing mid-run has no effect
+    rt.dossier.thresholds["gate1"]["min_score"] = 0.1          # editing the snapshot is refused
+    with pytest.raises(gates.ThresholdTamperError):
+        rt.ctx.t
+    log = [e for e in rt.ctx.store.log.entries if e["action"] == "lock_thresholds"]
+    assert len(log) == 1 and log[0]["hash"] == rt.dossier.thresholds_hash
+
+
+def test_each_run_has_its_own_graph_and_context(make_runtime):
+    from venture_builder import orchestrator
+    assert not hasattr(orchestrator, "CONTEXTS")
+    a, b = make_runtime(), make_runtime()
+    a.advance(); b.advance()
+    assert a.ctx is not b.ctx and a.graph is not b.graph
+    assert a.dossier.history and b.dossier.history
+    with pytest.raises(RuntimeError):
+        a.graph.invoke({"run_id": b.run_id, "next": "p1_parse", "pending": None, "answer": None},
+                       {"configurable": {"thread_id": "other"}})

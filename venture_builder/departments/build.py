@@ -131,7 +131,7 @@ def p3_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     r = d.build["report"]
     res = gates.gate3(tests_passed=r["passed"], tests_total=r["total"], loops_used=d.build["loops"],
-                      repeated=d.count("gate3_repeat") > 0, promise_unmeetable=False, t=ctx.t)
+                      repeats=d.count("gate3_repeat"), promise_unmeetable=False, t=ctx.t)
     memo = gate_reporter.run(ctx, 3, res.model_dump(), {"spec": d.spec.model_dump(),
                                                         "failures": r.get("failures", [])}).model_dump()
     md = gate_markdown(ctx, res, memo, "Does the product exist and work?", "gate3")

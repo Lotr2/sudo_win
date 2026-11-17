@@ -69,6 +69,8 @@ class Dossier(BaseModel):
     brand: dict = {}
     research_log: dict = {}        # per version and researcher: queries tried, those that found evidence, dead ends
     shortlist: dict = {}           # Stage 1 idea shortlist: kept and dropped versions with their pre-screen signal               # founder's brand for the landing page: name, color (#hex), logo (data URI)     # plain-words score breakdown and other directions shown at Gate 1
+    thresholds: dict = {}          # config/thresholds.toml as it was when the run started (see Context.t)
+    thresholds_hash: str | None = None
     counters: dict[str, int] = {}
     asked: list[str] = []
     history: list[dict] = []
@@ -99,7 +101,7 @@ class RunStore:
         self.dir.mkdir(parents=True, exist_ok=True)
         (self.dir / "outputs").mkdir(exist_ok=True)
         self._lock = threading.Lock()
-        self.log = DecisionLog(self.dir / "decision_log.json")
+        self.log = DecisionLog(self.dir / "decision_log.jsonl")
 
     @property
     def outputs(self) -> Path:

@@ -62,7 +62,25 @@ class Context:
     # ---- settings shortcuts ----
     @property
     def t(self) -> dict:
-        return self.settings.thresholds()
+        """The thresholds this run started with. They are snapshotted into the dossier and hashed into the
+        decision log at the start, so editing config/thresholds.toml never changes a run in progress, and a
+        snapshot edited afterwards is refused."""
+        d = self.dossier
+        if d is None or not d.thresholds:
+            return self.settings.thresholds()
+        from .gates import LockedTargets
+        return LockedTargets(d.thresholds, d.thresholds_hash or "").verify("the run's thresholds")
+
+    def lock_thresholds(self, note: str | None = None) -> None:
+        """Snapshot config/thresholds.toml into the dossier and log its hash (once per run)."""
+        if self.dossier is None or self.dossier.thresholds:
+            return
+        from .decision_log import log_action
+        from .gates import LockedTargets
+        locked = LockedTargets.lock(self.settings.thresholds())
+        self.dossier.thresholds, self.dossier.thresholds_hash = locked.targets, locked.hash
+        self.save()
+        log_action("threshold_lock", "lock_thresholds", hash=locked.hash, note=note)
 
     @property
     def demo(self) -> bool:

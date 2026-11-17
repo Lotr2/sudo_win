@@ -5,6 +5,9 @@ routes to the single `founder` node, which calls LangGraph's `interrupt()` and, 
 resumes the run, returns to the step named in `resume_to`. No LLM decides what runs next: the transitions
 are the ones written in the department modules. Checkpoints are stored in SQLite so a run can pause for
 days and resume.
+
+Each run gets its own compiled graph, bound to that run's `Context` (settings, stores, ledgers, outbox).
+Graph state holds only small, serialisable control fields; there is no module-level registry of runs.
 """
 
 from __future__ import annotations
@@ -26,9 +29,6 @@ for _mod in (discover, validate, build, commercial, launch, operate):
 FIRST_NODE = "p1_parse"
 NO_ANSWER = {"no_answer": True}  # LangGraph cannot resume with None
 
-# Live contexts, by run id. Graph state holds only small, serialisable control fields.
-CONTEXTS: dict[str, Context] = {}
-
 
 class State(TypedDict, total=False):
     run_id: str
@@ -37,9 +37,10 @@ class State(TypedDict, total=False):
     answer: Any
 
 
-def _wrap(name: str, fn):
+def _wrap(ctx: Context, name: str, fn):
     def node(state: State) -> State:
-        ctx = CONTEXTS[state["run_id"]]
+        if state.get("run_id") != ctx.dossier.run_id:
+            raise RuntimeError(f"graph for run {ctx.dossier.run_id} was given state for run {state.get('run_id')}")
         answer = state.get("answer")
         if name.endswith("_gate_decided") and isinstance(answer, dict) and answer.get("rerun"):
             # A founder correction while the gate waited: re-run only the dependent steps.
@@ -73,11 +74,12 @@ def route(state: State) -> str:
     return END if nxt == END_NODE else nxt
 
 
-def build_graph(checkpointer=None):
+def build_graph(ctx: Context, checkpointer=None):
+    """The pipeline graph for one run, with every node bound to that run's context."""
     g = StateGraph(State)
     targets = {name: name for name in NODES} | {"founder": "founder", END: END}
     for name, fn in NODES.items():
-        g.add_node(name, _wrap(name, fn))
+        g.add_node(name, _wrap(ctx, name, fn))
         g.add_conditional_edges(name, route, targets)
     g.add_node("founder", founder)
     g.add_conditional_edges("founder", route, targets)

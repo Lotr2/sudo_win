@@ -71,7 +71,7 @@ def run_case(case: dict, settings, factory) -> dict:
             problems += readability_problems(walk[-1], "advisor's explanation")
     for doc in sorted(rt.ctx.store.outputs.glob("*.md")):
         problems += readability_problems(doc.read_text(), doc.name)
-    log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
+    log = rt.ctx.store.log.entries
     return {"id": case["id"], "outcome": outcome, "expected": case["expect"]["gate1_in"], "problems": problems,
             "seconds": round(time.time() - started), "tokens": sum(int(e.get("tokens") or 0) for e in log),
             "run_id": rt.run_id}

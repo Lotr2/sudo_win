@@ -128,7 +128,7 @@ def test_simulated_founder_decisions_are_labelled_in_the_log(make_runtime, monke
     p = drive(rt, stop_at_gate=1)
     rt.decide_gate(p["recommended"], FounderConfirmation(channel="simulation", item_ref=f"gate1-{p['attempt']}",
                    typed_hash_prefix=p["code"]), variant_id=p.get("suggested_variant"))
-    log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
+    log = rt.ctx.store.log.entries
     decision = [e for e in log if e["action"] == "gate1_decision"][-1]
     assert decision["approved_by"] == "founder" and decision["simulated_founder"] is True
     assert decision["channel"] == "simulation"
@@ -207,6 +207,26 @@ def test_rejection_needs_a_confirmation_for_the_current_version():
     h = item["content_hash"].removeprefix("sha256:")[:8]
     ob.reject(item["id"], "no", FounderConfirmation(channel="cli", item_ref=item["id"], typed_hash_prefix=h))
     assert ob.get(item["id"])["status"] == "rejected"
+
+
+def test_a_gate_paused_before_codes_were_issued_gets_a_new_code(make_runtime):
+    import hashlib
+    from conftest import drive
+    rt = make_runtime()
+    p = drive(rt, stop_at_gate=1)
+    # Simulate an older run: no code on record in the outbox, the old derivable code in the checkpoint.
+    rt.ctx.outbox._db.execute("DELETE FROM gate_codes")
+    rt.ctx.outbox._db.commit()
+    old = hashlib.sha256(f"gate1-{p['attempt']}".encode()).hexdigest()[:6]
+    fresh = rt.pending()["code"]
+    assert fresh and fresh == rt.pending()["code"]            # issued once, stable while it waits
+    if fresh != old:
+        with pytest.raises(InvalidConfirmation):
+            rt.decide_gate(p["recommended"], FounderConfirmation(channel="cli", item_ref=f"gate1-{p['attempt']}",
+                                                                  typed_hash_prefix=old), variant_id=p.get("suggested_variant"))
+    rt.decide_gate(p["recommended"], FounderConfirmation(channel="cli", item_ref=f"gate1-{p['attempt']}",
+                                                          typed_hash_prefix=fresh), variant_id=p.get("suggested_variant"))
+    assert rt.ctx.outbox.gate_decision(1, p["attempt"])["decision"] == p["recommended"]
 
 
 def test_outbox_reads_are_safe_while_another_thread_writes(tmp_path):

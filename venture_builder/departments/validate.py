@@ -141,8 +141,8 @@ def p2_lock(ctx: Context, answer) -> Next:
         ctx.store.converse("founder", f"Target changed: {item['note']}", phase=2)
     elif ctx.outbox.valid_approval(item["id"]) is None:
         raise RuntimeError("targets resumed without an approval or rejection")
-    d.locked_targets = targets
-    d.lock_hash = gates.lock_hash(targets)
+    locked = gates.LockedTargets.lock(targets)
+    d.locked_targets, d.lock_hash = locked.targets, locked.hash
     log_action("threshold_lock", "lock_targets", approved_by="founder", targets=targets, hash=d.lock_hash)
     _write_experiment(ctx)
     return Next("p2_landing")
@@ -213,7 +213,7 @@ def p2_gate(ctx: Context, answer) -> Ask:
                        snippet=f"{d.locked_targets['metric']}: {d.signups['result']:g} ({etype})")
         log_action("founder", "enter_experiment_result", approved_by="founder", **d.signups)
     fatal_answered = bool(d.objection_answers)
-    res = gates.gate2(d.review, locked=d.locked_targets, recorded_hash=d.lock_hash, result=d.signups["result"],
+    res = gates.gate2(d.review, locked=gates.LockedTargets(d.locked_targets, d.lock_hash), result=d.signups["result"],
                       mocked=d.signups["mocked"], repeats=d.count("gate2_repeat"), fatal_answered=fatal_answered,
                       alternative_supported=False, t=ctx.t)
     memo = gate_reporter.run(ctx, 2, res.model_dump() | {"label": res.label},

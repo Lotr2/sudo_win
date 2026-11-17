@@ -172,7 +172,8 @@ class VariantScore(Strict):
 class GateResult(Strict):
     gate: int
     outcome: Outcome
-    reasons: list[str]
+    reasons: list[str]                 # founder-facing wording, rendered from `codes` by labels.gate_reason
+    codes: list[str] = []              # reason codes decided by gates.py
     mocked_evidence: bool = False
     rests_on: list[str] = []
     critical_unconfirmed: list[str] = []

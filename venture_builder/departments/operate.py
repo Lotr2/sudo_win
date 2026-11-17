@@ -32,8 +32,8 @@ def p6_start(ctx: Context, answer) -> Ask:
                  "write a persevere-or-pivot memo checked by a critic",
             ["the activity entered is " + ("your real numbers" if real else "practice data (MOCKED)"),
              "targets are locked before the data"])
-    d.gate6_targets = dict(ctx.t["gate6"])
-    d.gate6_hash = gates.lock_hash(d.gate6_targets)
+    locked = gates.LockedTargets.lock(ctx.t["gate6"])
+    d.gate6_targets, d.gate6_hash = locked.targets, locked.hash
     log_action("threshold_lock", "lock_gate6_targets", targets=d.gate6_targets, hash=d.gate6_hash)
     ctx.say(f"Time to review how things went. The goals were set before any data: at least "
             f"{d.gate6_targets['min_conversion']:.0%} of visitors buy, and at most "
@@ -206,10 +206,9 @@ def p6_memo(ctx: Context, answer) -> Next:
 
 def p6_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
-    if gates.lock_hash(d.gate6_targets) != d.gate6_hash:
-        raise gates.ThresholdTamperError("Gate 6 targets changed after locking")
     mocked = d.metrics.get("label") == "MOCKED"
-    res = gates.gate6(metrics=d.metrics, targets=d.gate6_targets, memo_passes=d.memo["passes"],
+    res = gates.gate6(metrics=d.metrics, locked=gates.LockedTargets(d.gate6_targets, d.gate6_hash),
+                      memo_passes=d.memo["passes"],
                       alternative_supported=bool(d.lessons), t=ctx.t, mocked=mocked)
     memo = {"summary": f"The team recommends: {labels.outcome_name(res.label, 6)}.",
             "explanation": "This check compares the review period's results with the goals set before any data "

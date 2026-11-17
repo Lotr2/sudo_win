@@ -2,7 +2,12 @@
 
 Every entry always has the required keys `timestamp, agent, action, sources, model, cost, approved_by`.
 Code logs through `log_action` (or the `logged` decorator) on the log bound to the current run, so no
-agent can skip it. Each run keeps its own log in `runs/<run_id>/decision_log.json`.
+agent can skip it.
+
+Each run keeps its own log in `runs/<run_id>/decision_log.jsonl`, one JSON object per line, appended as it
+happens (writing an entry costs the same however long the log is). `export_run` turns a run's log into the
+JSON array committed as `decision_log.json`. Entry ids (`log_1`, `log_2`, ...) give the order within a run,
+since several entries often share the same second.
 """
 
 from __future__ import annotations
@@ -31,12 +36,15 @@ class DecisionLog:
         self.tags: dict = {}   # added to every entry, e.g. {"project": "real"}
 
     def _load(self) -> list[dict]:
-        if self.path and self.path.exists():
-            try:
-                data = json.loads(self.path.read_text() or "[]")
-                return data if isinstance(data, list) else []
-            except json.JSONDecodeError:
-                return []
+        if not self.path:
+            return []
+        if self.path.exists():
+            return read_log(self.path)
+        legacy = self.path.with_suffix(".json")
+        if self.path.suffix == ".jsonl" and legacy.exists():   # a run from before the JSON Lines format
+            entries = read_log(legacy)
+            self.path.write_text("".join(json.dumps(e) + "\n" for e in entries))
+            return entries
         return []
 
     @property
@@ -68,14 +76,33 @@ class DecisionLog:
             self._entries.append(entry)
             if self.path:
                 self.path.parent.mkdir(parents=True, exist_ok=True)
-                tmp = self.path.with_suffix(".tmp")
-                tmp.write_text(json.dumps(self._entries, indent=1))
-                tmp.replace(self.path)
+                with self.path.open("a", encoding="utf-8") as f:
+                    f.write(json.dumps(entry) + "\n")
             return entry
 
     def bind(self):
         """Make this the log for the current context (thread / task)."""
         return _current.set(self)
+
+
+def read_log(path: Path | str) -> list[dict]:
+    """A decision log file as a list of entries: JSON Lines (a run's log) or a JSON array (the exported log).
+    A line cut off by a crash mid-write is skipped."""
+    text = Path(path).read_text(encoding="utf-8")
+    if text.lstrip().startswith("["):
+        try:
+            data = json.loads(text)
+            return data if isinstance(data, list) else []
+        except json.JSONDecodeError:
+            return []
+    entries = []
+    for line in text.splitlines():
+        if line.strip():
+            try:
+                entries.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return entries
 
 
 def current() -> DecisionLog:

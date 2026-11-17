@@ -4,7 +4,7 @@ An open-source team of AI agents that takes a founder's brief toward a validated
 
 ## Overview
 
-The founder submits a short brief: a starting idea plus skills, budget, available time, target market and values. A deterministic orchestrator moves a single shared record, the **Venture Dossier**, through six phases. Each phase is a department with its own agent topology: fan-out research, generator–critic debate, a build–test loop, a pipes-and-filters pipeline, a transactional outbox, and a monitoring loop. Every phase ends at a **gate** that code evaluates against thresholds fixed in advance, followed by a founder decision. Nothing is published, sent, spent or signed unless the founder approves it through the UI or CLI. Every agent action is logged to `decision_log.json`. Throughout the run, the Founder Liaison talks with the founder in a chat beside the progress view (or inline in the CLI); every answer the founder gives is stored in the dossier and every assumption the system makes is tracked in an **Assumption Ledger**, together with the decisions that depend on it.
+The founder submits a short brief: a starting idea plus skills, budget, available time, target market and values. A deterministic orchestrator moves a single shared record, the **Venture Dossier**, through six phases. Each phase is a department with its own agent pattern (shown under each box), and ends at a **gate** that code evaluates against thresholds fixed in advance, followed by a founder decision. Nothing is published, sent, spent or signed without a founder approval in the UI or CLI, and every agent action is logged to `decision_log.json`. Throughout the run the Founder Liaison talks with the founder; every answer is stored in the dossier and every assumption is tracked in an **Assumption Ledger** with the decisions that depend on it.
 
 ```mermaid
 flowchart LR
@@ -14,7 +14,14 @@ flowchart LR
   G3 -->|go| P4["4 · Commercial setup<br/>pipes and filters"] --> G4{"Gate 4"}
   G4 -->|go| P5["5 · Launch<br/>transactional outbox"] --> G5{"Gate 5"}
   G5 -->|go| P6["6 · Operate & learn<br/>monitor loop + critic"] --> G6{"Gate 6"}
-  G6 -.->|pivot| P1
+  G6 -->|"go (keep going)"| K(["Keep operating"])
+  G1 -.->|"repeat · pivot to another version"| P1
+  G2 -.->|repeat| P2
+  G3 -.->|repeat| P3
+  G4 -.->|repeat| P4
+  G5 -.->|repeat| P5
+  G6 -.->|repeat| P6
+  G2 & G3 & G6 -.->|"pivot (back to Discover)"| P1
   G1 & G2 & G3 & G4 & G5 & G6 -.->|stop| X["STOP memo<br/>(honest no-launch)"]
   F(["Founder"]) <-.->|"interview · check-ins · questions · why?"| FL["Founder Liaison<br/>(Gemma 4 31B)"]
   FL <-.-> P1 & P2 & P3 & P4 & P5 & P6
@@ -33,6 +40,8 @@ flowchart LR
   end
 ```
 
+Dotted arrows: **repeat** restarts the same phase; **pivot** returns to Phase 1 with the lessons learned (Gates 4 and 5 have none); **stop** ends the run.
+
 ### Core steps at a glance
 
 Every core step of the brief, where it lives, and how it is checked. Each phase's section under [Phases](#phases) has the full detail.
@@ -50,7 +59,7 @@ Every core step of the brief, where it lives, and how it is checked. Each phase'
 1. **Code controls the pipeline; agents fill in the departments.** The orchestrator, gates, approvals, policy checks and payment flow are deterministic code. Agents receive one narrow task and return JSON that matches a schema.
 2. **Each department gets the pattern its work needs.** Exploring, judging, building, drafting, sending and monitoring are different kinds of work, so each phase uses a different pattern.
 3. **Agents never write sources themselves.** Tools record evidence in a ledger, agents cite evidence IDs, and code turns IDs into URLs. Anything unsourced is labelled `ASSUMPTION`.
-4. **Gates decide by evidence against thresholds fixed in advance.** Thresholds are locked and hashed into the log before results exist, so a weak result cannot be talked up afterwards.
+4. **Gates decide by evidence against thresholds fixed in advance.** Each run snapshots `config/thresholds.toml` when it starts, and experiment targets and review goals are locked before results exist; all are hashed into the log and checked again at the gate, so a weak result cannot be talked up afterwards.
 5. **Agents propose; the founder disposes.** Agents can only put items in an outbox. Only an approval record created by the founder in the UI or CLI lets an item be executed.
 6. **No LLM in the money path.** Payment events, delivery, refunds and reconciliation are plain code with tests. All payment events are MOCKED.
 7. **Talk a lot, decide nothing by chat.** The Founder Liaison interviews, reads back, checks in, asks and explains, but it cannot change a decision. Code decides when a question matters; the founder changes things only through explicit commands or buttons.
@@ -97,13 +106,15 @@ One `###` per phase: its agents (and model), tools, method and outputs. The full
 
 ## Gates
 
-A gate is a pure function in `gates.py`: it reads the dossier and the thresholds, returns an outcome with reasons, and writes a log entry. For Gates 1–3, the Gate Reporter (Gemma 4 31B) turns that result into a readable memo; for Gates 4–6, code fills a memo template. Before the founder reads a memo or the Liaison's walk-through, the Fact Checker compares every factual statement with the facts it came from and corrects anything unsupported, stating why. None of them can change the outcome. The founder then decides. The founder can override the recommendation, and the log records it as an override against the recommendation.
+A gate is a pure function in `gates.py`: it reads the dossier and the thresholds, returns an outcome with **reason codes** and the facts behind them, and writes a log entry. `labels.py` turns each code into the plain-words reason the founder reads. The Gate Reporter (Gates 1–3) or a code template (Gates 4–6) writes the memo, and the Fact Checker corrects any statement its facts don't support; neither can change the outcome. The founder then decides, and may override the recommendation; the log records the override.
 
 **Outcomes**
 - **go**: move to the next phase.
-- **repeat**: run the same phase again with a specific fix (more evidence, smaller spec). At most 2 repeats per phase, then the recommendation becomes pivot or stop.
-- **pivot**: go back to an earlier phase with a changed variant, customer or product.
+- **repeat**: run the same phase again with a specific fix. Limited per gate (`[gateN] max_repeats` in `config/thresholds.toml`): 2 more research rounds at Gate 1, one re-test at Gate 2, one smaller spec at Gate 3; then the recommendation becomes pivot or stop. At Gates 4–6 a repeat is a revision that continues until it passes or the founder stops.
+- **pivot**: back to Phase 1 with a changed variant, customer or product (Gates 2, 3, 6); at Gate 1, switch to another version that passes.
 - **stop**: recommend not continuing, with the reasons and the evidence.
+
+**Thresholds fixed in advance.** The run's copy of `config/thresholds.toml` (at the start), the Gate 2 target (on founder approval) and the Gate 6 goals (at the start of Phase 6) are each locked as a `LockedTargets` value and hashed into the log. Gates check the hash before use and raise `ThresholdTamperError` on any change; editing the file never affects a run in progress.
 
 **Evidence that counts**
 
@@ -119,41 +130,45 @@ A gate is a pure function in `gates.py`: it reads the dossier and the thresholds
 
 | Gate | Checks | go | repeat | pivot | stop |
 |---|---|---|---|---|---|
-| 1 Discover | Independent sourced, graded examples of the problem for the top version; founder-fit rules (budget, hours, skills); excluded categories | ≥3 examples from ≥2 websites, score ≥60/100, fit rules pass | 1–2 signals, or search tools failed | another variant passes | excluded category, or 0 signals after the limit of 2 repeats |
+| 1 Discover | Independent sourced, graded examples of the problem for the top version; founder-fit rules (budget, hours, skills); excluded categories | ≥3 examples from ≥2 websites, score ≥60/100, fit rules pass | below the bar (up to 2 times), or search tools failed | another variant passes | excluded category, or still below the bar after 2 repeats |
 | 2 Validate ★ | Investor rubric; result vs locked target; threshold hash matches | no unaddressed fatal risk and result ≥100% of target | result 50–99% of target (once) | a different segment or offer is supported by the evidence | result <50% of target, or a fatal risk with no answer |
 | 3 Build | Acceptance tests | all pass + founder approves | failures after 3 loops (once, with smaller spec) | spec cannot meet the landing-page promise | still failing after the repeat |
 | 4 Commercial | Linter result; price within the sourced competitor range or justified | zero violations + founder sign-off | violations remain | — | founder rejects |
 | 5 Launch | Each outbound item approved; delivery, refund and idempotency tests pass | all approved items executed, tests pass | rejected items revised | — | founder withdraws the launch |
-| 6 Operate | Critic rubric on memo; metrics vs canvas key metrics | metrics meet targets | memo fails the rubric | metrics miss targets but a sourced alternative exists | metrics miss targets and no alternative is supported |
+| 6 Operate | Critic rubric on memo; metrics vs the goals locked at the start of Phase 6 | metrics meet targets | memo fails the rubric | metrics miss targets but a sourced alternative exists | metrics miss targets and no alternative is supported |
 
 A tool failure is not evidence of absence: if search is unreachable, claims fall back to `ASSUMPTION` and Gate 1 returns **repeat**, never go and never a stop based on missing data.
 
-**Assumptions behind a decision.** Every gate memo ends with a section "This recommendation rests on", listing each assumption the outcome depends on and whether the founder has confirmed it, plus how much of the brief is confirmed (for example "7 of 9 brief fields confirmed"). If a GO rests on an unconfirmed assumption that the Clarifier marked decision-critical, the founder cannot accept the GO until they confirm or correct it. A correction re-runs only the steps that depend on that assumption, and the gate is evaluated again.
+**Assumptions behind a decision.** Every gate memo ends with "This recommendation rests on": each assumption the outcome depends on and whether the founder confirmed it. A GO that rests on an unconfirmed decision-critical assumption can't be accepted until the founder confirms or corrects it; a correction re-runs only the dependent steps and the gate.
 
 **When the system recommends STOP on weak evidence:** when an idea falls in an excluded category; when no sourced pain signal exists after the allowed repeats; when a locked experiment target is missed by more than half (example: target 100 waitlist sign-ups in 14 days, result 12, so stop or pivot rather than reframing the number); when a fatal risk has no answer; when the only support for an idea is simulated or assumed evidence. A STOP memo lists what was tested, the target, the result, and what evidence would change the recommendation.
 
 ## Sale to cash
 
-Everything here is plain code with tests, and every event is **MOCKED**. There is no payment provider, SDK, sandbox or test mode, no payment keys and no real accounts: payments are left out completely, and the mock events exist only to show how the sale-to-cash logic behaves. No LLM can trigger delivery, refunds or payouts. Patterns: event-driven processing, idempotent consumer, compensating action, reconciliation.
+Everything here is plain code with tests, and every event is **MOCKED**. There is no payment provider, SDK, sandbox or test mode, no payment keys and no real accounts: payments are left out completely, and the mock events exist only to show how the sale-to-cash logic behaves. No LLM can trigger delivery, refunds or payouts. Patterns: idempotent consumer, single-use approval, compensating action, reconciliation.
 
 ```mermaid
 stateDiagram-v2
   [*] --> Pending: mock checkout created (order_id)
-  Pending --> Paid: payment.succeeded event (MOCKED)
-  Paid --> Delivered: delivery.grant(order_id) issues access token
+  Pending --> Paid: payment.succeeded (MOCKED)
+  Paid --> Delivered: same transaction, delivery.grant(order_id) issues one access token
   Delivered --> Delivered: duplicate payment event (ignored, logged)
-  Delivered --> Refunded: refund approved by founder (MOCKED event)
-  Refunded --> Revoked: access token revoked
+  Delivered --> Refunded: refund.succeeded after a founder approval (MOCKED)
+  Refunded --> Revoked: same transaction, access token revoked
+  Revoked --> Revoked: late payment or second refund (rejected, logged)
+  Pending --> Pending: refund for an unpaid order (rejected, logged)
   Revoked --> [*]
-  Pending --> Expired: no payment within window
 ```
 
-1. **Payment triggers delivery.** `webhooks.py` receives a mock `payment.succeeded` event. `delivery.py` issues a unique access token for that order and records the delivery.
-2. **A refund revokes access (compensating action).** A refund request becomes an outbox item; only after founder approval does `refunds.py` emit a mock refund event, and the access token is revoked in the same transaction.
-3. **Idempotency prevents double delivery (idempotent consumer).** Every event has an `event_id`; every delivery is keyed by `order_id`. A replayed or duplicate event finds the existing record and does nothing except log the duplicate.
-4. **Reconciliation matches the books.** `reconcile.py` matches orders, payments, fees and payouts (all mocked) and reports any mismatch, such as a payment with no delivery or a delivery with no payment.
+`webhooks.py` enforces these transitions: payments only for pending orders, refunds only for paid ones; any other event changes nothing and returns `rejected`.
 
-Every test run writes to `outputs/payment_test_log.md`. Tests cover: one payment delivers once; a duplicate event does not deliver twice; a refund revokes access; a refund without founder approval does nothing; reconciliation flags a deliberately broken record.
+1. **Payment triggers delivery.** `webhooks.py` receives a mock `payment.succeeded` event. `delivery.py` issues a unique access token for that order and records the delivery.
+2. **A refund revokes access (compensating action).** A refund request is an outbox item; only after founder approval does `refunds.py` emit a mock refund event, revoking access in the same transaction. Only paid orders can be refunded.
+3. **Idempotency prevents double delivery and double refunds.** Every event has an `event_id`; every delivery is keyed by `order_id`. A duplicate event only logs the duplicate; a refund event's id is fixed by its outbox item.
+4. **An approval is used once.** The executor moves an item from approved to published in one conditional update; a second execution raises `AlreadyExecuted`, so one approval never publishes or refunds twice.
+5. **Reconciliation matches the books.** `reconcile.py` matches orders, payments, fees, refunds, deliveries and payouts (all mocked) and reports every mismatch: payments without delivery or order, deliveries without payment, refunded orders with access, refunds without payment, above the payment or repeated, and payouts ≠ gross − fees − refunds.
+
+Every test run writes to `outputs/payment_test_log.md`. Tests cover each rule above, including a duplicate event, a refund without approval, a second use of one approval, a refund of an unpaid order, a late payment after a refund, and deliberately broken records.
 
 ## Data flow
 
@@ -181,108 +196,62 @@ flowchart TB
 
 | Store | Format | Holds |
 |---|---|---|
-| Venture Dossier (blackboard) | `dossier.json`, one version per phase | profile, variants, scores, canvas, locked targets, spec, price, policies, metrics, gate results |
+| Venture Dossier (blackboard) | `dossier.json`, one version per phase | profile, variants, scores, canvas, the run's thresholds and locked targets (with hashes), spec, price, policies, metrics, gate results (outcome, reason codes, reasons) |
 | Evidence Ledger | `ledger.json` | `{id, type, url, snippet, fetched_at}` per item |
-| Assumption Ledger | `assumptions.json` | `{id, field, value, status: assumed / confirmed / corrected, depends_on: [decision ids], asked_at, answer}` per assumption |
+| Assumption Ledger | `assumptions.json` | `{id, field, value, status, depends_on, answer}` per assumption |
 | Conversation log | `conversation.jsonl` | every Liaison and founder turn, with the phase and the dossier fields it touched |
-| Outbox and approvals | SQLite | outbound items with content hash; approval records |
+| Outbox and approvals | SQLite | outbound items with content hash; approval records (each used once); gate decisions and their one-time codes |
 | Event log | SQLite, append-only | mock orders, payments, deliveries, refunds, tickets |
-| Decision log | `decision_log.json`, append-only | one entry per agent action |
+| Decision log | `decision_log.jsonl` per run (appended line by line), exported as `decision_log.json` | one entry per agent action, in order (`log_1`, `log_2`, ...) |
 
-**Decision log entry.** Written by middleware around every agent, tool and gate call, so no agent can skip it. All five required keys are always present:
-
-```json
-{"timestamp": "2026-11-17T09:01:00Z", "agent": "market_researcher", "action": "find_opportunities",
- "sources": ["https://example.org/thread"], "model": "gpt-oss:20b", "cost": 0, "approved_by": null,
- "reasoning_effort": "low", "tokens": 1840}
-```
+**Decision log entry.** Written by middleware around every agent, tool and gate call, so no agent can skip it. All five required keys (`action`, `sources`, `model`, `cost`, `approved_by`) are always present, plus `timestamp`, `agent`, and extras such as `tokens`, `reasoning_effort` and a gate's `outcome`.
 
 **Approval record.** Created only by the UI button or an interactive CLI confirmation, never by an agent:
 
 ```json
-{"approval_id": "ap_01", "item_id": "ob_07", "item_hash": "sha256:…", "action": "publish",
+{"approval_id": "ap_3f9c0b6e21d84a57", "item_id": "ob_07", "item_hash": "sha256:…", "action": "publish",
  "approved_by": "founder", "channel": "ui", "timestamp": "2026-11-17T10:12:00Z"}
 ```
 
-The executor recomputes the item's hash. If the item changed after approval, the approval is invalid.
+The executor recomputes the item's hash: if the item changed after approval, the approval is invalid, and once executed it is spent. Gate decisions are confirmed with a random one-time code issued by the outbox when the gate is shown.
 
-**What each agent sees.** The orchestrator passes each agent only the dossier fields its task needs, which keeps prompts short enough for small models and the free API tier and stops one agent's mistakes spreading into unrelated steps.
+**What each agent sees.** Only the dossier fields its task needs: prompts stay short enough for small models, and one agent's mistakes don't spread.
 
 ## Built vs. stubbed
 
-Everything below is implemented and covered by the smoke tests in `tests/`, which run on a fake model client. `outputs/` and `decision_log.json` hold only output of real runs on the real models (GPT-OSS-20B, live search). In the committed demo run the founder's approvals and stage decisions are **MOCKED**: `scripts/simulate_founder.py` makes them with fixed rules on a separate `simulation` channel, which is accepted only when `VENTURE_SIMULATED_FOUNDER=1` is set for that process (the web UI refuses to start with it), and every such log entry carries `simulated_founder: true`.
+Everything below is covered by the smoke tests in `tests/` (fake model client). `outputs/` and `decision_log.json` hold only real runs on the real models; in the committed demo run the founder's decisions are **MOCKED** by `scripts/simulate_founder.py` (a `simulation` channel the web UI refuses), and each such log entry carries `simulated_founder: true`.
 
-| Part | Status | Files (in `venture_builder/`) |
+| Part | Status | Main files (in `venture_builder/`) |
 |---|---|---|
 | Orchestrator (LangGraph), dossier, decision log, runtime | Working | `orchestrator.py`, `runtime.py`, `dossier.py`, `decision_log.py` |
-| Model router, Ollama / llama.cpp + Gemini clients, free-tier rate limiter, `venture doctor` | Working | `router.py`, `llm_clients.py`, `rate_limit.py` |
-| Phase 1 Discover (all steps, Gate 1) | Working | `departments/discover.py`, `scoring.py`, `agents/brief_parser.py`, `agents/opportunity_scout.py`, `agents/market_researcher.py`, `agents/competitor_analyst.py`, `agents/mom_test_writer.py` |
-| Customer interviews | **STUBBED**: the script is generated; the founder runs real interviews and pastes notes; no simulated personas are offered | `agents/mom_test_writer.py` |
-| Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-up counts founder-entered: founder-reported in a real project, **MOCKED** in a practice run | `departments/validate.py`, `agents/canvas_builder.py`, `agents/skeptical_investor.py`, `agents/experiment_designer.py`, `agents/landing_copywriter.py` |
-| Phase 3 Build (all steps, Gate 3) | Working for the three templates; web-tool browser behaviour **STUBBED** (structure and safety tested statically) | `departments/build.py`, `templates/`, `qa.py`, `agents/product_manager.py`, `agents/builder.py`, `agents/docs_writer.py` |
-| Phase 4 Commercial setup | Working; legal review **STUBBED** (drafts marked not legal advice) | `departments/commercial.py`, `agents/pricing_analyst.py`, `agents/policy_drafter.py`, `policy_guard.py` |
-| Phase 5 Launch | Working; publishing **MOCKED** | `departments/launch.py`, `agents/launch_writers.py`, `approval.py` |
-| Sale to cash | Working against **MOCKED** payment events | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `events.py` |
-| Phase 6 Operate and learn | Working; activity founder-entered (founder-reported in a real project, **MOCKED** in a practice run); reply sending **MOCKED** | `departments/operate.py`, `metrics.py`, `agents/support_agent.py`, `agents/pivot_memo_writer.py`, `agents/critic.py` |
-| Gates, approval, policy guard, gate reporter | Working | `gates.py`, `approval.py`, `policy_guard.py`, `agents/gate_reporter.py` |
-| Founder conversation (intake, read-back, kickoffs, clarifying questions, gate walk-through, ask-anything) | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`, `runtime.py` |
-| Evidence and search | Working (SearXNG, self-hosted, with engine fallback) | `ledger.py`, `tools/` |
-| Agentic skills: research loop, grading, agreement, shortlist, memory, fact-check, self-review | Working | `departments/discover.py`, `scoring.py`, `explain.py`, `research_memory.py`, `agents/fact_checker.py`, `agents/product_reviewer.py` |
-| Landing page renderer with the founder's brand and three layouts | Working | `landing.py` |
-| Evals (8 briefs, expected outcomes, readability checks) | Working | `evals/` |
-| Web UI and CLI | Working | `ui/`, `cli.py`, `labels.py` |
+| Model router, Ollama / llama.cpp + Gemini clients, free-tier rate limiter | Working | `router.py`, `llm_clients.py` |
+| Phase 1 Discover (all steps, Gate 1) | Working | `departments/discover.py`, `scoring.py` |
+| Customer interviews | **STUBBED**: the founder runs real interviews from the generated script; no simulated personas | `agents/mom_test_writer.py` |
+| Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-ups founder-reported in a real project, **MOCKED** in a practice run | `departments/validate.py`, `landing.py` |
+| Phase 3 Build (all steps, Gate 3) | Working (3 templates); web-tool browser behaviour **STUBBED** (tested statically) | `departments/build.py`, `templates/`, `qa.py` |
+| Phase 4 Commercial setup | Working; legal review **STUBBED** (drafts marked not legal advice) | `departments/commercial.py`, `policy_guard.py` |
+| Phase 5 Launch | Working; publishing **MOCKED** | `departments/launch.py`, `approval.py` |
+| Sale to cash | Working against **MOCKED** payment events | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py` |
+| Phase 6 Operate and learn | Working; activity founder-reported in a real project, **MOCKED** in a practice run; reply sending **MOCKED** | `departments/operate.py`, `metrics.py` |
+| Gates, approvals, policy guard | Working | `gates.py`, `labels.py`, `approval.py`, `policy_guard.py` |
+| Founder conversation | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py` |
+| Evidence and search (SearXNG, self-hosted) | Working | `ledger.py`, `tools/` |
+| Agentic skills | Working | `departments/discover.py`, `explain.py`, `agents/fact_checker.py` |
+| Evals, web UI and CLI | Working | `evals/`, `ui/`, `cli.py` |
 | Founder decisions in the committed demo run | **MOCKED** (simulated founder, labelled in every log entry) | `scripts/simulate_founder.py` |
-| Real or practice projects | Working: chosen at the start; every log entry carries `project`, a person's decisions carry `real_founder: true`, and results are labelled founder-reported or MOCKED accordingly | `runtime.py`, `decision_log.py` |
+| Real or practice projects | Working; results labelled founder-reported or MOCKED | `runtime.py` |
+
+Agents: `agents/<role>.py`. Every file: [code map](docs/architecture-details.md#code-map).
 
 ## Roadmap
 
 1. **Real channels behind approval.** Replace MOCKED publish adapters with real ones (email, social, store platforms) that still require an approval record per item.
 2. **Real payments behind approval.** A payment-provider adapter using the same idempotency, refund and reconciliation code, with keys held only by the founder.
 3. **More product templates** for Phase 3, contributed by the community, each with its own acceptance-test pack.
-4. **Better evidence.** More search back ends and duplicate-source detection (source grading, a research loop and agreement between readings are built: see Agentic skills).
+4. **Better evidence.** More search back ends and duplicate-source detection (source grading, a research loop and agreement between readings are built: see [Agentic skills](docs/architecture-details.md#agentic-skills)).
 5. **Evaluation suite in CI.** `evals/` holds briefs with expected outcomes and readability checks; next is running the real-model evals on every prompt change and publishing the pass rate.
 6. **Model packs.** Tested routing presets for other open-weight models and smaller hardware.
 
-## Agentic skills
-
-Each skill has its settings in `config/thresholds.toml` (`[skills]`, with smaller values in demo mode) and logs what it did.
-
-| Skill | Agent | What it does |
-|---|---|---|
-| Research loop | Market Researcher, Competitor Analyst | Plan, then search and read (top pages in full), extract findings, and compare them with the Stage 1 bar in code; while a required gap remains, write new queries aimed at it (narrower customers, local language, `site:` searches), up to `research_rounds` |
-| Evidence grading | both researchers, Scorer | Each finding says whether its source is first-hand, a question, an article or a listing, and whether it is about the founder's market; listings never count as evidence of a problem, articles count 0.8 and off-market sources 0.6 |
-| Agreement | both researchers | Findings are extracted `extraction_votes` times and kept only when most readings agree (same kind, shared evidence), which cuts run-to-run variance |
-| Idea shortlist | Opportunity Scout | Writes `scout_candidates` versions; code pre-screens each with one search and its fit, and keeps `scout_shortlist` with variety in product form |
-| Memory | researchers, scout | Per project: queries that found evidence and dead ends carry over to a retry; across projects: only the names of sites that yielded evidence (`runs/.research_sites.json`) |
-| Fact-check | Fact Checker | Before the founder reads a stage walk-through or report explanation, every factual statement is checked against the facts it came from and rewritten if unsupported; outcomes are never changed |
-| Self-review | Product Reviewer | Once the acceptance tests pass, the product is scored against a rubric; below `review_pass_score` the Builder revises it once, and the tests must pass again |
-| Evals | `evals/run_evals.py` | Eight briefs with expected Stage 1 outcomes (including excluded products and a fake-review request) plus readability checks; runs on the real models or, in the tests, on the fakes |
-
-## Safety and founder control
-
-The Policy Guard (policy as code) runs at four points: on the brief, on every founder chat message, on every agent output that will be shown (Liaison replies included), and on every outbox item. It applies rules first (fixed lists and patterns), then a classifier on a different model from the writer. Refusals are logged with the rule that matched.
-
-| The system never | Enforced by |
-|---|---|
-| Promises income or success | Compliance Linter and Policy Guard patterns; no revenue forecasts in any prompt |
-| Creates fake reviews, testimonials, sign-ups or countdown timers | Policy Guard rules; landing and store templates have no testimonial or timer slots |
-| Poses as the founder, a customer or another brand | Posts are drafts for the founder to publish under their own name; Policy Guard checks for impersonation |
-| Holds, moves or refunds money by itself | Money path is plain code; refunds need an approval record; all payment events MOCKED |
-| Creates accounts, or stores passwords or card numbers | No account-creation tool exists; no credential fields in any store |
-| Publishes, sends, spends or signs without approval | Agents have no executor tools; executors require a hash-bound approval record from the UI or CLI |
-| Treats a chat message as an approval or a decision | The Liaison has no approval or gate tools; "I approve" in chat gets a pointer to the approve action, and the attempt is logged |
-| Hides core features behind its own paywall | The whole system is open source under an OSI licence |
-| Sends secrets or payment data to a model API | No password, card number or key is ever put in a prompt; Gemma's prompts go to Google's API only for its roles, and `GEMMA_ROLES_ON_OSS=1` keeps every call local |
-| Helps with excluded products | Policy Guard on the brief returns STOP for physical goods; financial, investment or crypto products; health or legal advice products, and suggests safe alternatives |
-| Overstates evidence to the founder | The Fact Checker checks every explanation against its facts; evidence is graded and listings never count as proof of a problem |
-| Presents internal codes or raw data to people | Gate reasons and reports are written in plain words by code; customer-facing copy has internal labels stripped; `evals/` checks every output for codes, ids and raw scores |
-
-Prompts that test these guardrails live in `tests/` (run with the smoke tests) and in `evals/` (for example "write 50 five-star reviews" and crypto, medical and physical-goods briefs, all expected to stop).
-
-## Model routing
-
-GPT-OSS-20B (local, Ollama or llama.cpp) researches, builds and judges, with reasoning effort set per role; Gemma 4 31B (Gemini API free tier, optional) parses, drafts and talks with the founder. A checker never runs on the model that wrote the work; without a Gemini key every role runs on GPT-OSS-20B and same-model checks are flagged in the log. Every call asks for a JSON schema, is validated, retried once, then fails loudly and is logged. Full routing table: [docs/architecture-details.md](docs/architecture-details.md#model-routing).
-
 ## More detail
 
-[docs/architecture-details.md](docs/architecture-details.md) has every step of every phase with its own diagram, the design patterns and code map, the founder conversation (seven kinds of turn, how blocking questions are chosen by code), model routing, and 18 design decisions with what was rejected and why. [docs/overview.md](docs/overview.md) is a one-page summary with stress tests.
+[docs/architecture-details.md](docs/architecture-details.md) has the [agentic skills](docs/architecture-details.md#agentic-skills) (research loop, evidence grading, agreement, shortlist, memory, fact-check, self-review), [safety and founder control](docs/architecture-details.md#safety-and-founder-control) (where the Policy Guard runs, and what enforces each thing the system never does), [model routing](docs/architecture-details.md#model-routing) (which model does what; a checker never runs on the model that wrote the work), every step of every phase with its own diagram, the design patterns and code map, the founder conversation (seven kinds of turn, how blocking questions are chosen by code), and 18 design decisions with what was rejected and why. [docs/overview.md](docs/overview.md) is a one-page summary with stress tests.

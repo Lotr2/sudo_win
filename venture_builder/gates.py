@@ -1,13 +1,23 @@
 """Gates 1-6 as pure functions of the dossier and thresholds fixed in advance (ARCHITECTURE.md → Gates).
 
-Each returns a GateResult (go / repeat / pivot / stop) with reasons; none calls a model. A tool failure
-is not evidence of absence: Gate 1 returns repeat, never go and never a stop based on missing data.
+Each gate decides only: it returns an outcome (go / repeat / pivot / stop) plus reason codes and the facts
+behind them. None calls a model, and none writes prose: `labels.gate_reason` turns each code and its facts
+into the sentence the founder reads, so the decision and its wording can change independently.
+
+- Repeat limits are per gate in `config/thresholds.toml` (`[gateN] max_repeats`, falling back to
+  `[limits] max_repeats_per_phase`).
+- Targets fixed before results exist (Gate 2's experiment target, Gate 6's goals) arrive as `LockedTargets`
+  and are verified against their hash before use.
+- A tool failure is not evidence of absence: Gate 1 returns repeat, never go and never a stop based on
+  missing data.
 """
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+from dataclasses import dataclass
 
 from . import labels
 from .decision_log import logged
@@ -15,37 +25,62 @@ from .schemas import GateResult, InvestorReview, VariantScore
 
 
 class ThresholdTamperError(RuntimeError):
-    """The locked targets no longer match the hash written before results existed."""
+    """Locked targets or thresholds no longer match the hash written before results existed."""
 
 
 def lock_hash(targets: dict) -> str:
     return "sha256:" + hashlib.sha256(json.dumps(targets, sort_keys=True).encode()).hexdigest()
 
 
+@dataclass(frozen=True)
+class LockedTargets:
+    """Targets fixed (and hashed into the decision log) before any result exists."""
+    targets: dict
+    hash: str
+
+    @classmethod
+    def lock(cls, targets: dict) -> "LockedTargets":
+        frozen = copy.deepcopy(dict(targets))
+        return cls(frozen, lock_hash(frozen))
+
+    def verify(self, what: str = "locked targets") -> dict:
+        """The targets, if they still match their hash; otherwise the result is rejected."""
+        if lock_hash(self.targets) != self.hash:
+            raise ThresholdTamperError(f"{what} changed after locking; the result is rejected")
+        return self.targets
+
+
+def max_repeats(t: dict, gate: int) -> int:
+    return int(t.get(f"gate{gate}", {}).get("max_repeats", t["limits"]["max_repeats_per_phase"]))
+
+
+def _result(gate: int, outcome: str, code: str, facts: dict, details: dict | None = None,
+            mocked: bool = False) -> GateResult:
+    return GateResult(gate=gate, outcome=outcome, codes=[code], reasons=[labels.gate_reason(code, facts)],
+                      details=details or {}, mocked_evidence=mocked)
+
+
 @logged("gate", "gate1_discover")
 def gate1(scores: list[VariantScore], *, excluded: str | None, search_failed: bool, repeats: int,
           t: dict, names: dict | None = None) -> GateResult:
-    g, limits = t["gate1"], t["limits"]
+    g = t["gate1"]
     names = names or {}
-
-    def nm(vid: str) -> str:
-        return f"\"{names[vid]}\"" if vid in names else f"version {vid}"
+    can_repeat = repeats < max_repeats(t, 1)
 
     if excluded:
-        return GateResult(gate=1, outcome="stop", reasons=[
-            f"This idea falls under {excluded}, which the team doesn't help with: these products can cause real harm "
-            "if the advice is wrong, and they need licensed experts. Consider a related idea outside that area."])
+        return _result(1, "stop", "excluded_category", {"category": excluded})
     if search_failed:
-        return GateResult(gate=1, outcome="repeat", reasons=[
-            "Web search wasn't working, so the team couldn't check the market and everything is still a guess "
-            "(ASSUMPTION). That says nothing bad about your idea: try again once search is back."])
+        return _result(1, "repeat", "search_failed", {})
     if not scores:
-        return GateResult(gate=1, outcome="repeat" if repeats < limits["max_repeats_per_phase"] else "stop",
-                          reasons=["The team couldn't come up with versions of the idea to test."])
+        return _result(1, "repeat" if can_repeat else "stop", "no_versions", {})
 
     def passes(s: VariantScore) -> bool:
         return (s.pain_signals >= g["min_pain_signals"] and s.pain_domains >= g["min_source_domains"]
                 and s.score >= g["min_score"] and s.fit_rules_pass)
+
+    def version(s: VariantScore) -> dict:
+        return {"name": names.get(s.variant_id), "id": s.variant_id, "score": s.score,
+                "pain_signals": s.pain_signals, "pain_domains": s.pain_domains}
 
     ranked = sorted(scores, key=lambda s: s.score, reverse=True)
     top = ranked[0]
@@ -53,114 +88,79 @@ def gate1(scores: list[VariantScore], *, excluded: str | None, search_failed: bo
               "score": round(top.score, 3),
               "pain_signals": top.pain_signals,
               "pain_domains": top.pain_domains, "fit_rules_pass": top.fit_rules_pass}
+    facts = {"top": version(top), "min_score": g["min_score"], "repeats": repeats}
     if passes(top):
-        return GateResult(gate=1, outcome="go", details=detail, reasons=[
-            f"The best version, {nm(top.variant_id)}, looks promising: "
-            f"the team found {labels.plural(top.pain_signals, 'real example')} of people struggling with this problem "
-            f"on {labels.plural(top.pain_domains, 'different website')}, it scores {top.score * 100:.0f} out of 100 (needs "
-            f"{g['min_score'] * 100:.0f}), and it fits your skills, budget and time."])
+        return _result(1, "go", "top_version_passes", facts, detail)
     other = next((s for s in ranked[1:] if passes(s)), None)
     if other:
         detail["passing_variant"] = other.variant_id
         detail["passing_version"] = names.get(other.variant_id, other.variant_id)
-        return GateResult(gate=1, outcome="pivot", details=detail, reasons=[
-            f"The top-scoring version, {nm(top.variant_id)}, falls short, but {nm(other.variant_id)} passes: "
-            f"{labels.plural(other.pain_signals, 'real example')} of the problem on "
-            f"{labels.plural(other.pain_domains, 'website')}, scoring "
-            f"{other.score * 100:.0f} out of 100. Switching to it is the better bet."])
-    can_repeat = repeats < limits["max_repeats_per_phase"]
+        return _result(1, "pivot", "other_version_passes", facts | {"other": version(other)}, detail)
     if top.pain_signals == 0:
-        if can_repeat:
-            return GateResult(gate=1, outcome="repeat", details=detail, reasons=[
-                "The team hasn't yet found real people online describing this problem, so the need is still a "
-                "guess. Another round of research, ideally with a narrower customer group, may find it."])
-        return GateResult(gate=1, outcome="stop", details=detail, reasons=[
-            f"After {repeats} extra rounds of research, the team still found no real people describing this "
-            "problem. Without that, building it would be a gamble."])
-    why = []
+        return _result(1, "repeat" if can_repeat else "stop", "no_pain_found" if can_repeat else "no_pain_after_repeats",
+                       facts, detail)
+    shortfalls = []
     if top.pain_signals < g["min_pain_signals"]:
-        why.append(f"only {labels.plural(top.pain_signals, 'real example')} of people with this problem "
-                   f"(needs {g['min_pain_signals']})")
+        shortfalls.append({"kind": "pain_signals", "have": top.pain_signals, "need": g["min_pain_signals"]})
     if top.pain_domains < g["min_source_domains"]:
-        why.append(f"examples from only {labels.plural(top.pain_domains, 'website')} (needs {g['min_source_domains']})")
+        shortfalls.append({"kind": "pain_domains", "have": top.pain_domains, "need": g["min_source_domains"]})
     if top.score < g["min_score"]:
-        why.append(f"a score of {top.score * 100:.0f} out of 100 (needs {g['min_score'] * 100:.0f})")
+        shortfalls.append({"kind": "score", "have": top.score, "need": g["min_score"]})
     if not top.fit_rules_pass:
-        why.append("it doesn't fit your budget, time or skills well enough")
-    if can_repeat:
-        return GateResult(gate=1, outcome="repeat", details=detail, reasons=[
-            f"The best version so far, {nm(top.variant_id)}, isn't there yet: " + "; ".join(why) + "."])
-    return GateResult(gate=1, outcome="stop", details=detail, reasons=[
-        f"Even after {repeats} extra rounds, the best version, {nm(top.variant_id)}, falls short: " + "; ".join(why) + "."])
+        shortfalls.append({"kind": "fit"})
+    facts["shortfalls"] = shortfalls
+    return _result(1, "repeat" if can_repeat else "stop", "below_bar" if can_repeat else "below_bar_after_repeats",
+                   facts, detail)
 
 
 @logged("gate", "gate2_validate")
-def gate2(review: InvestorReview, *, locked: dict, recorded_hash: str, result: float, mocked: bool,
+def gate2(review: InvestorReview, *, locked: LockedTargets, result: float, mocked: bool,
           repeats: int, fatal_answered: bool, alternative_supported: bool, t: dict) -> GateResult:
-    if lock_hash(locked) != recorded_hash:
-        raise ThresholdTamperError("locked targets changed after locking; the result is rejected")
+    targets = locked.verify("Gate 2 targets")
     g = t["gate2"]
-    target = float(locked["target"])
+    target = float(targets["target"])
     ratio = result / target if target else 0.0
     fatal = [r.assumption for r in review.risks if r.fatal]
-    detail = {"target": target, "result": result, "ratio": round(ratio, 3), "metric": locked.get("metric"),
+    detail = {"target": target, "result": result, "ratio": round(ratio, 3), "metric": targets.get("metric"),
               "fatal_risks": fatal}
+    facts = {"target": target, "result": result, "ratio": ratio}
     if fatal and not fatal_answered:
-        return GateResult(gate=2, outcome="stop", mocked_evidence=mocked, details=detail,
-                          reasons=[f"There's a risk that could sink the business, and it hasn't been answered yet: {fatal[0]}"])
+        return _result(2, "stop", "fatal_risk_unanswered", {"risk": fatal[0]}, detail, mocked)
     if ratio >= g["go_ratio"]:
-        return GateResult(gate=2, outcome="go", mocked_evidence=mocked, details=detail,
-                          reasons=[f"The demand test reached {result:g}, which is {ratio:.0%} of the target of {target:g} set in advance."])
+        return _result(2, "go", "target_met", facts, detail, mocked)
     if ratio >= g["repeat_ratio"]:
-        if repeats < 1:
-            return GateResult(gate=2, outcome="repeat", mocked_evidence=mocked, details=detail,
-                              reasons=[f"The demand test reached {result:g}, which is {ratio:.0%} of the target of {target:g}. That's "
-                                       "close, so it's worth running the test once more."])
-        return GateResult(gate=2, outcome="pivot" if alternative_supported else "stop", mocked_evidence=mocked,
-                          details=detail, reasons=[f"After a second try the test still only reached {ratio:.0%} of the target."])
+        if repeats < max_repeats(t, 2):
+            return _result(2, "repeat", "close_to_target", facts, detail, mocked)
+        return _result(2, "pivot" if alternative_supported else "stop", "close_after_retry", facts, detail, mocked)
     if alternative_supported:
-        return GateResult(gate=2, outcome="pivot", mocked_evidence=mocked, details=detail, reasons=[
-            f"The demand test reached {result:g}, only {ratio:.0%} of the target of {target:g}. But the research "
-            "points to a different customer group that may want it more."])
-    return GateResult(gate=2, outcome="stop", mocked_evidence=mocked, details=detail, reasons=[
-        f"The demand test reached {result:g}, only {ratio:.0%} of the target of {target:g} set in advance: less "
-        "than half. It's better to stop or change direction than to move the goalposts."])
+        return _result(2, "pivot", "far_below_target_alternative", facts, detail, mocked)
+    return _result(2, "stop", "far_below_target", facts, detail, mocked)
 
 
 @logged("gate", "gate3_build")
-def gate3(*, tests_passed: int, tests_total: int, loops_used: int, repeated: bool,
+def gate3(*, tests_passed: int, tests_total: int, loops_used: int, repeats: int,
           promise_unmeetable: bool, t: dict) -> GateResult:
     detail = {"passed": tests_passed, "total": tests_total, "loops": loops_used}
+    facts = dict(detail)
     if promise_unmeetable:
-        return GateResult(gate=3, outcome="pivot", details=detail,
-                          reasons=["The product as planned can't deliver what the landing page promises with the formats the team can build."])
+        return _result(3, "pivot", "promise_unmeetable", facts, detail)
     if tests_total and tests_passed == tests_total:
-        return GateResult(gate=3, outcome="go", details=detail,
-                          reasons=[f"The product passes all {tests_total} quality checks (after {loops_used} build round(s))."])
-    if not repeated:
-        return GateResult(gate=3, outcome="repeat", details=detail, reasons=[
-            f"{tests_total - tests_passed} of {tests_total} quality checks still fail after {loops_used} build rounds. "
-            "Trying once more with a smaller first version usually fixes this."])
-    return GateResult(gate=3, outcome="stop", details=detail,
-                      reasons=[f"Even after a smaller retry, only {tests_passed} of {tests_total} quality checks pass."])
+        return _result(3, "go", "all_tests_pass", facts, detail)
+    if repeats < max_repeats(t, 3):
+        return _result(3, "repeat", "tests_failing", facts, detail)
+    return _result(3, "stop", "tests_failing_after_repeats", facts, detail)
 
 
 @logged("gate", "gate4_commercial")
 def gate4(*, violations: list[str], price: float, price_range: tuple[float, float] | None,
           price_justified: bool, t: dict) -> GateResult:
     detail = {"violations": violations, "price": price, "sourced_range": price_range}
+    facts = {"violations": violations, "price": price, "range": price_range}
     if violations:
-        return GateResult(gate=4, outcome="repeat", details=detail, reasons=[
-            f"{labels.plural(len(violations), 'wording problem')} still need fixing before launch: "
-            + "; ".join(labels.violation_text(v) for v in violations[:3]) + "."])
+        return _result(4, "repeat", "wording_violations", facts, detail)
     if price_range and not (price_range[0] <= price <= price_range[1]) and not price_justified:
-        return GateResult(gate=4, outcome="repeat", details=detail, reasons=[
-            f"The price of ${price:g} is outside what similar products charge (${price_range[0]:g} to "
-            f"${price_range[1]:g}), and there's no clear reason why."])
-    reason = (f"The texts are clean, and the price of ${price:g} is in line with similar products "
-              f"(${price_range[0]:g} to ${price_range[1]:g})." if price_range else
-              "The texts are clean. The team couldn't find competitor prices, so the price is a reasoned guess (ASSUMPTION).")
-    return GateResult(gate=4, outcome="go", details=detail, reasons=[reason])
+        return _result(4, "repeat", "price_outside_range", facts, detail)
+    return _result(4, "go", "clean_price_sourced" if price_range else "clean_price_assumed", facts, detail)
 
 
 @logged("gate", "gate5_launch")
@@ -171,39 +171,28 @@ def gate5(*, items: list[dict], delivery_tests_passed: bool, withdrawn: bool, t:
     detail = {"published": len(approved), "rejected": len(rejected), "pending": len(pending),
               "delivery_tests_passed": delivery_tests_passed}
     if withdrawn:
-        return GateResult(gate=5, outcome="stop", details=detail, reasons=["You withdrew the launch."])
+        return _result(5, "stop", "launch_withdrawn", {}, detail)
     if pending or rejected or not delivery_tests_passed:
-        why = []
-        if pending:
-            why.append(f"{len(pending)} item(s) still waiting for your approval")
-        if rejected:
-            why.append(f"{len(rejected)} item(s) you asked to change need revising")
-        if not delivery_tests_passed:
-            why.append("the practice sale, delivery or refund checks didn't all pass")
-        return GateResult(gate=5, outcome="repeat", details=detail, reasons=[("; ".join(why) + ".").capitalize()])
-    return GateResult(gate=5, outcome="go", mocked_evidence=True, details=detail, reasons=[
-        f"All {len(approved)} item(s) you approved were recorded (publishing MOCKED: nothing went online), and the "
-        "practice sale, delivery and refund all worked (payments MOCKED)."])
+        return _result(5, "repeat", "launch_not_ready", dict(detail), detail)
+    return _result(5, "go", "launch_ready", dict(detail), detail, mocked=True)
 
 
 @logged("gate", "gate6_operate")
-def gate6(*, metrics: dict, targets: dict, memo_passes: bool, alternative_supported: bool, t: dict,
+def gate6(*, metrics: dict, locked: LockedTargets, memo_passes: bool, alternative_supported: bool, t: dict,
           mocked: bool = True) -> GateResult:
+    targets = locked.verify("Gate 6 targets")
     misses = []
     if metrics.get("conversion", 0) < targets["min_conversion"]:
-        misses.append(f"only {metrics.get('conversion', 0):.1%} of visitors bought (target {targets['min_conversion']:.1%})")
+        misses.append({"kind": "conversion", "have": metrics.get("conversion", 0), "need": targets["min_conversion"]})
     if metrics.get("refund_rate", 0) > targets["max_refund_rate"]:
-        misses.append(f"{metrics.get('refund_rate', 0):.1%} of buyers asked for a refund (limit {targets['max_refund_rate']:.1%})")
-    detail = {"metrics": metrics, "targets": targets, "misses": misses}
+        misses.append({"kind": "refund_rate", "have": metrics.get("refund_rate", 0), "limit": targets["max_refund_rate"]})
+    miss_text = [labels.metric_miss(m) for m in misses]
+    detail = {"metrics": metrics, "targets": targets, "misses": miss_text}
+    facts = {"misses": misses, "mocked": mocked}
     if not memo_passes:
-        return GateResult(gate=6, outcome="repeat", mocked_evidence=mocked, details=detail,
-                          reasons=["The review of results didn't match the numbers, so it's being rewritten before you decide."])
+        return _result(6, "repeat", "memo_fails_check", facts, detail, mocked)
     if not misses:
-        return GateResult(gate=6, outcome="go", mocked_evidence=mocked, details=detail,
-                          reasons=["The results meet the targets set in advance" + (" (practice data, MOCKED)" if mocked else "")
-                                   + ": keep going."])
+        return _result(6, "go", "targets_met", facts, detail, mocked)
     if alternative_supported:
-        return GateResult(gate=6, outcome="pivot", mocked_evidence=mocked, details=detail,
-                          reasons=["The results miss the targets (" + "; ".join(misses) + "), but the research points to a promising alternative."])
-    return GateResult(gate=6, outcome="stop", mocked_evidence=mocked, details=detail,
-                      reasons=["The results miss the targets (" + "; ".join(misses) + "), and no alternative is backed by evidence."])
+        return _result(6, "pivot", "targets_missed_alternative", facts, detail, mocked)
+    return _result(6, "stop", "targets_missed", facts, detail, mocked)
