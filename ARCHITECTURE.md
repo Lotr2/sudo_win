@@ -255,3 +255,4 @@ Agents: `agents/<role>.py`. Every file: [code map](docs/architecture-details.md#
 ## More detail
 
 [docs/architecture-details.md](docs/architecture-details.md) has the [agentic skills](docs/architecture-details.md#agentic-skills) (research loop, evidence grading, agreement, shortlist, memory, fact-check, self-review), [safety and founder control](docs/architecture-details.md#safety-and-founder-control) (where the Policy Guard runs, and what enforces each thing the system never does), [model routing](docs/architecture-details.md#model-routing) (which model does what; a checker never runs on the model that wrote the work), every step of every phase with its own diagram, the design patterns and code map, the founder conversation (seven kinds of turn, how blocking questions are chosen by code), and 18 design decisions with what was rejected and why. [docs/overview.md](docs/overview.md) is a one-page summary with stress tests.
+
