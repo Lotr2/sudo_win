@@ -112,6 +112,7 @@ def p3_build(ctx: Context, answer) -> Next:
     d.build = {"dir": str(out), "form": form, "loops": loop, "report": {k: v for k, v in report.items() if k != "output"},
                "content": previous, "review": review}
     _write_test_report(ctx, report, loop)
+    _write_product(ctx)
     return Next("p3_docs")
 
 
@@ -171,6 +172,26 @@ def _write_spec(ctx: Context) -> None:
         md += ["- A Calculate button and a result area", "- No external resources, network calls or eval"]
     md += ["- No income promises, fake urgency or testimonials"]
     ctx.store.write_output("phase3_step1_spec.md", "\n".join(md) + "\n")
+
+
+def _write_product(ctx: Context) -> None:
+    """The built product itself, as the founder would receive it, so outputs/ holds the MVP and not only its plan
+    and test report: a guide as is, a template pack as its index followed by every template, a web tool as
+    its HTML page."""
+    out = ctx.store.dir / "product"
+    form = ctx.dossier.spec.product_form
+    if form == "web_tool" and (out / "index.html").exists():
+        ctx.store.write_output("phase3_step2_product.html", (out / "index.html").read_text())
+        return
+    parts = []
+    if form == "guide" and (out / "guide.md").exists():
+        parts.append((out / "guide.md").read_text().strip())
+    elif form == "template_pack" and (out / "index.md").exists():
+        parts.append((out / "index.md").read_text().strip())
+        for f in sorted((out / "templates").glob("*.md")):
+            parts.append(f"---\n\n<!-- templates/{f.name} -->\n\n" + f.read_text().strip())
+    if parts:
+        ctx.store.write_output("phase3_step2_product.md", "\n\n".join(parts) + "\n")
 
 
 def _write_test_report(ctx: Context, report: dict, loops: int) -> None:

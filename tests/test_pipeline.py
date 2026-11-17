@@ -331,3 +331,21 @@ def test_template_pack_gets_every_template_even_when_the_model_returns_one_at_a_
     report = rt.dossier.build["report"]
     assert p["recommended"] == "go", (p["reasons"], report.get("failures"))
     assert len(list((rt.ctx.store.dir / "product" / "templates").glob("*.md"))) == rt.dossier.spec.item_count
+    exported = (rt.ctx.store.outputs / "phase3_step2_product.md").read_text()
+    assert exported.count("<!-- templates/") == rt.dossier.spec.item_count     # every template is in outputs/
+
+
+# ---- the built product itself is part of the outputs ----
+
+def test_built_product_is_written_to_outputs(make_runtime):
+    """Gap: the MVP lived only under runs/<id>/product/ (git-ignored), so outputs/ held its spec, test report
+    and user guide but never the product."""
+    from conftest import drive
+    rt = make_runtime()
+    drive(rt, stop_at_gate=3)
+    out = rt.ctx.store.outputs / "phase3_step2_product.md"
+    assert out.exists(), sorted(p.name for p in rt.ctx.store.outputs.iterdir())
+    text = out.read_text()
+    product = (rt.ctx.store.dir / "product" / "guide.md").read_text()
+    assert product.strip().splitlines()[0] in text           # the real built file, not a summary of it
+    assert "MOCKED" not in text.splitlines()[0]
