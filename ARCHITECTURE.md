@@ -516,12 +516,12 @@ Everything below is implemented and covered by the smoke tests in `tests/`, whic
 | Model router, Ollama / llama.cpp + Gemini clients, free-tier rate limiter, `venture doctor` | Working | `router.py`, `llm_clients.py`, `rate_limit.py` |
 | Phase 1 Discover (all steps, Gate 1) | Working | `departments/discover.py`, `scoring.py`, `agents/brief_parser.py`, `agents/opportunity_scout.py`, `agents/market_researcher.py`, `agents/competitor_analyst.py`, `agents/mom_test_writer.py` |
 | Customer interviews | **STUBBED**: the script is generated; the founder runs real interviews and pastes notes; no simulated personas are offered | `agents/mom_test_writer.py` |
-| Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-up counts founder-entered, labelled **MOCKED** unless real | `departments/validate.py`, `agents/canvas_builder.py`, `agents/skeptical_investor.py`, `agents/experiment_designer.py`, `agents/landing_copywriter.py` |
+| Phase 2 Validate (all steps, Gate 2) | Working; landing-page publishing **MOCKED**; sign-up counts founder-entered: founder-reported in a real project, **MOCKED** in a practice run | `departments/validate.py`, `agents/canvas_builder.py`, `agents/skeptical_investor.py`, `agents/experiment_designer.py`, `agents/landing_copywriter.py` |
 | Phase 3 Build (all steps, Gate 3) | Working for the three templates; web-tool browser behaviour **STUBBED** (structure and safety tested statically) | `departments/build.py`, `templates/`, `qa.py`, `agents/product_manager.py`, `agents/builder.py`, `agents/docs_writer.py` |
 | Phase 4 Commercial setup | Working; legal review **STUBBED** (drafts marked not legal advice) | `departments/commercial.py`, `agents/pricing_analyst.py`, `agents/policy_drafter.py`, `policy_guard.py` |
 | Phase 5 Launch | Working; publishing **MOCKED** | `departments/launch.py`, `agents/launch_writers.py`, `approval.py` |
 | Sale to cash | Working against **MOCKED** payment events | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py`, `events.py` |
-| Phase 6 Operate and learn | Working; event log and reply sending **MOCKED** | `departments/operate.py`, `metrics.py`, `agents/support_agent.py`, `agents/pivot_memo_writer.py`, `agents/critic.py` |
+| Phase 6 Operate and learn | Working; activity founder-entered (founder-reported in a real project, **MOCKED** in a practice run); reply sending **MOCKED** | `departments/operate.py`, `metrics.py`, `agents/support_agent.py`, `agents/pivot_memo_writer.py`, `agents/critic.py` |
 | Gates, approval, policy guard, gate reporter | Working | `gates.py`, `approval.py`, `policy_guard.py`, `agents/gate_reporter.py` |
 | Founder conversation (intake, read-back, kickoffs, clarifying questions, gate walk-through, ask-anything) | Working | `agents/founder_liaison.py`, `clarifier.py`, `assumptions.py`, `runtime.py` |
 | Evidence and search | Working (SearXNG, self-hosted, with engine fallback) | `ledger.py`, `tools/` |
@@ -530,6 +530,7 @@ Everything below is implemented and covered by the smoke tests in `tests/`, whic
 | Evals (8 briefs, expected outcomes, readability checks) | Working | `evals/` |
 | Web UI and CLI | Working | `ui/`, `cli.py`, `labels.py` |
 | Founder decisions in the committed demo run | **MOCKED** (simulated founder, labelled in every log entry) | `scripts/simulate_founder.py` |
+| Real or practice projects | Working: chosen at the start; every log entry carries `project`, a person's decisions carry `real_founder: true`, and results are labelled founder-reported or MOCKED accordingly | `runtime.py`, `decision_log.py` |
 
 ## Roadmap
 

@@ -7,7 +7,8 @@ from .decision_log import log_action
 from .events import EventStore
 
 
-def compute(store: EventStore) -> dict:
+def compute(store: EventStore, label: str = "MOCKED") -> dict:
+    """label: "MOCKED" for practice numbers, "founder-reported" for real numbers the founder entered."""
     act = store.rows("SELECT kind, SUM(value) AS v, COUNT(*) AS n FROM activity GROUP BY kind")
     by = {a["kind"]: a for a in act}
     visitors = int(by.get("visitors", {}).get("v") or 0)
@@ -22,7 +23,7 @@ def compute(store: EventStore) -> dict:
         "conversion": round(orders / visitors, 4) if visitors else 0.0,
         "refund_rate": round(refunds / orders, 4) if orders else 0.0,
         "tickets_per_order": round(tickets / orders, 4) if orders else 0.0,
-        "label": "MOCKED",
+        "label": label,
     }
     log_action("metrics_engine", "compute_metrics", **{k: v for k, v in m.items() if k != "label"})
     return m

@@ -27,22 +27,27 @@ def p6_start(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     d.phase = 6
     from .common import kickoff
+    real = d.data_mode == "real"
     kickoff(ctx, "Operate and learn: compute metrics from the event log, answer support from the docs, "
                  "write a persevere-or-pivot memo checked by a critic",
-            ["the activity entered is MOCKED", "targets are locked before the data"])
+            ["the activity entered is " + ("your real numbers" if real else "practice data (MOCKED)"),
+             "targets are locked before the data"])
     d.gate6_targets = dict(ctx.t["gate6"])
     d.gate6_hash = gates.lock_hash(d.gate6_targets)
     log_action("threshold_lock", "lock_gate6_targets", targets=d.gate6_targets, hash=d.gate6_hash)
     ctx.say(f"Time to review how things went. The goals were set before any data: at least "
             f"{d.gate6_targets['min_conversion']:.0%} of visitors buy, and at most "
             f"{d.gate6_targets['max_refund_rate']:.0%} of buyers ask for a refund. Enter the numbers for the period "
-            "(in this version they're practice numbers, labelled MOCKED), plus a few questions buyers asked, one "
-            "per line.", kind="question")
-    return Ask("mocked_input", {"question": "How did the launch go? (practice numbers, MOCKED)", "fields": [
-        {"name": "visitors", "label": "Store visitors (MOCKED)", "type": "number"},
-        {"name": "orders", "label": "Orders (MOCKED)", "type": "number"},
-        {"name": "refunds", "label": "Refunds (MOCKED)", "type": "number"},
-        {"name": "tickets", "label": "Support questions, one per line (MOCKED)", "type": "text"}]},
+            "from where you sell, plus a few questions buyers asked, one per line. Real numbers are recorded as "
+            "founder-reported; if you're only trying the app out, mark them as practice numbers (MOCKED).",
+            kind="question")
+    return Ask("mocked_input", {"question": "How did the launch go?", "fields": [
+        {"name": "visitors", "label": "Store visitors", "type": "number"},
+        {"name": "orders", "label": "Orders", "type": "number"},
+        {"name": "refunds", "label": "Refunds", "type": "number"},
+        {"name": "tickets", "label": "Support questions, one per line", "type": "text"},
+        {"name": "mocked", "label": "Are these practice numbers (MOCKED) rather than real ones?", "type": "bool",
+         "default": not real}]},
                resume_to="p6_events")
 
 
@@ -54,12 +59,17 @@ def p6_events(ctx: Context, answer) -> Next:
     tickets = [t.strip() for t in str(answer.get("tickets") or "").splitlines() if t.strip()][:5]
     for t in tickets:
         store.add_activity("ticket", 1, t)
-    log_action("founder", "enter_mocked_activity", approved_by="founder", label="MOCKED",
+    mocked = bool(answer.get("mocked", d.data_mode != "real"))
+    label = "MOCKED" if mocked else "founder-reported"
+    log_action("founder", "enter_activity", approved_by="founder", label=label,
                visitors=answer.get("visitors"), orders=answer.get("orders"), refunds=answer.get("refunds"))
-    d.metrics = metrics.compute(store)
+    d.metrics = metrics.compute(store, label)
     t = d.gate6_targets
-    md = ["# Phase 6 · Step 1: Results (practice data, MOCKED)", "", "Calculated by code from the activity entered for "
-          "the review period. Every number below is practice data (MOCKED), not real sales.", "",
+    md = ["# Phase 6 · Step 1: Results " + ("(practice data, MOCKED)" if mocked else "(your real numbers)"), "",
+          "Calculated by code from the activity entered for the review period. "
+          + ("Every number below is practice data (MOCKED), not real sales." if mocked else
+             "The numbers were entered by the founder as real (founder-reported); the app does not collect them "
+             "itself, and payments in this app remain MOCKED."), "",
           "| Measure | Value | Goal |", "|---|---|---|",
           f"| Visitors | {d.metrics['visitors']} | |", f"| Orders | {d.metrics['orders']} | |",
           f"| Visitors who bought | {d.metrics['conversion']:.1%} | at least {t['min_conversion']:.0%} |",
@@ -158,10 +168,12 @@ def p6_memo(ctx: Context, answer) -> Next:
     review = None
     memo = None
     for _ in range(ctx.t["limits"]["memo_revisions"] + 1):
-        memo = pivot_memo_writer.run(ctx, {"metrics": m, "targets": d.gate6_targets, "label": "MOCKED data",
+        data_label = ("MOCKED (practice data entered by the founder)" if d.metrics.get("label") == "MOCKED"
+                      else "founder-reported (real numbers entered by the founder)")
+        memo = pivot_memo_writer.run(ctx, {"metrics": m, "targets": d.gate6_targets, "label": data_label,
                                            "ticket_themes": [s["ticket"] for s in d.support],
                                            "canvas_key_metrics": d.canvas.key_metrics.text, "critic_gaps": feedback})
-        review = critic.run(ctx, memo.model_dump(), m, d.gate6_targets, "MOCKED (practice data entered by the founder)")
+        review = critic.run(ctx, memo.model_dump(), m, d.gate6_targets, data_label)
         if review.rubric_score >= 3 and all(c.matches_data for c in review.checks):
             break
         feedback = review.gaps + [c.comment for c in review.checks if not c.matches_data]
@@ -169,7 +181,8 @@ def p6_memo(ctx: Context, answer) -> Next:
     d.memo = {"memo": memo.model_dump(), "review": review.model_dump(), "passes": passes}
     rec = {"persevere": "Keep going", "pivot": "Change direction", "stop": "Stop here"}.get(memo.recommendation,
                                                                                             memo.recommendation)
-    md = ["# Phase 6 · Step 3: Keep going or change course? (practice data, MOCKED)", "",
+    md = ["# Phase 6 · Step 3: Keep going or change course? "
+          + ("(practice data, MOCKED)" if d.metrics.get("label") == "MOCKED" else "(your real numbers)"), "",
           f"**The review recommends: {rec}**", "", memo.body, "",
           "## Fact-check", "", "A second model checked every statement against the numbers and the goals:", ""]
     for i, c in enumerate(memo.claims):
@@ -187,13 +200,15 @@ def p6_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     if gates.lock_hash(d.gate6_targets) != d.gate6_hash:
         raise gates.ThresholdTamperError("Gate 6 targets changed after locking")
+    mocked = d.metrics.get("label") == "MOCKED"
     res = gates.gate6(metrics=d.metrics, targets=d.gate6_targets, memo_passes=d.memo["passes"],
-                      alternative_supported=bool(d.lessons), t=ctx.t)
+                      alternative_supported=bool(d.lessons), t=ctx.t, mocked=mocked)
     memo = {"summary": f"The team recommends: {labels.outcome_name(res.label, 6)}.",
             "explanation": "This check compares the review period's results with the goals set before any data "
-                           "existed, and only counts the written review if a second model's fact-check passes. The "
-                           "numbers are practice data (MOCKED), so this shows how the review works; it is not real "
-                           "proof that the product sells.",
+                           "existed, and only counts the written review if a second model's fact-check passes. "
+                           + ("The numbers are practice data (MOCKED), so this shows how the review works; it is not "
+                              "real proof that the product sells." if mocked else
+                              "The numbers are the founder's own (founder-reported)."),
             "what_would_change_it": ["Run the product with real visitors and buyers, then enter the real numbers",
                                      "Collect real support questions to see where buyers get stuck"]}
     md = gate_markdown(ctx, res, memo, "Is it working, and what next?", "gate6")

@@ -22,7 +22,9 @@ Open **http://localhost:8000**, describe your idea (or press "Fill in an example
 | Use Ollama on another machine | set `OLLAMA_HOST=http://<machine>:11434` in `.env`, then `docker compose -f docker-compose.yml -f compose.remote-ollama.yaml up` |
 | Run without Docker | install [uv](https://docs.astral.sh/uv/), point `OLLAMA_HOST` (or `OSS_BACKEND=llamacpp`) and `SEARXNG_URL` at your services in `.env`, then `uv run venture doctor` and `uv run venture serve` |
 | Keep a live demo short | `RUN_MODE=demo`: time budget per step, 5 sources per version, 3 intake questions, 30-second question timeouts |
-| Check that it works | `uv run pytest` (114 smoke tests on a fake model, no model needed); `uv run python evals/run_evals.py` (8 briefs on the real models) |
+| Start a real project or a practice run | the web form asks; in the terminal, `venture run` is real and `venture run --practice` is practice. Every log entry carries `"project": "real"` or `"practice"`, and a person's decisions carry `real_founder: true` |
+| Add a finished real project to the repository | `venture export RUN_ID --tag real --append` (adds its outputs as `phase<N>_step<M>_real_…` and its log entries to `decision_log.json`) |
+| Check that it works | `uv run pytest` (117 smoke tests on a fake model, no model needed); `uv run python evals/run_evals.py` (8 briefs on the real models) |
 
 ## What works and what is mocked
 
@@ -38,7 +40,8 @@ Open **http://localhost:8000**, describe your idea (or press "Fill in an example
 | 1 Discover | Brief parsing, idea shortlist, research (SearXNG search, page reading, Evidence Ledger), Scorer with a points breakdown per version, Gate 1, interview script | Working |
 | 1 Discover | Customer interviews | **STUBBED**: the founder runs them and pastes notes; interviews are never simulated |
 | 2 Validate | Lean Canvas debate, experiment design, threshold lock with hash, landing page (founder's brand, three layouts), Gate 2 | Working |
-| 2 Validate | Publishing the landing page; sign-up counts | **MOCKED**: no hosting; the count is entered by the founder and labelled MOCKED unless real |
+| 2 Validate | Publishing the landing page | **MOCKED**: no hosting; the founder hosts the page |
+| 2 Validate | Sign-up counts | Entered by the founder: recorded as founder-reported in a real project, **MOCKED** when marked as practice numbers |
 | 3 Build | Product plan checked per product type, three templates (guide, template pack, web tool) with acceptance tests, build–test loop in a no-network sandbox, self-review, user docs, Gate 3 | Working |
 | 3 Build | Web tool behaviour in a browser | **STUBBED**: structure and safety are tested; the founder tries the preview |
 | 4 Commercial setup | Pricing from sourced anchors, policy drafts, Compliance Linter, Gate 4 | Working |
@@ -47,7 +50,8 @@ Open **http://localhost:8000**, describe your idea (or press "Fill in an example
 | 5 Launch | Posting, publishing | **MOCKED**: a publish adapter logs the approved item; nothing goes online |
 | 5 Launch | Sale to cash: payment triggers delivery once, founder-approved refunds revoke access, reconciliation | Working, against **MOCKED** payment events (no provider, no sandbox, no keys) |
 | 6 Operate | Metrics Engine, Support Agent (answers only from the user docs), review memo with a fact-checking critic, Gate 6 | Working |
-| 6 Operate | Event log (visitors, orders, refunds, tickets) and sending replies | **MOCKED**: entered by the founder and labelled MOCKED |
+| 6 Operate | Activity (visitors, orders, refunds, questions) | Entered by the founder: founder-reported in a real project, **MOCKED** in a practice run; the app never collects it itself |
+| 6 Operate | Sending support replies | **MOCKED**: approved replies are recorded, not sent |
 
 ## Architecture
 

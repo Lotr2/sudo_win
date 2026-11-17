@@ -118,7 +118,7 @@ def fill_form(rt, p: dict) -> None:
 
 def run(brief_path: str, follow: bool, max_steps: int = 400) -> Runtime:
     settings = load_settings(dict(os.environ))
-    rt = Runtime.new(settings, Path(brief_path).read_text())
+    rt = Runtime.new(settings, Path(brief_path).read_text(), data_mode="practice")   # a script's numbers are MOCKED
     say(f"Run {rt.run_id} started ({settings.run_mode} mode) from {brief_path}")
     repeats: dict[int, int] = {}
     p = rt.advance()

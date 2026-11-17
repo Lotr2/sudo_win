@@ -57,6 +57,13 @@
   @media (max-width:900px) { .home { grid-template-columns:1fr; } }
   .twocol { display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
   @media (max-width:600px) { .twocol { grid-template-columns:1fr; } }
+  .modebox { margin-top:16px; border:1px solid var(--line); border-radius:10px; padding:10px 14px; }
+  .modebox legend { font-weight:600; padding:0 6px; }
+  .radio { display:flex; gap:10px; align-items:flex-start; font-weight:400; margin:8px 0; }
+  .radio input { width:auto; margin-top:5px; }
+  .modetag { display:inline-block; font-size:12px; font-weight:700; padding:2px 9px; border-radius:99px; margin-left:8px; vertical-align:middle; }
+  .modetag.real { background:var(--goodbg); color:var(--good); }
+  .modetag.practice { background:var(--warnbg); color:var(--warn); }
   .brandbox { margin-top:16px; border:1px solid var(--line); border-radius:10px; padding:10px 14px; }
   .brandbox summary { cursor:pointer; font-weight:600; }
   .brandbox summary small { font-weight:400; color:var(--muted); }
@@ -202,6 +209,12 @@
       </div>
       <label for="f-values">What matters to you <small>(optional)</small></label>
       <input id="f-values" placeholder="e.g. honest pricing, no pushy marketing">
+      <fieldset class="modebox">
+        <legend>What kind of project is this?</legend>
+        <label class="radio"><input type="radio" name="dmode" value="real" checked> <span><b>A real project.</b> The results you enter later (sign-ups, sales) are your own numbers and are recorded as real.</span></label>
+        <label class="radio"><input type="radio" name="dmode" value="practice"> <span><b>Just trying it out.</b> Results are practice numbers, labelled MOCKED, and never count as proof.</span></label>
+        <p class="muted" style="margin:6px 0 0">Either way, payments and publishing stay simulated (MOCKED): no money moves and nothing goes online.</p>
+      </fieldset>
       <details class="brandbox">
         <summary>Your brand <small>(optional: used on your landing page)</small></summary>
         <div class="twocol">
@@ -361,7 +374,8 @@ function brandInput() {
 $("go").onclick = async () => {
   if ($("f-idea").value.trim().length < 15) { toast("Please describe your idea in a sentence or two first."); $("f-idea").focus(); return; }
   $("go").disabled = true; $("go").textContent = "Starting…";
-  try { const r = await api("/api/runs", {brief: composeBrief(), brand: brandInput()}); location.search = "?run=" + r.run_id; }
+  const dmode = document.querySelector('input[name="dmode"]:checked')?.value || "real";
+  try { const r = await api("/api/runs", {brief: composeBrief(), brand: brandInput(), data_mode: dmode}); location.search = "?run=" + r.run_id; }
   catch { $("go").disabled = false; $("go").textContent = "Start my project"; }
 };
 $("homeBtn").onclick = () => location.href = "/";
@@ -476,9 +490,9 @@ function renderTurnBody(st) {
     return h;
   }
   if (k === "mocked_input") return `${head}<p class="question">${esc(p.question)}</p>
-      <p class="muted">These numbers are labelled MOCKED unless you say they are real.</p>` +
+      <p class="muted">${st.data_mode === "practice" ? "Practice run: these numbers are labelled MOCKED unless you say they are real." : "Real project: these are recorded as your own (founder-reported) numbers unless you mark them as practice."}</p>` +
       p.fields.map(f => `<label>${esc(f.label)}</label>` + (f.type === "text" ? `<textarea data-f="${esc(f.name)}" rows="3"></textarea>`
-        : f.type === "bool" ? `<select data-f="${esc(f.name)}"><option value="true">Practice numbers (MOCKED)</option><option value="false">Real numbers I collected</option></select>`
+        : f.type === "bool" ? `<select data-f="${esc(f.name)}"><option value="false" ${f.default ? "" : "selected"}>No: these are real numbers I collected</option><option value="true" ${f.default ? "selected" : ""}>Yes: practice numbers (MOCKED)</option></select>`
         : `<input data-f="${esc(f.name)}" type="number" min="0" step="any" inputmode="decimal">`)).join("") +
       `<div class="row"><button onclick="submitForm()">Submit</button></div>`;
   return `${head}<p>${esc(JSON.stringify(p))}</p>`;
@@ -552,7 +566,8 @@ async function refresh(force = false) {
   if (!RUN) return;
   let st; try { st = await api(`/api/runs/${RUN}`); } catch { return; }
   ST = st;
-  $("sub").textContent = `${STATUS[st.status] || human(st.status)} · stage ${st.phase} of 6${st.mode === "demo" ? " · quick demo mode" : ""}`;
+  $("sub").innerHTML = `${esc(STATUS[st.status] || human(st.status))} · stage ${st.phase} of 6${st.mode === "demo" ? " · quick demo mode" : ""}`
+    + (st.data_mode === "practice" ? `<span class="modetag practice">Practice run (results MOCKED)</span>` : `<span class="modetag real">Real project</span>`);
   $("stepper").innerHTML = stepper(st);
   const key = JSON.stringify([st.pending, st.busy, st.status, st.error, st.busy ? FEED.length : 0]);
   if (force || key !== lastTurnKey) { if (!document.activeElement || !$("turn").contains(document.activeElement) || force) { $("turn").innerHTML = renderTurn(st); lastTurnKey = key; } }

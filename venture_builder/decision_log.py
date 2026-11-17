@@ -28,6 +28,7 @@ class DecisionLog:
         self.path = Path(path) if path else None
         self._lock = threading.Lock()
         self._entries: list[dict] = self._load()
+        self.tags: dict = {}   # added to every entry, e.g. {"project": "real"}
 
     def _load(self) -> list[dict]:
         if self.path and self.path.exists():
@@ -56,11 +57,14 @@ class DecisionLog:
                 "cost": cost,
                 "approved_by": approved_by,
             }
+            entry.update(self.tags)
             entry.update({k: v for k, v in extra.items() if v is not None})
             if agent == "founder" or approved_by == "founder":
                 from .approval import simulation_enabled
                 if simulation_enabled():
                     entry["simulated_founder"] = True   # made by scripts/simulate_founder.py, not a person
+                else:
+                    entry["real_founder"] = True        # a person, through the web UI or the terminal
             self._entries.append(entry)
             if self.path:
                 self.path.parent.mkdir(parents=True, exist_ok=True)

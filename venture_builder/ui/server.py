@@ -57,6 +57,7 @@ class Handle:
 class BriefIn(BaseModel):
     brief: str
     brand: dict | None = None
+    data_mode: str = "real"
 
 
 class BrandIn(BaseModel):
@@ -156,7 +157,11 @@ def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | Non
             brand = clean_brand(body.brand) if body.brand else {}
         except ValueError as exc:
             raise HTTPException(400, str(exc)) from None
+        if body.data_mode not in {"real", "practice"}:
+            raise HTTPException(400, "The project must be real or practice.")
         rt = new_runtime(body.brief)
+        if body.data_mode != rt.dossier.data_mode:
+            rt.set_data_mode(body.data_mode)
         if brand:
             rt.set_brand(brand)
         h = handles[rt.run_id] = Handle(rt)

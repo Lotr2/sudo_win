@@ -53,16 +53,21 @@ class Runtime:
         self.ctx = Context(settings, router, store, search, fetch)
         CONTEXTS[run_id] = self.ctx
         self.graph = build_graph(sqlite_checkpointer(str(store.path("checkpoints.db"))))
+        if self.ctx.dossier is not None:
+            store.log.tags = {"project": self.ctx.dossier.data_mode}
         self.config = {"configurable": {"thread_id": run_id}, "recursion_limit": 1000}
 
     @classmethod
-    def new(cls, settings: Settings, brief: str, **kw) -> "Runtime":
+    def new(cls, settings: Settings, brief: str, data_mode: str = "real", **kw) -> "Runtime":
         run_id = new_run_id()
         store = RunStore(settings.runs_dir, run_id)
-        store.save(Dossier(run_id=run_id, brief=brief.strip()))
+        store.save(Dossier(run_id=run_id, brief=brief.strip(), data_mode=data_mode))
         store.progress(f"run {run_id} created (mode {settings.run_mode}"
                        f"{', single-model' if settings.single_model else ''})")
-        return cls(settings, run_id, **kw)
+        rt = cls(settings, run_id, **kw)
+        with rt.ctx.bound():
+            log_action("orchestrator", "start_project", mode=data_mode)
+        return rt
 
     # ---- graph driving ----
     @property
@@ -79,6 +84,18 @@ class Runtime:
         else:
             self.graph.invoke(Command(resume=NO_ANSWER if resume is None else resume), self.config)
         return self.pending()
+
+    def set_data_mode(self, mode: str) -> str:
+        """"real": the founder will enter real results (labelled founder-reported); "practice": results are
+        practice numbers (labelled MOCKED). Payments and publishing are MOCKED in both."""
+        if mode not in {"real", "practice"}:
+            raise ValueError("project mode must be real or practice")
+        with self.ctx.bound():
+            self.dossier.data_mode = mode
+            self.ctx.save()
+            self.ctx.store.log.tags = {"project": mode}
+            log_action("orchestrator", "set_project_mode", mode=mode)
+        return mode
 
     def set_brand(self, brand: dict) -> dict:
         """The founder's brand for the landing page (name, colour, logo). Validated; the logo is never logged."""
@@ -293,6 +310,7 @@ class Runtime:
         return {
             "run_id": self.run_id, "phase": d.phase, "status": d.status if not self.finished() or d.status != "running" else "finished",
             "mode": self.settings.run_mode, "single_model": self.settings.single_model,
+            "data_mode": self.dossier.data_mode,
             "pending": self.pending(),
             "gates": {n: {"outcome": g.outcome, "label": g.label, "reasons": g.reasons} for n, g in d.gates.items()},
             "outbox": [{k: v for k, v in i.items() if k != "content"} | {"hash": i["content_hash"].removeprefix("sha256:")[:12]}

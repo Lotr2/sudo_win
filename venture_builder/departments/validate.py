@@ -192,20 +192,22 @@ def p2_publish(ctx: Context, answer) -> Next:
 
 def p2_signups(ctx: Context, answer) -> Ask:
     t = ctx.dossier.locked_targets
-    ctx.say(f"When your {t['window_days']}-day test is done, enter how many {t['metric']} you got. If you're just "
-            "trying the app out, you can enter a practice number: it's labelled MOCKED and never counts as real proof.",
-            kind="question")
+    real = ctx.dossier.data_mode == "real"
+    ctx.say(f"When your {t['window_days']}-day test is done, enter how many {t['metric']} you really got: it is "
+            "recorded as your own (founder-reported) result. If you're only trying the app out, mark it as a practice "
+            "number instead: it's labelled MOCKED and never counts as real proof.", kind="question")
     return Ask("mocked_input", {"question": f"How many {t['metric']} did you get?", "fields": [
         {"name": "result", "label": f"Number of {t['metric']}", "type": "number"},
         {"name": "mocked", "label": "Is this a practice number (MOCKED) rather than real sign-ups?", "type": "bool",
-         "default": True}]},
+         "default": not real}]},
                resume_to="p2_gate")
 
 
 def p2_gate(ctx: Context, answer) -> Ask:
     d = ctx.dossier
     if answer is not None:
-        d.signups = {"result": float(answer["result"]), "mocked": bool(answer.get("mocked", True))}
+        d.signups = {"result": float(answer["result"]),
+                     "mocked": bool(answer.get("mocked", d.data_mode != "real"))}
         etype = "mocked" if d.signups["mocked"] else "founder_reported"
         ctx.ledger.add(tool="founder_input_form", type=etype,
                        snippet=f"{d.locked_targets['metric']}: {d.signups['result']:g} ({etype})")

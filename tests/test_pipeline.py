@@ -171,3 +171,59 @@ def test_spec_must_fill_its_own_form_and_only_that():
     good = mixed.model_copy(update={"item_fields": ["When to use", "Template", "Example"]})
     check(good)
     assert normalise(good).sections == [] and normalise(good).item_fields == ["When to use", "Template", "Example"]
+
+
+def test_a_real_project_is_logged_and_labelled_as_real(make_runtime):
+    import json
+    from conftest import drive
+    rt = make_runtime()                                    # projects are real unless the founder says practice
+    real_numbers = {"result": 120, "mocked": False, "visitors": 1000, "orders": 40, "refunds": 1,
+                    "tickets": "How do I get access?\nI want a refund please"}
+    drive(rt, mocked=real_numbers)
+    d = rt.dossier
+    assert d.data_mode == "real" and d.signups["mocked"] is False and d.metrics["label"] == "founder-reported"
+    assert d.gates["6"].mocked_evidence is False and d.gates["2"].mocked_evidence is False
+    log = json.loads(rt.ctx.store.path("decision_log.json").read_text())
+    assert log[0]["action"] == "start_project" and log[0]["mode"] == "real"
+    assert all(e.get("project") == "real" for e in log)
+    founder = [e for e in log if e["agent"] == "founder" or e["approved_by"] == "founder"]
+    assert founder and all(e.get("real_founder") is True and "simulated_founder" not in e for e in founder)
+    metrics_doc = (rt.ctx.store.outputs / "phase6_step1_metrics.md").read_text()
+    assert "your real numbers" in metrics_doc and "practice data" not in metrics_doc.split("\n")[0]
+
+
+def test_real_project_forms_default_to_real_and_practice_to_mocked(make_runtime):
+    from conftest import confirm_gate, confirm_item
+    for mode, expected_default in (("real", False), ("practice", True)):
+        rt = make_runtime()
+        if mode == "practice":
+            rt.set_data_mode("practice")
+        p = rt.advance()
+        while p and p["kind"] != "mocked_input":
+            if p["kind"] == "readback":
+                rt.reply("yes")
+            elif p["kind"] in {"question", "notes"}:
+                rt.skip()
+            elif p["kind"] == "approval":
+                for it in p["items"]:
+                    if rt.ctx.outbox.get(it["id"])["status"] == "pending":
+                        rt.approve(it["id"], confirm_item(rt, it["id"]))
+            elif p["kind"] == "gate":
+                rt.decide_gate(p["recommended"] if p["recommended"] != "stop" else "go", confirm_gate(p),
+                               variant_id=p.get("suggested_variant"))
+            p = rt.pending()
+        field = next(f for f in p["fields"] if f["name"] == "mocked")
+        assert field["default"] is expected_default, mode
+
+
+def test_api_records_the_project_mode(settings, router):
+    from fastapi.testclient import TestClient
+    from fakes import FakeSearch, fake_fetch
+    from venture_builder.runtime import Runtime
+    from venture_builder.ui.server import create_app
+    c = TestClient(create_app(settings, runtime_factory=lambda b: Runtime.new(settings, b, router=router,
+                                                                                 search=FakeSearch(), fetch=fake_fetch)))
+    brief = "I'm a designer selling invoice templates; $200, 8 h/week."
+    assert c.post("/api/runs", json={"brief": brief, "data_mode": "pretend"}).status_code == 400
+    rid = c.post("/api/runs", json={"brief": brief, "data_mode": "practice"}).json()["run_id"]
+    assert Runtime(settings, rid).dossier.data_mode == "practice"

@@ -494,8 +494,9 @@ def interactive(rt) -> None:
                         _print(dim(f"  {f['label']} (empty line ends):"))
                         values[f["name"]] = "\n".join(iter(lambda: input("    "), ""))
                     elif f["type"] == "bool":
-                        a = _ask(f"{f['label']}: practice numbers (MOCKED)? [y/n]").lower()
-                        values[f["name"]] = a not in {"n", "no"}
+                        default = bool(f.get("default", True))
+                        a = _ask(f"{f['label']} [{'Y/n' if default else 'y/N'}]").lower()
+                        values[f["name"]] = default if not a else a in {"y", "yes"}
                     else:
                         while True:
                             a = _ask(f"{f['label']}:")
@@ -544,6 +545,8 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("run", help="start a new project: from a brief file, --idea TEXT, or by typing it")
     r.add_argument("brief", nargs="?", help="path to a brief file (Markdown or text)")
     r.add_argument("--idea", help="your idea as text instead of a file")
+    r.add_argument("--practice", action="store_true",
+                   help="just trying it out: results you enter are practice numbers (MOCKED); default is a real project")
     r.add_argument("--brand-name", help="your brand name, shown on the landing page")
     r.add_argument("--brand-color", help="your brand colour as #rrggbb")
     r.add_argument("--logo", help="your logo: a PNG, JPEG or WebP file under 100 KB")
@@ -632,9 +635,12 @@ def main(argv: list[str] | None = None) -> int:
             except ValueError as exc:
                 _print(yellow(f"  {exc}"))
                 return 1
-        rt = Runtime.new(settings, brief)
+        rt = Runtime.new(settings, brief, data_mode="practice" if args.practice else "real")
         if brand:
             rt.set_brand(brand)
+        _print(dim("  Real project: results you enter are recorded as your own (founder-reported) numbers."
+                   if not args.practice else
+                   "  Practice run: results you enter are labelled MOCKED and never count as real proof."))
         _print(green(f"\n  Project started.") + dim(f" Its ID is {rt.run_id}; continue it any time with: venture resume {rt.run_id}"))
         if args.once or not sys.stdin.isatty():
             render_pending(rt, work(rt, rt.advance))

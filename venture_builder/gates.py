@@ -187,7 +187,8 @@ def gate5(*, items: list[dict], delivery_tests_passed: bool, withdrawn: bool, t:
 
 
 @logged("gate", "gate6_operate")
-def gate6(*, metrics: dict, targets: dict, memo_passes: bool, alternative_supported: bool, t: dict) -> GateResult:
+def gate6(*, metrics: dict, targets: dict, memo_passes: bool, alternative_supported: bool, t: dict,
+          mocked: bool = True) -> GateResult:
     misses = []
     if metrics.get("conversion", 0) < targets["min_conversion"]:
         misses.append(f"only {metrics.get('conversion', 0):.1%} of visitors bought (target {targets['min_conversion']:.1%})")
@@ -195,13 +196,14 @@ def gate6(*, metrics: dict, targets: dict, memo_passes: bool, alternative_suppor
         misses.append(f"{metrics.get('refund_rate', 0):.1%} of buyers asked for a refund (limit {targets['max_refund_rate']:.1%})")
     detail = {"metrics": metrics, "targets": targets, "misses": misses}
     if not memo_passes:
-        return GateResult(gate=6, outcome="repeat", mocked_evidence=True, details=detail,
+        return GateResult(gate=6, outcome="repeat", mocked_evidence=mocked, details=detail,
                           reasons=["The review of results didn't match the numbers, so it's being rewritten before you decide."])
     if not misses:
-        return GateResult(gate=6, outcome="go", mocked_evidence=True, details=detail,
-                          reasons=["The results meet the targets set in advance (practice data, MOCKED): keep going."])
+        return GateResult(gate=6, outcome="go", mocked_evidence=mocked, details=detail,
+                          reasons=["The results meet the targets set in advance" + (" (practice data, MOCKED)" if mocked else "")
+                                   + ": keep going."])
     if alternative_supported:
-        return GateResult(gate=6, outcome="pivot", mocked_evidence=True, details=detail,
+        return GateResult(gate=6, outcome="pivot", mocked_evidence=mocked, details=detail,
                           reasons=["The results miss the targets (" + "; ".join(misses) + "), but the research points to a promising alternative."])
-    return GateResult(gate=6, outcome="stop", mocked_evidence=True, details=detail,
+    return GateResult(gate=6, outcome="stop", mocked_evidence=mocked, details=detail,
                       reasons=["The results miss the targets (" + "; ".join(misses) + "), and no alternative is backed by evidence."])
