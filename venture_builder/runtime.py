@@ -346,6 +346,10 @@ def export_run(settings: Settings, run_id: str, *, tag: str = "", clear: bool = 
     entries = json.loads(src.path("decision_log.json").read_text())
     for e in entries:
         e["run_id"] = run_id
+        e.setdefault("run_entry_id", e.get("id"))      # the entry's number within its own run
     existing = json.loads(log_path.read_text()) if (not clear and log_path.exists()) else []
-    log_path.write_text(json.dumps(existing + entries, indent=1))
+    combined = existing + entries
+    for i, e in enumerate(combined, 1):                 # ids stay unique across every run in the file
+        e["id"] = f"log_{i}"
+    log_path.write_text(json.dumps(combined, indent=1))
     return copied

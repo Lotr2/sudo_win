@@ -9,7 +9,8 @@
   "cost": 0,
   "approved_by": null,
   "subject": "brief",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_1"
  },
  {
   "id": "log_2",
@@ -26,7 +27,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_2"
  },
  {
   "id": "log_3",
@@ -43,7 +45,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_3"
  },
  {
   "id": "log_4",
@@ -61,7 +64,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_4"
  },
  {
   "id": "log_5",
@@ -80,7 +84,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_5"
  },
  {
   "id": "log_6",
@@ -98,7 +103,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_6"
  },
  {
   "id": "log_7",
@@ -146,7 +152,8 @@
     "fit": 1.0
    }
   },
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_7"
  },
  {
   "id": "log_8",
@@ -164,7 +171,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_8"
  },
  {
   "id": "log_9",
@@ -182,7 +190,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_9"
  },
  {
   "id": "log_10",
@@ -200,7 +209,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_10"
  },
  {
   "id": "log_11",
@@ -218,7 +228,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_11"
  },
  {
   "id": "log_12",
@@ -247,7 +258,8 @@
    "ev_5",
    "ev_22"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_12"
  },
  {
   "id": "log_13",
@@ -279,7 +291,8 @@
    "ev_25",
    "ev_26"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_13"
  },
  {
   "id": "log_14",
@@ -303,7 +316,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_14"
  },
  {
   "id": "log_15",
@@ -327,7 +341,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_15"
  },
  {
   "id": "log_16",
@@ -350,7 +365,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_16"
  },
  {
   "id": "log_17",
@@ -379,7 +395,8 @@
    "ev_19",
    "ev_27"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_17"
  },
  {
   "id": "log_18",
@@ -411,7 +428,8 @@
    "ev_28",
    "ev_29"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_18"
  },
  {
   "id": "log_19",
@@ -435,7 +453,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_19"
  },
  {
   "id": "log_20",
@@ -459,7 +478,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_20"
  },
  {
   "id": "log_21",
@@ -482,7 +502,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_21"
  },
  {
   "id": "log_22",
@@ -500,7 +521,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_22"
  },
  {
   "id": "log_23",
@@ -524,7 +546,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_23"
  },
  {
   "id": "log_24",
@@ -542,7 +565,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_24"
  },
  {
   "id": "log_25",
@@ -566,7 +590,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_25"
  },
  {
   "id": "log_26",
@@ -590,7 +615,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_26"
  },
  {
   "id": "log_27",
@@ -611,7 +637,8 @@
   "gaps": [
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_27"
  },
  {
   "id": "log_28",
@@ -635,7 +662,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_28"
  },
  {
   "id": "log_29",
@@ -657,7 +685,8 @@
    "prices of existing options",
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_29"
  },
  {
   "id": "log_30",
@@ -675,7 +704,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_30"
  },
  {
   "id": "log_31",
@@ -693,7 +723,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_31"
  },
  {
   "id": "log_32",
@@ -723,7 +754,8 @@
    "ev_25",
    "ev_26"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_32"
  },
  {
   "id": "log_33",
@@ -746,7 +778,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_33"
  },
  {
   "id": "log_34",
@@ -769,7 +802,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_34"
  },
  {
   "id": "log_35",
@@ -792,7 +826,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_35"
  },
  {
   "id": "log_36",
@@ -805,7 +840,8 @@
   "approved_by": null,
   "query": "freelance graphic designer proposal timing frustration reddit",
   "evidence_ids": [],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_36"
  },
  {
   "id": "log_37",
@@ -828,7 +864,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_37"
  },
  {
   "id": "log_38",
@@ -846,7 +883,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_38"
  },
  {
   "id": "log_39",
@@ -859,7 +897,8 @@
   "approved_by": null,
   "query": "freelance graphic designer invoice timing help",
   "evidence_ids": [],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_39"
  },
  {
   "id": "log_40",
@@ -882,7 +921,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_40"
  },
  {
   "id": "log_41",
@@ -910,7 +950,8 @@
    "ev_34",
    "ev_35"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_41"
  },
  {
   "id": "log_42",
@@ -932,7 +973,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_42"
  },
  {
   "id": "log_43",
@@ -954,7 +996,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_43"
  },
  {
   "id": "log_44",
@@ -977,7 +1020,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_44"
  },
  {
   "id": "log_45",
@@ -1005,7 +1049,8 @@
    "ev_38",
    "ev_39"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_45"
  },
  {
   "id": "log_46",
@@ -1029,7 +1074,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_46"
  },
  {
   "id": "log_47",
@@ -1053,7 +1099,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_47"
  },
  {
   "id": "log_48",
@@ -1076,7 +1123,8 @@
    "prices of existing options",
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_48"
  },
  {
   "id": "log_49",
@@ -1094,7 +1142,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_49"
  },
  {
   "id": "log_50",
@@ -1126,7 +1175,8 @@
    "ev_47",
    "ev_48"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_50"
  },
  {
   "id": "log_51",
@@ -1150,7 +1200,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_51"
  },
  {
   "id": "log_52",
@@ -1174,7 +1225,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_52"
  },
  {
   "id": "log_53",
@@ -1197,7 +1249,8 @@
    "prices of existing options",
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_53"
  },
  {
   "id": "log_54",
@@ -1213,7 +1266,8 @@
    "v2": 0.416,
    "v3": 0.44
   },
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_54"
  },
  {
   "id": "log_55",
@@ -1228,7 +1282,8 @@
   "reasons": [
    "The team hasn't yet found real people online describing this problem, so the need is still a guess. Another round of research, ideally with a narrower customer group, may find it."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_55"
  },
  {
   "id": "log_56",
@@ -1245,7 +1300,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_56"
  },
  {
   "id": "log_57",
@@ -1264,7 +1320,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_57"
  },
  {
   "id": "log_58",
@@ -1280,7 +1337,8 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_58"
  },
  {
   "id": "log_59",
@@ -1298,7 +1356,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_59"
  },
  {
   "id": "log_60",
@@ -1316,7 +1375,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_60"
  },
  {
   "id": "log_61",
@@ -1334,7 +1394,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_61"
  },
  {
   "id": "log_62",
@@ -1352,7 +1413,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_62"
  },
  {
   "id": "log_63",
@@ -1383,7 +1445,8 @@
    "ev_20",
    "ev_21"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_63"
  },
  {
   "id": "log_64",
@@ -1415,7 +1478,8 @@
    "ev_64",
    "ev_65"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_64"
  },
  {
   "id": "log_65",
@@ -1442,7 +1506,8 @@
    "ev_69",
    "ev_70"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_65"
  },
  {
   "id": "log_66",
@@ -1474,7 +1539,8 @@
    "ev_75",
    "ev_76"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_66"
  },
  {
   "id": "log_67",
@@ -1500,7 +1566,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_67"
  },
  {
   "id": "log_68",
@@ -1531,7 +1598,8 @@
    "ev_83",
    "ev_22"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_68"
  },
  {
   "id": "log_69",
@@ -1556,7 +1624,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_69"
  },
  {
   "id": "log_70",
@@ -1582,7 +1651,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_70"
  },
  {
   "id": "log_71",
@@ -1605,7 +1675,8 @@
    "prices of existing options",
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_71"
  },
  {
   "id": "log_72",
@@ -1633,7 +1704,8 @@
    "ev_80",
    "ev_81"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_72"
  },
  {
   "id": "log_73",
@@ -1658,7 +1730,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_73"
  },
  {
   "id": "log_74",
@@ -1682,7 +1755,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_74"
  },
  {
   "id": "log_75",
@@ -1713,7 +1787,8 @@
    "ev_26",
    "ev_87"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_75"
  },
  {
   "id": "log_76",
@@ -1731,7 +1806,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_76"
  },
  {
   "id": "log_77",
@@ -1749,7 +1825,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_77"
  },
  {
   "id": "log_78",
@@ -1774,7 +1851,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_78"
  },
  {
   "id": "log_79",
@@ -1803,7 +1881,8 @@
    "ev_91",
    "ev_97"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_79"
  },
  {
   "id": "log_80",
@@ -1833,7 +1912,8 @@
    "ev_104",
    "ev_104"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_80"
  },
  {
   "id": "log_81",
@@ -1864,7 +1944,8 @@
    "ev_105",
    "ev_106"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_81"
  },
  {
   "id": "log_82",
@@ -1889,7 +1970,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_82"
  },
  {
   "id": "log_83",
@@ -1912,7 +1994,8 @@
    "prices of existing options",
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_83"
  },
  {
   "id": "log_84",
@@ -1941,7 +2024,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_84"
  },
  {
   "id": "log_85",
@@ -1959,7 +2043,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_85"
  },
  {
   "id": "log_86",
@@ -1988,7 +2073,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_86"
  },
  {
   "id": "log_87",
@@ -2011,7 +2097,8 @@
    "(needed for the Stage 1 bar) 2 more real examples of people having this problem or asking for help with it (forums, Q&A sites, groups, reviews of current solutions)",
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_87"
  },
  {
   "id": "log_88",
@@ -2029,7 +2116,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_88"
  },
  {
   "id": "log_89",
@@ -2059,7 +2147,8 @@
    "ev_25",
    "ev_115"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_89"
  },
  {
   "id": "log_90",
@@ -2091,7 +2180,8 @@
    "ev_116",
    "ev_117"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_90"
  },
  {
   "id": "log_91",
@@ -2121,7 +2211,8 @@
    "ev_124",
    "ev_125"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_91"
  },
  {
   "id": "log_92",
@@ -2146,7 +2237,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_92"
  },
  {
   "id": "log_93",
@@ -2171,7 +2263,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_93"
  },
  {
   "id": "log_94",
@@ -2195,7 +2288,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_94"
  },
  {
   "id": "log_95",
@@ -2227,7 +2321,8 @@
    "ev_126",
    "ev_127"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_95"
  },
  {
   "id": "log_96",
@@ -2256,7 +2351,8 @@
    "ev_17",
    "ev_97"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_96"
  },
  {
   "id": "log_97",
@@ -2287,7 +2383,8 @@
    "ev_25",
    "ev_115"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_97"
  },
  {
   "id": "log_98",
@@ -2305,7 +2402,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_98"
  },
  {
   "id": "log_99",
@@ -2333,7 +2431,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_99"
  },
  {
   "id": "log_100",
@@ -2358,7 +2457,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_100"
  },
  {
   "id": "log_101",
@@ -2383,7 +2483,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_101"
  },
  {
   "id": "log_102",
@@ -2406,7 +2507,8 @@
    "(needed for the Stage 1 bar) 2 more real examples of people having this problem or asking for help with it (forums, Q&A sites, groups, reviews of current solutions)",
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_102"
  },
  {
   "id": "log_103",
@@ -2431,7 +2533,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_103"
  },
  {
   "id": "log_104",
@@ -2463,7 +2566,8 @@
    "ev_137",
    "ev_138"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_104"
  },
  {
   "id": "log_105",
@@ -2491,7 +2595,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_105"
  },
  {
   "id": "log_106",
@@ -2513,7 +2618,8 @@
   "gaps": [
    "(needed for the Stage 1 bar) 2 more real examples of people having this problem or asking for help with it (forums, Q&A sites, groups, reviews of current solutions)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_106"
  },
  {
   "id": "log_107",
@@ -2538,7 +2644,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_107"
  },
  {
   "id": "log_108",
@@ -2561,7 +2668,8 @@
    "prices of existing options",
    "complaints about existing options"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_108"
  },
  {
   "id": "log_109",
@@ -2592,7 +2700,8 @@
    "ev_143",
    "ev_144"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_109"
  },
  {
   "id": "log_110",
@@ -2618,7 +2727,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_110"
  },
  {
   "id": "log_111",
@@ -2644,7 +2754,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_111"
  },
  {
   "id": "log_112",
@@ -2668,7 +2779,8 @@
    "evidence from the founder's own market (place or customer group), including searches in the local language if it isn't English",
    "places where these customers gather online (communities, groups, forums)"
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_112"
  },
  {
   "id": "log_113",
@@ -2684,7 +2796,8 @@
    "v2": 0.597,
    "v3": 0.4
   },
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_113"
  },
  {
   "id": "log_114",
@@ -2699,7 +2812,8 @@
   "reasons": [
    "The best version so far, \"Client Communication Checklist Pack\", isn't there yet: only 1 real example of people with this problem (needs 3); examples from only 1 website (needs 2); a score of 60 out of 100 (needs 60)."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_114"
  },
  {
   "id": "log_115",
@@ -2716,7 +2830,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_115"
  },
  {
   "id": "log_116",
@@ -2735,7 +2850,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_116"
  },
  {
   "id": "log_117",
@@ -2751,7 +2867,8 @@
   "override": true,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_117"
  },
  {
   "id": "log_118",
@@ -2768,7 +2885,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_118"
  },
  {
   "id": "log_119",
@@ -2785,7 +2903,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_119"
  },
  {
   "id": "log_120",
@@ -2798,7 +2917,8 @@
   "approved_by": null,
   "kind": "question",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_120"
  },
  {
   "id": "log_121",
@@ -2815,7 +2935,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_121"
  },
  {
   "id": "log_122",
@@ -2834,7 +2955,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_122"
  },
  {
   "id": "log_123",
@@ -2852,7 +2974,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_123"
  },
  {
   "id": "log_124",
@@ -2869,7 +2992,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_124"
  },
  {
   "id": "log_125",
@@ -2888,7 +3012,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_125"
  },
  {
   "id": "log_126",
@@ -2906,7 +3031,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_126"
  },
  {
   "id": "log_127",
@@ -2918,7 +3044,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_01",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_127"
  },
  {
   "id": "log_128",
@@ -2932,7 +3059,8 @@
   "item_id": "ob_01",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_128"
  },
  {
   "id": "log_129",
@@ -2951,7 +3079,8 @@
   },
   "hash": "sha256:272d93d11cdd67c35335d5c9c6778ac378b1ff57c9b8ea3414927860d34fa921",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_129"
  },
  {
   "id": "log_130",
@@ -2968,7 +3097,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_130"
  },
  {
   "id": "log_131",
@@ -2987,7 +3117,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_131"
  },
  {
   "id": "log_132",
@@ -2999,7 +3130,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_02",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_132"
  },
  {
   "id": "log_133",
@@ -3013,7 +3145,8 @@
   "item_id": "ob_02",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_133"
  },
  {
   "id": "log_134",
@@ -3027,7 +3160,8 @@
   "item_id": "ob_02",
   "adapter": "MOCKED landing-page host",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_134"
  },
  {
   "id": "log_135",
@@ -3041,7 +3175,8 @@
   "result": 50.0,
   "mocked": true,
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_135"
  },
  {
   "id": "log_136",
@@ -3056,7 +3191,8 @@
   "reasons": [
    "The demand test reached 50, which is 100% of the target of 50 set in advance."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_136"
  },
  {
   "id": "log_137",
@@ -3073,7 +3209,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_137"
  },
  {
   "id": "log_138",
@@ -3092,7 +3229,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_138"
  },
  {
   "id": "log_139",
@@ -3106,7 +3244,8 @@
   "problems": [
    "The claim that the 50 sign\u2011ups prove people are interested in a free checklist pack is not directly supported by the facts; the evidence is mocked and does not confirm real demand."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_139"
  },
  {
   "id": "log_140",
@@ -3122,7 +3261,8 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_140"
  },
  {
   "id": "log_141",
@@ -3140,7 +3280,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_141"
  },
  {
   "id": "log_142",
@@ -3157,7 +3298,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_142"
  },
  {
   "id": "log_143",
@@ -3170,7 +3312,8 @@
   "approved_by": null,
   "kind": "question",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_143"
  },
  {
   "id": "log_144",
@@ -3188,7 +3331,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_144"
  },
  {
   "id": "log_145",
@@ -3202,7 +3346,8 @@
   "passed": 5,
   "total": 5,
   "isolation": "audit hook (sockets, DNS and subprocesses blocked)",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_145"
  },
  {
   "id": "log_146",
@@ -3220,7 +3365,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_146"
  },
  {
   "id": "log_147",
@@ -3238,7 +3384,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_147"
  },
  {
   "id": "log_148",
@@ -3252,7 +3399,8 @@
   "passed": 5,
   "total": 5,
   "isolation": "audit hook (sockets, DNS and subprocesses blocked)",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_148"
  },
  {
   "id": "log_149",
@@ -3270,7 +3418,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_149"
  },
  {
   "id": "log_150",
@@ -3287,7 +3436,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_150"
  },
  {
   "id": "log_151",
@@ -3302,7 +3452,8 @@
   "reasons": [
    "The product passes all 5 quality checks (after 2 build round(s))."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_151"
  },
  {
   "id": "log_152",
@@ -3319,7 +3470,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_152"
  },
  {
   "id": "log_153",
@@ -3338,7 +3490,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_153"
  },
  {
   "id": "log_154",
@@ -3354,7 +3507,8 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_154"
  },
  {
   "id": "log_155",
@@ -3372,7 +3526,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_155"
  },
  {
   "id": "log_156",
@@ -3394,7 +3549,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_156"
  },
  {
   "id": "log_157",
@@ -3411,7 +3567,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_157"
  },
  {
   "id": "log_158",
@@ -3426,7 +3583,8 @@
   "reasons": [
    "The texts are clean. The team couldn't find competitor prices, so the price is a reasoned guess (ASSUMPTION)."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_158"
  },
  {
   "id": "log_159",
@@ -3442,7 +3600,8 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_159"
  },
  {
   "id": "log_160",
@@ -3460,7 +3619,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_160"
  },
  {
   "id": "log_161",
@@ -3477,7 +3637,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_161"
  },
  {
   "id": "log_162",
@@ -3496,7 +3657,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_162"
  },
  {
   "id": "log_163",
@@ -3515,7 +3677,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_163"
  },
  {
   "id": "log_164",
@@ -3534,7 +3697,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_164"
  },
  {
   "id": "log_165",
@@ -3553,7 +3717,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_165"
  },
  {
   "id": "log_166",
@@ -3565,7 +3730,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_03",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_166"
  },
  {
   "id": "log_167",
@@ -3577,7 +3743,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_04",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_167"
  },
  {
   "id": "log_168",
@@ -3589,7 +3756,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_05",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_168"
  },
  {
   "id": "log_169",
@@ -3601,7 +3769,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_06",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_169"
  },
  {
   "id": "log_170",
@@ -3615,7 +3784,8 @@
   "item_id": "ob_03",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_170"
  },
  {
   "id": "log_171",
@@ -3629,7 +3799,8 @@
   "item_id": "ob_04",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_171"
  },
  {
   "id": "log_172",
@@ -3643,7 +3814,8 @@
   "item_id": "ob_05",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_172"
  },
  {
   "id": "log_173",
@@ -3657,7 +3829,8 @@
   "item_id": "ob_06",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_173"
  },
  {
   "id": "log_174",
@@ -3671,7 +3844,8 @@
   "item_id": "ob_03",
   "adapter": "MOCKED channel publisher",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_174"
  },
  {
   "id": "log_175",
@@ -3685,7 +3859,8 @@
   "item_id": "ob_04",
   "adapter": "MOCKED channel publisher",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_175"
  },
  {
   "id": "log_176",
@@ -3699,7 +3874,8 @@
   "item_id": "ob_05",
   "adapter": "MOCKED channel publisher",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_176"
  },
  {
   "id": "log_177",
@@ -3713,7 +3889,8 @@
   "item_id": "ob_06",
   "adapter": "MOCKED channel publisher",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_177"
  },
  {
   "id": "log_178",
@@ -3727,7 +3904,8 @@
   "order_id": "ord_001",
   "amount": 29.0,
   "label": "MOCKED",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_178"
  },
  {
   "id": "log_179",
@@ -3741,7 +3919,8 @@
   "order_id": "ord_001",
   "event_id": "evt_0002",
   "label": "MOCKED",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_179"
  },
  {
   "id": "log_180",
@@ -3754,7 +3933,8 @@
   "approved_by": null,
   "event_id": "evt_0002",
   "order_id": "ord_001",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_180"
  },
  {
   "id": "log_181",
@@ -3767,7 +3947,8 @@
   "approved_by": null,
   "event_id": "evt_0002",
   "order_id": "ord_001",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_181"
  },
  {
   "id": "log_182",
@@ -3781,7 +3962,8 @@
   "order_id": "ord_002",
   "amount": 29.0,
   "label": "MOCKED",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_182"
  },
  {
   "id": "log_183",
@@ -3795,7 +3977,8 @@
   "order_id": "ord_002",
   "event_id": "evt_0004",
   "label": "MOCKED",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_183"
  },
  {
   "id": "log_184",
@@ -3808,7 +3991,8 @@
   "approved_by": null,
   "event_id": "evt_0004",
   "order_id": "ord_002",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_184"
  },
  {
   "id": "log_185",
@@ -3820,7 +4004,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_07",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_185"
  },
  {
   "id": "log_186",
@@ -3834,7 +4019,8 @@
   "item_id": "ob_07",
   "order_id": "ord_002",
   "reason": "no founder approval record",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_186"
  },
  {
   "id": "log_187",
@@ -3848,7 +4034,8 @@
   "item_id": "ob_07",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_187"
  },
  {
   "id": "log_188",
@@ -3862,7 +4049,8 @@
   "item_id": "ob_07",
   "adapter": "MOCKED refund",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_188"
  },
  {
   "id": "log_189",
@@ -3875,7 +4063,8 @@
   "approved_by": null,
   "event_id": "evt_0005",
   "order_id": "ord_002",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_189"
  },
  {
   "id": "log_190",
@@ -3888,7 +4077,8 @@
   "approved_by": null,
   "amount": 26.72,
   "label": "MOCKED",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_190"
  },
  {
   "id": "log_191",
@@ -3900,7 +4090,8 @@
   "cost": 0,
   "approved_by": null,
   "mismatches": 0,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_191"
  },
  {
   "id": "log_192",
@@ -3912,7 +4103,8 @@
   "cost": 0,
   "approved_by": null,
   "mismatches": 1,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_192"
  },
  {
   "id": "log_193",
@@ -3924,7 +4116,8 @@
   "cost": 0,
   "approved_by": null,
   "passed": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_193"
  },
  {
   "id": "log_194",
@@ -3939,7 +4132,8 @@
   "reasons": [
    "All 4 item(s) you approved were recorded (publishing MOCKED: nothing went online), and the practice sale, delivery and refund all worked (payments MOCKED)."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_194"
  },
  {
   "id": "log_195",
@@ -3955,7 +4149,8 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_195"
  },
  {
   "id": "log_196",
@@ -3971,7 +4166,8 @@
    "max_refund_rate": 0.1
   },
   "hash": "sha256:d58516044317fc4baf39e023264afe15774df6b88fa375f238d76f09b3c5e434",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_196"
  },
  {
   "id": "log_197",
@@ -3987,7 +4183,8 @@
   "orders": 14.0,
   "refunds": 1.0,
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_197"
  },
  {
   "id": "log_198",
@@ -4005,7 +4202,8 @@
   "conversion": 0.035,
   "refund_rate": 0.0714,
   "tickets_per_order": 0.1429,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_198"
  },
  {
   "id": "log_199",
@@ -4017,7 +4215,8 @@
   "cost": 0,
   "approved_by": null,
   "subject": "support_ticket",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_199"
  },
  {
   "id": "log_200",
@@ -4035,7 +4234,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_200"
  },
  {
   "id": "log_201",
@@ -4054,7 +4254,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_201"
  },
  {
   "id": "log_202",
@@ -4066,7 +4267,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_08",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_202"
  },
  {
   "id": "log_203",
@@ -4078,7 +4280,8 @@
   "cost": 0,
   "approved_by": null,
   "subject": "support_ticket",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_203"
  },
  {
   "id": "log_204",
@@ -4096,7 +4299,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_204"
  },
  {
   "id": "log_205",
@@ -4108,7 +4312,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_09",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_205"
  },
  {
   "id": "log_206",
@@ -4127,7 +4332,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_206"
  },
  {
   "id": "log_207",
@@ -4139,7 +4345,8 @@
   "cost": 0,
   "approved_by": null,
   "item_id": "ob_10",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_207"
  },
  {
   "id": "log_208",
@@ -4153,7 +4360,8 @@
   "item_id": "ob_08",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_208"
  },
  {
   "id": "log_209",
@@ -4167,7 +4375,8 @@
   "item_id": "ob_09",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_209"
  },
  {
   "id": "log_210",
@@ -4181,7 +4390,8 @@
   "item_id": "ob_10",
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_210"
  },
  {
   "id": "log_211",
@@ -4195,7 +4405,8 @@
   "item_id": "ob_08",
   "adapter": "MOCKED email sender",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_211"
  },
  {
   "id": "log_212",
@@ -4209,7 +4420,8 @@
   "item_id": "ob_09",
   "adapter": "MOCKED refund",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_212"
  },
  {
   "id": "log_213",
@@ -4222,7 +4434,8 @@
   "approved_by": null,
   "event_id": "evt_0007",
   "order_id": "ord_001",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_213"
  },
  {
   "id": "log_214",
@@ -4236,7 +4449,8 @@
   "item_id": "ob_10",
   "adapter": "MOCKED email sender",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_214"
  },
  {
   "id": "log_215",
@@ -4253,7 +4467,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_215"
  },
  {
   "id": "log_216",
@@ -4272,7 +4487,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_216"
  },
  {
   "id": "log_217",
@@ -4289,7 +4505,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_217"
  },
  {
   "id": "log_218",
@@ -4308,7 +4525,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_218"
  },
  {
   "id": "log_219",
@@ -4325,7 +4543,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_219"
  },
  {
   "id": "log_220",
@@ -4344,7 +4563,8 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_220"
  },
  {
   "id": "log_221",
@@ -4359,7 +4579,8 @@
   "reasons": [
    "The results meet the targets set in advance (practice data, MOCKED): keep going."
   ],
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_221"
  },
  {
   "id": "log_222",
@@ -4375,10 +4596,11 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-170621-da2d"
+  "run_id": "20261117-170621-da2d",
+  "run_entry_id": "log_222"
  },
  {
-  "id": "log_1",
+  "id": "log_223",
   "timestamp": "2026-11-17T17:14:43Z",
   "agent": "policy_guard",
   "action": "block_brief",
@@ -4389,10 +4611,11 @@
   "rule": "R12",
   "category": "excluded_product",
   "subject": "brief",
-  "run_id": "20261117-171443-2416"
+  "run_id": "20261117-171443-2416",
+  "run_entry_id": "log_1"
  },
  {
-  "id": "log_2",
+  "id": "log_224",
   "timestamp": "2026-11-17T17:14:45Z",
   "agent": "brief_parser",
   "action": "parse_brief",
@@ -4406,10 +4629,11 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-171443-2416"
+  "run_id": "20261117-171443-2416",
+  "run_entry_id": "log_2"
  },
  {
-  "id": "log_3",
+  "id": "log_225",
   "timestamp": "2026-11-17T17:14:45Z",
   "agent": "gate",
   "action": "gate1_discover",
@@ -4421,10 +4645,11 @@
   "reasons": [
    "This idea falls under health or medical advice products (your idea mentions \u201cmedical\u201d), which the team doesn't help with: these products can cause real harm if the advice is wrong, and they need licensed experts. Consider a related idea outside that area."
   ],
-  "run_id": "20261117-171443-2416"
+  "run_id": "20261117-171443-2416",
+  "run_entry_id": "log_3"
  },
  {
-  "id": "log_4",
+  "id": "log_226",
   "timestamp": "2026-11-17T17:14:50Z",
   "agent": "gate_reporter",
   "action": "gate1_memo",
@@ -4438,10 +4663,11 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "none",
-  "run_id": "20261117-171443-2416"
+  "run_id": "20261117-171443-2416",
+  "run_entry_id": "log_4"
  },
  {
-  "id": "log_5",
+  "id": "log_227",
   "timestamp": "2026-11-17T17:14:50Z",
   "agent": "fact_checker",
   "action": "fact_check_stage1_report",
@@ -4457,10 +4683,11 @@
   "backend": "llamacpp",
   "structured_output": "json_schema",
   "think_method": "chat_template",
-  "run_id": "20261117-171443-2416"
+  "run_id": "20261117-171443-2416",
+  "run_entry_id": "log_5"
  },
  {
-  "id": "log_6",
+  "id": "log_228",
   "timestamp": "2026-11-17T17:14:50Z",
   "agent": "founder",
   "action": "gate1_decision",
@@ -4473,6 +4700,7 @@
   "override": false,
   "channel": "simulation",
   "simulated_founder": true,
-  "run_id": "20261117-171443-2416"
+  "run_id": "20261117-171443-2416",
+  "run_entry_id": "log_6"
  }
 ]

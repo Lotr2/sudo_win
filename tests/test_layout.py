@@ -86,3 +86,20 @@ class LayoutTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_exported_log_ids_are_unique_across_runs(tmp_path, make_runtime):
+    import json
+    from conftest import drive
+    from venture_builder.runtime import export_run
+    a, b = make_runtime(), make_runtime()
+    drive(a, stop_at_gate=1)
+    drive(b, stop_at_gate=1)
+    out, log = tmp_path / "outputs", tmp_path / "decision_log.json"
+    export_run(a.settings, a.run_id, outputs_dir=out, log_path=log)
+    export_run(b.settings, b.run_id, tag="weak", clear=False, outputs_dir=out, log_path=log)
+    entries = json.loads(log.read_text())
+    ids = [e["id"] for e in entries]
+    assert len(ids) == len(set(ids)) and ids[-1] == f"log_{len(ids)}"
+    assert {e["run_id"] for e in entries} == {a.run_id, b.run_id}
+    assert all(e["run_entry_id"].startswith("log_") for e in entries)
