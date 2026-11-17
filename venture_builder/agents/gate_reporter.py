@@ -6,6 +6,7 @@ the prompt asks for this, and the check makes sure, because the summary is not f
 
 import re
 
+from .. import labels
 from ..decision_log import log_action
 from ..schemas import GateMemo
 
@@ -59,6 +60,11 @@ def run(ctx, gate: int, result: dict, context: dict) -> GateMemo:
         for field in ("summary", "explanation"):
             text = update.get(field, getattr(memo, field))
             clean, n = remove_mocked_demand_claims(text)
+            if n and field == "summary":
+                # The summary is one sentence with the recommendation: keep the recommendation in front.
+                rec = labels.outcome_name(result.get("outcome", ""), gate)
+                if not clean.lower().startswith(rec.lower()):
+                    clean = f"{rec}. {clean}"
             if n:
                 update[field] = clean
                 log_action("gate_reporter", "removed_mocked_demand_claim", field=field, sentences=n, gate=gate)

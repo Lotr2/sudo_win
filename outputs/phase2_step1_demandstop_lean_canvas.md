@@ -1,56 +1,56 @@
-# Phase 2 · Step 1: Lean Canvas (Agency Payment Workflow Tool)
+# Phase 2 · Step 1: Lean Canvas (Payment Terms Cheat Sheet)
 
 ## Problem
 
-Design agencies often face payment delays, disputes, and clients who disappear after delivering work. This causes cash flow issues and wasted time.
+New freelance designers often don’t know what payment terms to ask for or how to phrase them, causing confusion and delays.
 
-Source: https://painonsocial.com/blog/designer-client-problems-reddit
+Source: https://ramp.com/blog/payment-terms, https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them
 
 ## Customer Segments
 
-Small design agencies that handle multiple clients and need a simple way to track and collect payments.
+New freelance designers just starting to negotiate contracts.
 
 Source: ASSUMPTION
 
 ## Unique Value
 
-A single web tool that lets agencies manage all client payments, invoices, and disputes in one place, without needing multiple platforms.
+A ready‑made template pack that shows exactly what to say in emails and contracts, so designers can set clear payment terms right away.
 
-Source: https://spendesk.netlify.app/blog/payment-management-software/, https://www.agencyhandy.com/client-management/best/small-business/
+Source: https://mangogranola.com/, https://ownedwork.com/, https://www.smartsheet.com/content/ms-word-invoice-templates, https://www.template.net/invoices/modern
 
 ## Solution
 
-A web-based payment workflow that automates invoicing, tracks payment status, and provides dispute resolution tools for agencies.
+A downloadable set of email and contract templates that explain payment terms in plain language and can be customized.
 
-Source: https://vulta.one/en/blog/vulta-for-agencies-managing-multiple-client-payments, https://webflow.com/blog/introducing-client-payments
+Source: https://mangogranola.com/, https://ownedwork.com/, https://template.systems/agreement-template.html, https://www.smartsheet.com/content/ms-word-invoice-templates, https://www.template.net/invoices/modern
 
 ## Channels
 
-Online marketing, design community forums, and referrals from existing agency clients.
+Sell through freelance marketplaces like Upwork and Fiverr, template sites like Template.net, and free tools like OwnedWork.
 
-Source: ASSUMPTION
+Source: https://ownedwork.com/, https://www.fiverr.com/, https://www.smartsheet.com/content/ms-word-invoice-templates, https://www.template.net/invoices/modern, https://www.upwork.com/freelance-jobs/, https://www.upwork.com/freelance-jobs/graphic-design/
 
 ## Revenue
 
-Monthly subscription fee per agency, with optional transaction fee for large payments.
+Charge $15 for the template pack.
 
 Source: ASSUMPTION
 
 ## Costs
 
-Development cost of about $80 and 20 hours of build time.
+Build the pack in 8 hours and spend $15 on design tools.
 
 Source: ASSUMPTION
 
 ## Key Metrics
 
-Number of agencies using the tool, average payments processed per month, and reduction in payment disputes.
+Number of downloads, conversion rate from free to paid, and repeat customers.
 
 Source: ASSUMPTION
 
 ## Unfair Advantage
 
-Low upfront cost and quick deployment, plus integration with popular design tools.
+No direct competitor offering a tailored, ready‑made payment‑terms guide for new designers.
 
 Source: ASSUMPTION
 
@@ -58,21 +58,21 @@ Source: ASSUMPTION
 
 | Box | Score | Comment |
 |---|---|---|
-| problem | 4 | Evidence shows designers face payment issues, implying agencies likely do too. |
-| customer_segments | 2 | No evidence provided for target segment. |
-| unique_value | 5 | Evidence supports all-in-one payment and client management. |
-| solution | 5 | Evidence shows tools that automate invoicing and payments. |
-| channels | 2 | No evidence for chosen marketing channels. |
-| revenue | 2 | No evidence for pricing model. |
-| costs | 2 | No evidence for low development cost. |
-| key_metrics | 2 | No evidence for chosen metrics. |
-| unfair_advantage | 2 | No evidence for low cost and quick deployment advantage. |
+| problem | 5 | Evidence confirms the problem. |
+| customer_segments | 1 | No evidence that this segment exists. |
+| unique_value | 5 | Evidence supports the unique value proposition. |
+| solution | 5 | Evidence supports the solution. |
+| channels | 5 | Evidence supports the chosen channels. |
+| revenue | 1 | No evidence that customers will pay $15. |
+| costs | 1 | No evidence that costs are $15 and 8 hours. |
+| key_metrics | 1 | No evidence for key metrics. |
+| unfair_advantage | 1 | No evidence that there are no competitors. |
 
 ### Riskiest assumptions
 
-- customer_segments (risk 5 of 5; could sink the business if wrong)
-- channels (risk 4 of 5)
-- revenue (risk 4 of 5)
+- Revenue: $15 price point (risk 5 of 5; could sink the business if wrong)
+- Unfair advantage: no direct competitor (risk 4 of 5)
+- Customer segment: new freelance designers (risk 3 of 5)
 
 ### Your answers to the reviewer's questions
 

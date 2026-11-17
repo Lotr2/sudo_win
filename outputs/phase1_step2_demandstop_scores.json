@@ -2,51 +2,51 @@
  "how_scores_work": "Each version gets up to 100 points: evidence that people have this problem (30 points), fit with your skills, budget and time (25 points), places to reach these customers (20 points), can be built as a first version (15 points), room next to existing options (10 points). These weights are design choices, not facts (config/scoring.toml).",
  "versions": [
   {
-   "name": "Agency Payment Workflow Tool",
-   "total_out_of_100": 66.4,
+   "name": "Payment Terms Cheat Sheet",
+   "total_out_of_100": 77.8,
    "verdict": "Passes every check.",
    "points": {
-    "Evidence that people have this problem": "16 of 30: Found 3 real examples of people describing this problem or looking for help with it, on painonsocial.com, proz.com and vulta.one. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 3 of 3 are about your market. For example: “Designers report clients who disappear after receiving files, dispute invoices, or drag out payment for months” / “Many designers start projects without formal contracts, leading to unclear deliverables, payment disputes, and no legal protection when things go wrong”.",
-    "Fit with your skills, budget and time": "21 of 25: You already have what it takes for ux; you'd need help with web development; it needs about 20 hours (you have about 24 a month) and about $80 (your budget is $150).",
-    "Places to reach these customers": "13 of 20: These customers can be found on warriorforum.com and webflow.com.",
-    "Can be built as a first version": "15 of 15: It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "2 of 10: Found 3 existing options but no complaints about them. Complaints show where you could do better."
-   }
-  },
-  {
-   "name": "Proposal Template Pack",
-   "total_out_of_100": 43.2,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 43.2 out of 100; 60 is needed.",
-   "points": {
-    "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing and design; it needs about 8 hours (you have about 24 a month) and about $0 (your budget is $150).",
-    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
+    "Evidence that people have this problem": "18 of 30: Found 4 real examples of people describing this problem or looking for help with it, on alemiguel.com, domestika.org, ramp.com and winvesta.in. Full marks need 5. Of these, 2 are people describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 2 of 4 are about your market (the others count less). For example: “Freelance designers in Barcelona say they don’t know how to budget and feel unsure about pricing their work” / “A Spanish freelance designer notes that a client told her she was too cheap, showing uncertainty about setting rates”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing clear client emails; it needs about 8 hours (you have about 24 a month) and about $15 (your budget is $150).",
+    "Places to reach these customers": "20 of 20: These customers can be found on fiverr.com and upwork.com.",
     "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "3 of 10: Found 1 existing option but no complaints about them. Complaints show where you could do better."
+    "Room next to existing options": "0 of 10: Found 6 existing options but no complaints about them. Complaints show where you could do better."
    }
   },
   {
-   "name": "Client Communication Toolkit",
-   "total_out_of_100": 43.2,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 43.2 out of 100; 60 is needed.",
+   "name": "Late‑Payment Reminder Guide",
+   "total_out_of_100": 69.4,
+   "verdict": "Passes every check.",
    "points": {
-    "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
-    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing and design; it needs about 7 hours (you have about 24 a month) and about $0 (your budget is $150).",
-    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
-    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
-    "Room next to existing options": "3 of 10: Found 1 existing option but no complaints about them. Complaints show where you could do better."
-   }
-  },
-  {
-   "name": "Freelance Designer Payment Planner",
-   "total_out_of_100": 41.5,
-   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1); it scores 41.5 out of 100; 60 is needed.",
-   "points": {
-    "Evidence that people have this problem": "3 of 30: Found 1 real example of people describing this problem or looking for help with it, on imagetotable.ai. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Freelancers feel overwhelmed by scattered invoice records across multiple platforms during tax season preparation” / “The lack of a single tool to track invoices creates a structural problem for freelancers with multiple clients”.",
-    "Fit with your skills, budget and time": "24 of 25: You already have what it takes for figma and ux; basic web development can be learned quickly; it needs about 12 hours (you have about 24 a month) and about $50 (your budget is $150).",
-    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
-    "Can be built as a first version": "15 of 15: It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.",
+    "Evidence that people have this problem": "9 of 30: Found 3 real examples of people describing this problem or looking for help with it, on fairquotehk.pages.dev, justanswer.com and tiktok.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 0 of 3 are about your market (the others count less). For example: “Freelance designers and other business owners are looking for strategies to get paid on time and to handle late payments without sounding pushy” / “Freelance designers often struggle to follow up on late payments without sounding pushy”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing clear client emails; it needs about 10 hours (you have about 24 a month) and about $20 (your budget is $150).",
+    "Places to reach these customers": "20 of 20: These customers can be found on domestika.org, freelancer.com, selfmade-engine.github.io and upwork.com.",
+    "Can be built as a first version": "15 of 15: It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.",
     "Room next to existing options": "0 of 10: Found 5 existing options but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Quick Negotiation Guide",
+   "total_out_of_100": 66.0,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 1).",
+   "points": {
+    "Evidence that people have this problem": "6 of 30: Found 1 real example of people describing this problem or looking for help with it, on linkedin.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 1 of 1 is about your market. For example: “Freelance designers often sign contracts without clear terms, leading to unpaid invoices and disputes”.",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for writing clear client emails; it needs about 12 hours (you have about 24 a month) and about $20 (your budget is $150).",
+    "Places to reach these customers": "20 of 20: These customers can be found on freelancer.com, freelancer.in, graphicdesignforum.com and hostinger.com and 2 more.",
+    "Can be built as a first version": "15 of 15: It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "0 of 10: Found 8 existing options but no complaints about them. Complaints show where you could do better."
+   }
+  },
+  {
+   "name": "Proposal & Invoice Pack",
+   "total_out_of_100": 40.0,
+   "verdict": "Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.",
+   "points": {
+    "Evidence that people have this problem": "0 of 30: The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).",
+    "Fit with your skills, budget and time": "25 of 25: You already have what it takes for graphic design and google docs; it needs about 12 hours (you have about 24 a month) and about $30 (your budget is $150).",
+    "Places to reach these customers": "0 of 20: No online places where these customers gather were found yet (forums, groups, communities).",
+    "Can be built as a first version": "15 of 15: It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.",
+    "Room next to existing options": "0 of 10: Found 21 existing options but no complaints about them. Complaints show where you could do better."
    }
   }
  ],
@@ -57,8 +57,8 @@
    "founder_fit": 1.0,
    "reachability": 0.0,
    "buildability": 1.0,
-   "competition_gap": 0.32,
-   "score": 0.432,
+   "competition_gap": 0.0,
+   "score": 0.4,
    "pain_signals": 0,
    "pain_domains": 0,
    "fit_rules_pass": true,
@@ -67,18 +67,18 @@
     "budget_usd": 150.0,
     "skill_coverage": 1.0,
     "budget_ok": true,
-    "build_hours": 8.0,
+    "build_hours": 12.0,
     "complaints": 0,
-    "alternatives": 1,
+    "alternatives": 21,
     "channels": 0,
     "skills_covered": [
-     "writing",
-     "design"
+     "graphic design",
+     "Google Docs"
     ],
     "skills_learnable": [],
     "skills_missing": [],
     "help_affordable": false,
-    "budget_needed": 0.0,
+    "budget_needed": 30.0,
     "month_hours": 24.0,
     "channel_sites": [],
     "problem_sites": [],
@@ -91,145 +91,167 @@
   },
   {
    "variant_id": "v2",
-   "pain": 0.0,
+   "pain": 0.312,
    "founder_fit": 1.0,
-   "reachability": 0.0,
-   "buildability": 1.0,
-   "competition_gap": 0.32,
-   "score": 0.432,
-   "pain_signals": 0,
-   "pain_domains": 0,
-   "fit_rules_pass": true,
-   "inputs": {
-    "hours_per_week": 6.0,
-    "budget_usd": 150.0,
-    "skill_coverage": 1.0,
-    "budget_ok": true,
-    "build_hours": 7.0,
-    "complaints": 0,
-    "alternatives": 1,
-    "channels": 0,
-    "skills_covered": [
-     "writing",
-     "design"
-    ],
-    "skills_learnable": [],
-    "skills_missing": [],
-    "help_affordable": false,
-    "budget_needed": 0.0,
-    "month_hours": 24.0,
-    "channel_sites": [],
-    "problem_sites": [],
-    "in_templates": true,
-    "problem_claims": [],
-    "problem_grades": {},
-    "problem_on_market": 0,
-    "problem_urls": []
-   }
-  },
-  {
-   "variant_id": "v3",
-   "pain": 0.096,
-   "founder_fit": 0.944,
-   "reachability": 0.0,
+   "reachability": 1.0,
    "buildability": 1.0,
    "competition_gap": 0.0,
-   "score": 0.415,
-   "pain_signals": 1,
-   "pain_domains": 1,
-   "fit_rules_pass": true,
-   "inputs": {
-    "hours_per_week": 6.0,
-    "budget_usd": 150.0,
-    "skill_coverage": 0.83,
-    "budget_ok": true,
-    "build_hours": 12.0,
-    "complaints": 0,
-    "alternatives": 5,
-    "channels": 0,
-    "skills_covered": [
-     "Figma",
-     "UX"
-    ],
-    "skills_learnable": [
-     "basic web development"
-    ],
-    "skills_missing": [],
-    "help_affordable": false,
-    "budget_needed": 50.0,
-    "month_hours": 24.0,
-    "channel_sites": [],
-    "problem_sites": [
-     "imagetotable.ai"
-    ],
-    "in_templates": true,
-    "problem_claims": [
-     "Freelancers feel overwhelmed by scattered invoice records across multiple platforms during tax season preparation.",
-     "The lack of a single tool to track invoices creates a structural problem for freelancers with multiple clients."
-    ],
-    "problem_grades": {
-     "article": 1
-    },
-    "problem_on_market": 0,
-    "problem_urls": [
-     "https://imagetotable.ai/blog/freelancer-invoice-tracking-tax-problem"
-    ]
-   }
-  },
-  {
-   "variant_id": "v4",
-   "pain": 0.52,
-   "founder_fit": 0.833,
-   "reachability": 0.667,
-   "buildability": 1.0,
-   "competition_gap": 0.16,
-   "score": 0.664,
+   "score": 0.694,
    "pain_signals": 3,
    "pain_domains": 3,
    "fit_rules_pass": true,
    "inputs": {
     "hours_per_week": 6.0,
     "budget_usd": 150.0,
-    "skill_coverage": 0.5,
+    "skill_coverage": 1.0,
     "budget_ok": true,
-    "build_hours": 20.0,
+    "build_hours": 10.0,
     "complaints": 0,
-    "alternatives": 3,
-    "channels": 2,
+    "alternatives": 5,
+    "channels": 5,
     "skills_covered": [
-     "UX"
+     "writing clear client emails"
     ],
     "skills_learnable": [],
-    "skills_missing": [
-     "web development"
-    ],
+    "skills_missing": [],
     "help_affordable": false,
-    "budget_needed": 80.0,
+    "budget_needed": 20.0,
     "month_hours": 24.0,
     "channel_sites": [
-     "warriorforum.com",
-     "webflow.com"
+     "domestika.org",
+     "freelancer.com",
+     "selfmade-engine.github.io",
+     "upwork.com"
     ],
     "problem_sites": [
-     "painonsocial.com",
-     "proz.com",
-     "vulta.one"
+     "fairquotehk.pages.dev",
+     "justanswer.com",
+     "tiktok.com"
     ],
     "in_templates": true,
     "problem_claims": [
-     "Designers report clients who disappear after receiving files, dispute invoices, or drag out payment for months.",
-     "Many designers start projects without formal contracts, leading to unclear deliverables, payment disputes, and no legal protection when things go wrong.",
-     "Agencies and freelance teams need a system to manage multiple client payments, team access, and payment infrastructure for their whole business."
+     "Freelance designers and other business owners are looking for strategies to get paid on time and to handle late payments without sounding pushy.",
+     "Freelance designers often struggle to follow up on late payments without sounding pushy.",
+     "Freelance designers look for tools that help them chase late invoices without feeling awkward."
     ],
     "problem_grades": {
      "article": 2,
      "first_hand": 1
     },
-    "problem_on_market": 3,
+    "problem_on_market": 0,
     "problem_urls": [
-     "https://painonsocial.com/blog/designer-client-problems-reddit",
-     "https://vulta.one/en/blog/vulta-for-agencies-managing-multiple-client-payments",
-     "https://www.proz.com/forum/business_issues/130687-vat_ue_invoice_problem-page2.html"
+     "https://fairquotehk.pages.dev/tools/freelance-late-payment-email-generator",
+     "https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html",
+     "https://www.tiktok.com/discover/how-to-nicely-tell-your-client-to-pay-on-time"
+    ]
+   }
+  },
+  {
+   "variant_id": "v3",
+   "pain": 0.592,
+   "founder_fit": 1.0,
+   "reachability": 1.0,
+   "buildability": 1.0,
+   "competition_gap": 0.0,
+   "score": 0.778,
+   "pain_signals": 4,
+   "pain_domains": 4,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 8.0,
+    "complaints": 0,
+    "alternatives": 6,
+    "channels": 4,
+    "skills_covered": [
+     "writing clear client emails"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 15.0,
+    "month_hours": 24.0,
+    "channel_sites": [
+     "fiverr.com",
+     "upwork.com"
+    ],
+    "problem_sites": [
+     "alemiguel.com",
+     "domestika.org",
+     "ramp.com",
+     "winvesta.in"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Freelance designers in Barcelona say they don’t know how to budget and feel unsure about pricing their work.",
+     "A Spanish freelance designer notes that a client told her she was too cheap, showing uncertainty about setting rates.",
+     "A freelance designer says that contracts are often just a “yes, let’s go” over WhatsApp, implying a lack of clear payment terms."
+    ],
+    "problem_grades": {
+     "first_hand": 2,
+     "article": 2
+    },
+    "problem_on_market": 2,
+    "problem_urls": [
+     "https://alemiguel.com/articulos/contrato-para-disenador-freelance/",
+     "https://ramp.com/blog/payment-terms",
+     "https://www.domestika.org/es/forums/946-cuestiones-laborales/topics/90016-tarifas-estandard-para-disenadores-graficos-freelance",
+     "https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them"
+    ]
+   }
+  },
+  {
+   "variant_id": "v4",
+   "pain": 0.2,
+   "founder_fit": 1.0,
+   "reachability": 1.0,
+   "buildability": 1.0,
+   "competition_gap": 0.0,
+   "score": 0.66,
+   "pain_signals": 1,
+   "pain_domains": 1,
+   "fit_rules_pass": true,
+   "inputs": {
+    "hours_per_week": 6.0,
+    "budget_usd": 150.0,
+    "skill_coverage": 1.0,
+    "budget_ok": true,
+    "build_hours": 12.0,
+    "complaints": 0,
+    "alternatives": 8,
+    "channels": 8,
+    "skills_covered": [
+     "writing clear client emails"
+    ],
+    "skills_learnable": [],
+    "skills_missing": [],
+    "help_affordable": false,
+    "budget_needed": 20.0,
+    "month_hours": 24.0,
+    "channel_sites": [
+     "freelancer.com",
+     "freelancer.in",
+     "graphicdesignforum.com",
+     "hostinger.com",
+     "linkedin.com",
+     "upwork.com"
+    ],
+    "problem_sites": [
+     "linkedin.com"
+    ],
+    "in_templates": true,
+    "problem_claims": [
+     "Freelance designers often sign contracts without clear terms, leading to unpaid invoices and disputes."
+    ],
+    "problem_grades": {
+     "first_hand": 1
+    },
+    "problem_on_market": 1,
+    "problem_urls": [
+     "https://www.linkedin.com/posts/simonlowtherdesign_go-freelance-without-the-guesswork-activity-7450406020079673344-tmaT"
     ]
    }
   }

@@ -1,14 +1,14 @@
 # Phase 2 · Step 2: Demand test and its goal
 
-**The test:** You create a simple landing page that explains the tool and asks agencies to sign up for early access. You share it in design community forums, Slack groups, and LinkedIn groups where small agencies gather. You ask participants to sign up with their email to get a free trial.
+**The test:** You create a simple landing page with a clear description of the $15 template pack and a 'Buy now' button. Share the link on freelance designer communities such as r/freelance, r/graphic_design, and on Upwork and Fiverr community forums. Encourage people to try the free sample and then purchase if they find it useful.
 
-**Why this goal:** If 50 agencies sign up, it shows that the target group cares about the problem and is willing to try the solution, proving the customer segment assumption.
+**Why this goal:** A 10% conversion rate shows that you have a good chance of selling the $15 template pack to new freelance designers, validating the price point.
 
 ## Goal set before any result existed
 
-- What is measured: waitlist sign-ups
-- Success means: 50
-- Time allowed: 30 days
-- Fingerprint of this goal: `sha256:272d93d11cdd67c35335d5c9c6778ac378b1ff57c9b8ea3414927860d34fa921`. It was written to the decision log when the goal was set, so anyone can check the goal wasn't changed after the results came in.
+- What is measured: visitor_signup_rate
+- Success means: 10%
+- Time allowed: 14 days
+- Fingerprint of this goal: `sha256:ad566ef2d68e0189937727a197a971025fa2e823dc46038125b8e8e053bef63b`. It was written to the decision log when the goal was set, so anyone can check the goal wasn't changed after the results came in.
 
 Lowest goals the team may propose (config/thresholds.toml): 30 waitlist sign-ups, or 5% of visitors signing up; at most 30 days.

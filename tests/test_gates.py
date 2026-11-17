@@ -302,10 +302,12 @@ def test_gate_memo_never_claims_demand_from_mocked_numbers(make_runtime, models,
                        "demand yet. Next, test pricing."}
     with rt.ctx.bound():
         memo = gate_reporter.run(rt.ctx, 2, {"gate": 2, "outcome": "go", "mocked_evidence": mocked}, {})
+        stop = gate_reporter.run(rt.ctx, 2, {"gate": 2, "outcome": "stop", "mocked_evidence": mocked}, {})
     text = memo.summary + " " + memo.explanation
     if mocked:
         assert "showing demand" not in text and "proves people want" not in text
         assert "practice numbers (MOCKED)" in memo.summary
+        assert memo.summary.startswith("Go ahead. ") and stop.summary.startswith("Stop here. ")   # recommendation kept
         assert "don’t prove real demand yet" in memo.explanation            # negated statements are kept
         assert "Next, test pricing." in memo.explanation
         assert any(e["action"] == "removed_mocked_demand_claim" for e in rt.ctx.store.log.entries)

@@ -29,7 +29,8 @@ Usage:
     python scripts/simulate_founder.py briefs/weak_meal_coach.md --follow      # follows the STOP
     python scripts/simulate_founder.py briefs/plausible_client_kit.md --demand-result 12 --follow-from 2
                                                     # practice demand test far below its target: Stage 2 STOP
-    venture export RUN_ID; venture export WEAK_RUN_ID --tag weak --append      # commit the demo run
+    venture export RUN_ID; venture export DEMAND_STOP_RUN_ID --tag demandstop --append;
+    venture export EXCLUDED_RUN_ID --tag excluded --append                   # commit the demo run
 """
 
 from __future__ import annotations

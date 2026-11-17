@@ -85,7 +85,7 @@ outputs/, decision_log.json   the committed demo run
 3. `uv run pytest -m live` checks both models.
 4. Plausible brief, all six phases: `uv run venture run briefs/plausible_client_kit.md` (interactive) or `uv run venture serve` and the web UI. The founder answers every question and makes every approval and gate decision; Phase 2 sign-ups and Phase 6 activity are entered as MOCKED values.
 5. Weak brief until it stops: `uv run venture run briefs/weak_meal_coach.md`; Gate 1 should recommend STOP (health product).
-6. Export: `uv run venture export <plausible_run_id>`, then `uv run venture export <weak_run_id> --tag weak --append` (weak-run files become `phase1_gate_weak_decision.md` and so on; both runs' log entries go to `decision_log.json`, each tagged with its run id).
+6. Export: `uv run venture export <plausible_run_id>`, then `uv run venture export <demand_stop_run_id> --tag demandstop --append` and `uv run venture export <excluded_run_id> --tag excluded --append` (their files become `phase2_gate_demandstop_decision.md`, `phase1_gate_excluded_decision.md` and so on; every run's log entries go to `decision_log.json`, each tagged with its run id).
 7. Fill the README `## Cost per run` line from the tokens in `decision_log.json`: `jq '[.[].tokens // 0] | add' decision_log.json`.
 8. `uv run pytest` again (the layout test checks the exported file names and log keys).
 

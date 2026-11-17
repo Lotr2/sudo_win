@@ -6,91 +6,91 @@
 
 ## In short
 
-Go ahead – the Agency Payment Workflow Tool meets the required score and has real evidence of the problem.
+Go ahead with the Payment Terms Cheat Sheet; it has enough evidence and fits your skills and budget.
 
 ## Why
 
-- The best version, "Agency Payment Workflow Tool", looks promising: the team found 3 real examples of people struggling with this problem on 3 different websites, it scores 66.4 out of 100 (needs 60), and it fits your skills, budget and time.
+- The best version, "Payment Terms Cheat Sheet", looks promising: the team found 4 real examples of people struggling with this problem on 4 different websites, it scores 77.8 out of 100 (needs 60), and it fits your skills, budget and time.
 
 ## What the team found
 
-We checked the idea against five criteria: evidence of the problem, fit with your skills, budget and time, places to reach customers, ability to build quickly, and room next to existing options. The Agency Payment Workflow Tool scored 66.4 out of 100, which is above the 60‑point threshold. It earned 16 of 30 points for evidence, because we found three real examples of agencies struggling to manage client payments. It also got full points for being buildable in about a month and for fitting your skill set and budget. The main area that could still improve is the number of places to reach customers, where it earned 13 of 20 points.
+The team checked whether people actually have the problem, whether you can build it, where to find customers, and if it can be made quickly. The Payment Terms Cheat Sheet scored 77.8 out of 100, mainly because it has 4 real examples of designers struggling with payment terms and it uses your writing skills and 8 hours of work. It also shows that customers can be reached on Fiverr and Upwork and that the product can be built in about a month. The only area that could be stronger is the lack of complaints about existing options, but that is not a blocker. Overall the version passes every check and is ready for the next stage.
 
 ## What you can do next
 
-- Ask a few small design agencies for quick feedback on the tool’s workflow.
-- Post a short survey in agency‑focused LinkedIn groups to confirm the pain.
-- Look for complaints about existing payment‑tracking tools to highlight gaps.
+- Ask 5 new freelance designers how they currently negotiate payment terms and note any gaps in their process
+- Search freelancer forums for posts where designers complain about unclear payment terms and add those complaints to your research
+- Create a short survey for designers on Upwork to confirm how many feel unsure about payment terms
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Create a Freelance Designer Payment Planner – a simple web tool that helps individual freelancers track invoices and deadlines; it uses your Figma and basic web skills and targets the same market. *It keeps the focus on payment tracking but for solo freelancers, a group you already know.*
-- **Product idea:** Offer a Proposal and Invoice Template Pack for UI/UX designers; this keeps the original idea and can be built quickly with your design and writing skills. *It matches your strengths and the original market you described.*
-- **Product idea:** Build a Client Communication Toolkit for freelancers working with agencies; it focuses on consistent email templates and could be sold as a downloadable pack. *It addresses a related pain point and uses the same skill set.*
-- **Product idea:** Develop a Payment Reminder Email Generator that auto‑creates polite late‑payment reminders; this could be a small web app or a template bundle. *It expands the email aspect of your original kit into a focused tool.*
-- **Customer group:** Launch a Design Agency Payment Dashboard that aggregates invoices from multiple clients into one view; this expands the web‑tool idea to larger agencies and uses your UX and web skills. *It builds on the successful Agency Payment Workflow Tool but targets bigger agencies.*
+- **Product idea:** Offer a quick “Late‑Payment Reminder Email Pack” that designers can drop into their inboxes *It uses the same writing skill set and targets designers who already have invoices*
+- **Customer group:** Target designers in Latin America who are just starting out *Your research shows similar pain points in other English‑speaking regions*
+- **Product idea:** Build a “Contract Negotiation Checklist” PDF for designers who are about to sign their first contract *It addresses a related need with a smaller scope*
+- **Market:** Apply the same approach to freelance copywriters who also struggle with payment terms *Copywriters share many of the same client‑interaction challenges*
+- **Product idea:** Create a “Pricing Strategy Guide” that helps designers set rates before they ask for payment terms *It tackles the root cause of uncertainty about payment terms*
 
 ## How each version scored
 
 Each version gets up to 100 points from five things. 60 points, plus enough real evidence and a good fit with you, are needed to go ahead.
 
-### Agency Payment Workflow Tool: 66.4 out of 100
+### Payment Terms Cheat Sheet: 77.8 out of 100
 
-*For small design agencies. A small web tool (like a calculator or planner).*
+*For new freelance designers just starting to negotiate contracts. A pack of ready-to-use templates.*
 
-- **Evidence that people have this problem: 16 of 30 points.** Found 3 real examples of people describing this problem or looking for help with it, on painonsocial.com, proz.com and vulta.one. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 3 of 3 are about your market. For example: “Designers report clients who disappear after receiving files, dispute invoices, or drag out payment for months” / “Many designers start projects without formal contracts, leading to unclear deliverables, payment disputes, and no legal protection when things go wrong”. Sources: [painonsocial.com](https://painonsocial.com/blog/designer-client-problems-reddit), [vulta.one](https://vulta.one/en/blog/vulta-for-agencies-managing-multiple-client-payments), [proz.com](https://www.proz.com/forum/business_issues/130687-vat_ue_invoice_problem-page2.html).
-- **Fit with your skills, budget and time: 21 of 25 points.** You already have what it takes for ux; you'd need help with web development; it needs about 20 hours (you have about 24 a month) and about $80 (your budget is $150).
-- **Places to reach these customers: 13 of 20 points.** These customers can be found on warriorforum.com and webflow.com.
-- **Can be built as a first version: 15 of 15 points.** It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 2 of 10 points.** Found 3 existing options but no complaints about them. Complaints show where you could do better.
+- **Evidence that people have this problem: 18 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on alemiguel.com, domestika.org, ramp.com and winvesta.in. Full marks need 5. Of these, 2 are people describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 2 of 4 are about your market (the others count less). For example: “Freelance designers in Barcelona say they don’t know how to budget and feel unsure about pricing their work” / “A Spanish freelance designer notes that a client told her she was too cheap, showing uncertainty about setting rates”. Sources: [alemiguel.com](https://alemiguel.com/articulos/contrato-para-disenador-freelance/), [ramp.com](https://ramp.com/blog/payment-terms), [domestika.org](https://www.domestika.org/es/forums/946-cuestiones-laborales/topics/90016-tarifas-estandard-para-disenadores-graficos-freelance), [winvesta.in](https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 8 hours (you have about 24 a month) and about $15 (your budget is $150).
+- **Places to reach these customers: 20 of 20 points.** These customers can be found on fiverr.com and upwork.com.
+- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 0 of 10 points.** Found 6 existing options but no complaints about them. Complaints show where you could do better.
 
 **Verdict:** Passes every check.
 
-### Proposal Template Pack: 43.2 out of 100
+### Late‑Payment Reminder Guide: 69.4 out of 100
 
-*For freelance UI/UX designers. A pack of ready-to-use templates.*
+*For freelance designers who have worked with at least one client in the past year. A written guide (an e-book or pdf).*
 
-- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and design; it needs about 8 hours (you have about 24 a month) and about $0 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 3 of 10 points.** Found 1 existing option but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 43.2 out of 100; 60 is needed.
-
-### Client Communication Toolkit: 43.2 out of 100
-
-*For freelance designers working with agencies. A pack of ready-to-use templates.*
-
-- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and design; it needs about 7 hours (you have about 24 a month) and about $0 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 3 of 10 points.** Found 1 existing option but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 43.2 out of 100; 60 is needed.
-
-### Freelance Designer Payment Planner: 41.5 out of 100
-
-*For freelance designers starting out. A small web tool (like a calculator or planner).*
-
-- **Evidence that people have this problem: 3 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on imagetotable.ai. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Freelancers feel overwhelmed by scattered invoice records across multiple platforms during tax season preparation” / “The lack of a single tool to track invoices creates a structural problem for freelancers with multiple clients”. Sources: [imagetotable.ai](https://imagetotable.ai/blog/freelancer-invoice-tracking-tax-problem).
-- **Fit with your skills, budget and time: 24 of 25 points.** You already have what it takes for figma and ux; basic web development can be learned quickly; it needs about 12 hours (you have about 24 a month) and about $50 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.
+- **Evidence that people have this problem: 9 of 30 points.** Found 3 real examples of people describing this problem or looking for help with it, on fairquotehk.pages.dev, justanswer.com and tiktok.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 0 of 3 are about your market (the others count less). For example: “Freelance designers and other business owners are looking for strategies to get paid on time and to handle late payments without sounding pushy” / “Freelance designers often struggle to follow up on late payments without sounding pushy”. Sources: [fairquotehk.pages.dev](https://fairquotehk.pages.dev/tools/freelance-late-payment-email-generator), [justanswer.com](https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html), [tiktok.com](https://www.tiktok.com/discover/how-to-nicely-tell-your-client-to-pay-on-time).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 10 hours (you have about 24 a month) and about $20 (your budget is $150).
+- **Places to reach these customers: 20 of 20 points.** These customers can be found on domestika.org, freelancer.com, selfmade-engine.github.io and upwork.com.
+- **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
 - **Room next to existing options: 0 of 10 points.** Found 5 existing options but no complaints about them. Complaints show where you could do better.
 
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1); it scores 41.5 out of 100; 60 is needed.
+**Verdict:** Passes every check.
+
+### Quick Negotiation Guide: 66.0 out of 100
+
+*For freelance designers who are about to sign their first contract. A written guide (an e-book or pdf).*
+
+- **Evidence that people have this problem: 6 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on linkedin.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 1 of 1 is about your market. For example: “Freelance designers often sign contracts without clear terms, leading to unpaid invoices and disputes”. Sources: [linkedin.com](https://www.linkedin.com/posts/simonlowtherdesign_go-freelance-without-the-guesswork-activity-7450406020079673344-tmaT).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 12 hours (you have about 24 a month) and about $20 (your budget is $150).
+- **Places to reach these customers: 20 of 20 points.** These customers can be found on freelancer.com, freelancer.in, graphicdesignforum.com and hostinger.com and 2 more.
+- **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 0 of 10 points.** Found 8 existing options but no complaints about them. Complaints show where you could do better.
+
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1).
+
+### Proposal & Invoice Pack: 40.0 out of 100
+
+*For freelance graphic designers in their first year. A pack of ready-to-use templates.*
+
+- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for graphic design and google docs; it needs about 12 hours (you have about 24 a month) and about $30 (your budget is $150).
+- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
+- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 0 of 10 points.** Found 21 existing options but no complaints about them. Complaints show where you could do better.
+
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.
 
 
 ## Key numbers
 
-- Best version of the idea: Agency Payment Workflow Tool
-- Score (out of 100): 66.4
-- Real examples of people with this problem: 3
-- Different websites those examples came from: 3
+- Best version of the idea: Payment Terms Cheat Sheet
+- Score (out of 100): 77.8
+- Real examples of people with this problem: 4
+- Different websites those examples came from: 4
 - Fits your skills, budget and time: yes
 
 ## What this is based on

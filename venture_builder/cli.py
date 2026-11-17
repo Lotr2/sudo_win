@@ -14,7 +14,7 @@
     venture gate RUN_ID go|repeat|pivot|stop [--variant V] [--note TEXT]   (interactive confirmation)
     venture confirm RUN_ID FIELD [VALUE]  confirm or correct an assumption
     venture ask RUN_ID QUESTION         ask anything about the run (answered from the record only)
-    venture export RUN_ID [--tag weak --append]   copy a run to outputs/ and decision_log.json
+    venture export RUN_ID [--tag excluded --append]   copy a run to outputs/ and decision_log.json
     venture runs                        list runs
 
 Approvals and gate decisions need an interactive terminal: you type part of the item's hash (or the gate
