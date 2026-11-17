@@ -1,56 +1,56 @@
-# Phase 2 · Step 1: Lean Canvas (Payment Terms Cheat Sheet)
+# Phase 2 · Step 1: Lean Canvas (Polite Reminder Email Templates)
 
 ## Problem
 
-New freelance designers often don’t know what payment terms to ask for or how to phrase them, causing confusion and delays.
+Freelance UX designers need polite reminder emails to keep clients responsive without sounding pushy.
 
-Source: https://ramp.com/blog/payment-terms, https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them
+Source: https://flodesk.com/tips/payment-reminder-email-templates, https://landolio.com/blog/polite-payment-reminder-emails, https://pynglo.com/blog/polite-late-payment-reminder-email, https://saldetto.com/for/freelance-ux-designers/sydney, https://weareindy.com/blog/how-to-politely-ask-for-payment, https://www.getjobber.com/academy/overdue-payment-reminder-templates/, https://www.hellobonsai.com/blog/gentle-reminder-email-example, https://www.saleshandy.com/blog/politely-remind-someone-reply-email/, https://www.sender.net/blog/reminder-email/
 
 ## Customer Segments
 
-New freelance designers just starting to negotiate contracts.
+Freelance UX designers who work on projects with clients.
 
-Source: ASSUMPTION
+Source: https://solidgigs.com/blog/how-to-become-a-highly-paid-freelance-ux-designer/, https://www.fiverr.com/categories/graphics-design/ux-design, https://www.linkedin.com/posts/jan-mraz_implement-these-6-tips-to-grow-your-freelance-activity-7322958874188152833-yiJz, https://www.upwork.com/hire/ux-designers/
 
 ## Unique Value
 
-A ready‑made template pack that shows exactly what to say in emails and contracts, so designers can set clear payment terms right away.
+A ready‑made pack of polite reminder email templates that saves time and keeps relationships friendly.
 
-Source: https://mangogranola.com/, https://ownedwork.com/, https://www.smartsheet.com/content/ms-word-invoice-templates, https://www.template.net/invoices/modern
+Source: https://landolio.com/blog/polite-payment-reminder-emails, https://pynglo.com/blog/polite-late-payment-reminder-email, https://weareindy.com/blog/how-to-politely-ask-for-payment, https://www.hellobonsai.com/blog/gentle-reminder-email-example, https://www.saleshandy.com/blog/politely-remind-someone-reply-email/, https://www.sender.net/blog/reminder-email/
 
 ## Solution
 
-A downloadable set of email and contract templates that explain payment terms in plain language and can be customized.
+Downloadable PDF or text templates that designers can copy, paste, and tweak for each client.
 
-Source: https://mangogranola.com/, https://ownedwork.com/, https://template.systems/agreement-template.html, https://www.smartsheet.com/content/ms-word-invoice-templates, https://www.template.net/invoices/modern
+Source: https://landolio.com/blog/polite-payment-reminder-emails, https://pynglo.com/blog/polite-late-payment-reminder-email, https://weareindy.com/blog/how-to-politely-ask-for-payment, https://www.hellobonsai.com/blog/gentle-reminder-email-example, https://www.saleshandy.com/blog/politely-remind-someone-reply-email/, https://www.sender.net/blog/reminder-email/
 
 ## Channels
 
-Sell through freelance marketplaces like Upwork and Fiverr, template sites like Template.net, and free tools like OwnedWork.
+Freelance marketplaces like Upwork, Fiverr, and specialized UX platforms, plus email outreach to existing contacts.
 
-Source: https://ownedwork.com/, https://www.fiverr.com/, https://www.smartsheet.com/content/ms-word-invoice-templates, https://www.template.net/invoices/modern, https://www.upwork.com/freelance-jobs/, https://www.upwork.com/freelance-jobs/graphic-design/
+Source: https://solidgigs.com/blog/how-to-become-a-highly-paid-freelance-ux-designer/, https://www.fiverr.com/categories/graphics-design/ux-design, https://www.upwork.com/hire/ux-designers/
 
 ## Revenue
 
-Charge $15 for the template pack.
+Sell the template pack for a one‑time fee, priced based on network feedback.
 
 Source: ASSUMPTION
 
 ## Costs
 
-Build the pack in 8 hours and spend $15 on design tools.
+Build the pack in about 4 hours, no upfront money needed.
 
 Source: ASSUMPTION
 
 ## Key Metrics
 
-Number of downloads, conversion rate from free to paid, and repeat customers.
+Track number of downloads, sales, and email open rates of the templates.
 
 Source: ASSUMPTION
 
 ## Unfair Advantage
 
-No direct competitor offering a tailored, ready‑made payment‑terms guide for new designers.
+First mover in a niche of UX designers needing polite reminders, with a simple ready‑made solution.
 
 Source: ASSUMPTION
 
@@ -58,21 +58,22 @@ Source: ASSUMPTION
 
 | Box | Score | Comment |
 |---|---|---|
-| problem | 5 | Evidence confirms the problem. |
-| customer_segments | 1 | No evidence that this segment exists. |
-| unique_value | 5 | Evidence supports the unique value proposition. |
-| solution | 5 | Evidence supports the solution. |
-| channels | 5 | Evidence supports the chosen channels. |
-| revenue | 1 | No evidence that customers will pay $15. |
-| costs | 1 | No evidence that costs are $15 and 8 hours. |
-| key_metrics | 1 | No evidence for key metrics. |
-| unfair_advantage | 1 | No evidence that there are no competitors. |
+| problem | 4 | Evidence shows freelance UX designers use polite reminder emails to manage client responses. |
+| customer_segments | 5 | Evidence confirms that freelance UX designers exist and work with clients. |
+| unique_value | 5 | Evidence shows ready‑made polite reminder templates are available and useful. |
+| solution | 5 | Evidence indicates downloadable templates can be used by designers. |
+| channels | 5 | Evidence shows these marketplaces are used by freelance UX designers. |
+| revenue | 2 | No evidence provided for pricing or willingness to pay. |
+| costs | 2 | No evidence that building takes 4 hours or costs nothing. |
+| key_metrics | 2 | No evidence that these metrics are relevant or measurable. |
+| unfair_advantage | 2 | No evidence that this is a first mover or that the niche is unique. |
 
 ### Riskiest assumptions
 
-- Revenue: $15 price point (risk 5 of 5; could sink the business if wrong)
-- Unfair advantage: no direct competitor (risk 4 of 5)
-- Customer segment: new freelance designers (risk 3 of 5)
+- Sell the template pack for a one‑time fee, priced based on network feedback. (risk 5 of 5; could sink the business if wrong)
+- Build the pack in about 4 hours, no upfront money needed. (risk 3 of 5)
+- Track number of downloads, sales, and email open rates of the templates. (risk 2 of 5)
+- First mover in a niche of UX designers needing polite reminders, with a simple ready‑made solution. (risk 2 of 5)
 
 ### Your answers to the reviewer's questions
 

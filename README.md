@@ -74,7 +74,7 @@ The system is organised like a small company: six departments, one per phase, ea
 
 ## Cost per run
 
-**$0.00 per run** (GPT-OSS-20B local; Gemma 4 31B, if used, on the Gemini API free tier). The committed demo run (`decision_log.json`, all on GPT-OSS-20B locally) took the main idea through all six stages in about 9 minutes and 300,000 tokens, the demand-test STOP in about 8 minutes and 590,000 tokens (two extra research rounds), and the excluded idea to its STOP in about 11 seconds and 6,000 tokens. In the evals, Stage 1 takes 40–70 seconds and 55,000–75,000 tokens per idea, and an excluded idea is stopped in about 10 seconds and 5,000 tokens (`evals/results.md`). Tokens are logged per call, so other setups can be costed from the log.
+**$0.00 per run** (GPT-OSS-20B local; Gemma 4 31B, if used, on the Gemini API free tier). The committed demo run (`decision_log.json`, all on GPT-OSS-20B locally) took the main idea through all six stages in about 5 minutes and 257,000 tokens, the demand-test STOP in about 3 minutes and 201,000 tokens, and the excluded idea to its STOP in about 9 seconds and 5,500 tokens. In the evals, Stage 1 takes 40–70 seconds and 55,000–75,000 tokens per idea, and an excluded idea is stopped in about 10 seconds and 5,000 tokens (`evals/results.md`). Tokens are logged per call, so other setups can be costed from the log.
 
 ## Demo video
 

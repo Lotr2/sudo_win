@@ -4,13 +4,13 @@
 
 | Option | Price | What's included |
 |---|---|---|
-| Basic | $27 | Design Brief Guide; Ready‑to‑use template |
-| Plus | $37 | Design Brief Guide; Ready‑to‑use template; Three additional templates |
-| Premium | $47 | Design Brief Guide; Ready‑to‑use template; Three additional templates; Video walkthrough |
+| Basic | $27 | PDF guide |
+| Standard | $37 | PDF guide; Bonus email templates |
+| Premium | $47 | PDF guide; Bonus email templates; 30‑minute coaching call |
 
 ## Why this price
 
-Similar tools are usually free, so a low price keeps it affordable for new freelancers. A $27 base price gives value while still being easy to buy. Extra tiers add optional templates and a short video walkthrough for those who want more depth, but the core guide is always included.
+We couldn't find any direct price quotes for similar guides. Digital guides for freelancers usually sell between $20 and $50. A $27 price point keeps it affordable for new freelancers while covering production costs. You can test this price and adjust based on early sales.
 
 Sources: a reasoned guess (ASSUMPTION): no sourced prices back it yet
 

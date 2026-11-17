@@ -7,35 +7,40 @@ The numbers here are practice data (MOCKED), so they don't count as real validat
 
 ## In short
 
-Go ahead to the next stage, but remember the conversion rate was based on mock data – you need real numbers before you can be sure people want this.
+Go ahead. These are practice numbers (MOCKED): they say nothing yet about whether people want this, and real numbers are needed first.
 
 ## Why
 
-- The demand test reached 10%, which is 100% of the target of 10% set in advance.
+- The demand test reached 50, which is 100% of the target of 50 set in advance.
 
 ## What the team found
 
-The test checked how many visitors who signed up for the free guide also bought the paid add‑on. The mock result hit the 10% target, so the code says "go". However, because the data were simulated, it does not prove that real users will pay. The idea scores well on problem, unique value, solution and channels, but it is weak on knowing who the customers are, how much they will pay, what the costs are, what key metrics matter, and whether it has a first‑mover edge. To move forward you need to confirm the customer segment, test a real price, estimate costs, decide on key metrics, and find a unique advantage.
+We checked how many designers signed up for the waitlist. The goal was 50 sign‑ups and the practice test reached that number, so the target was met. However, those numbers were mocked, so they don’t prove that real designers are interested. The review shows the idea has a clear problem and useful value, but it lacks evidence on who the target customers are, how much they would pay, and what the costs would be. To move forward, you need real data on actual sign‑ups and on whether designers are willing to pay for the guide.
 
-What_would_change_it:
-- Reach out to 10 freelance designers and ask if they would buy a concise brief template and how much.
-- Run a small paid test on a platform like Upwork to see how many actually purchase the add‑on at a set price.
-- Draft a simple cost sheet for hosting, content updates and marketing to see if the numbers look realistic.
+## What you can do next
 
-other_directions:
-- Target design agencies instead of freelancers: they may have larger budgets for brief templates.
-- Offer a free checklist of brief questions as a smaller product to test interest before the full guide.
-- Apply the brief‑template idea to copywriters who also struggle with client briefs.
-- Build a community forum for designers to discuss brief challenges, then sell the template as a premium add‑on.
-- Create a quick video series explaining brief best practices and upsell the full guide to viewers.
+- Run a real waitlist campaign and collect at least 50 actual sign‑ups from freelance designers.
+- Ask those sign‑ups how much they would pay for a rate‑negotiation guide and record their answers.
+- Estimate the cost of creating and delivering the guide by listing the time and tools needed and comparing that to the expected price.
+- Share the results with a small group of designers to confirm the guide’s usefulness before launching a full sale.
+
+## Other directions worth considering
+
+If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
+
+- **Customer group:** Offer a free webinar on rate negotiation for designers in a nearby city to test interest in a live format. *You already know designers struggle with rates, and a webinar can attract a local audience with less competition.*
+- **Product idea:** Create a short checklist of key negotiation points that designers can download for free. *A lightweight product lets you validate demand and collect emails without heavy development.*
+- **Market:** Apply the same guide concept to freelance writers who also face rate anxiety. *Your research shows writers also negotiate rates, so the same scripts could work with minimal changes.*
+- **Customer group:** Target design agencies that hire freelancers, offering them a bundle of negotiation templates. *Agencies need to manage many freelancers, so they may value a ready‑made guide.*
+- **Product idea:** Build a simple online calculator that estimates a designer’s ideal hourly rate based on experience and location. *A calculator is easy to build, provides value, and can lead to deeper engagement with the guide.*
 
 ## Key numbers
 
-- Goal set in advance: 0.1
-- Result: 0.1
+- Goal set in advance: 50
+- Result: 50
 - Share of the goal reached: 100%
-- What was measured: paid add‑on conversion rate
-- Risks that could sink the business: revenue
+- What was measured: waitlist sign-ups
+- Risks that could sink the business: Freelance designers who feel scared to say no or raise rates., Sell the guide for a one‑time fee.
 
 ## What this is based on
 

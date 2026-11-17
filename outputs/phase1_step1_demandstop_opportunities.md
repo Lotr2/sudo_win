@@ -1,151 +1,132 @@
 # Stage 1: Versions of your idea and what the research found
 
-*Your idea:* a kit that helps freelance designers get paid on time with proposal and invoice templates, polite late-payment reminder emails, and a short guide on when to send what
+*Your idea:* A digital kit with proposal and invoice templates, polite late-payment reminder emails, and a short guide to help freelance designers get paid on time.
 
 The team turned your idea into a few small, sellable versions, then searched the web for real people describing the problem, existing competitors, and places where these customers gather. Anything without a source is marked as a guess (ASSUMPTION).
 
-## 1. Proposal & Invoice Pack (40.0 out of 100)
+## 1. Proposal & Invoice Guide (50.3 out of 100)
 
-- **Who it's for:** freelance graphic designers in their first year
-- **Their problem:** you find it hard to create professional proposals and invoices that clients trust
-- **What you'd make:** a pack of ready-to-use templates
-- **Effort:** about 12 hours of work and $30
-
-### What the research found
-
-**Existing options:**
-- There are free proposal templates available for freelance graphic designers on sites like Template.net, Canva, and PDFfiller. ([aiproposer.com](https://aiproposer.com/guides/upwork-proposals/freelance-proposal-template), [canva.com](https://www.canva.com/proposals/templates/), [template.net](https://www.template.net/graphic/320))
-- There are several free template packs for graphic design proposals and invoices available online. ([aiproposer.com](https://aiproposer.com/templates/category/design), [invoicehome.com](https://invoicehome.com/), [invoicemaker.com](https://invoicemaker.com/))
-- There are several free proposal templates for freelance graphic designers available on template.net, such as the One Page Freelance Web Designer Proposal Template and the Freelance Graphic Design Proposal Template. ([template.net](https://www.template.net/proposals/freelancer))
-- Pdffiller.com offers printable proposal templates for freelance graphic designers, including 17 fillable PDF forms. ([pdffiller.com](https://www.pdffiller.com/en/catalog/freelance-graphic-designer-proposal.htm))
-- Examples.com provides a graphic design project proposal template that advises on tailoring the aesthetic to the client. ([examples.com](https://www.examples.com/business/graphic-design-proposal.html))
-- Pinterest hosts a Freelance Proposal Template that claims to streamline proposal creation for designers and creatives. ([pinterest.com](https://www.pinterest.com/ideas/how-to-invoice-for-graphic-design-services/954871734629/), [pinterest.com](https://www.pinterest.com/pin/if-youre-a-professional-freelancer-or-trying-to-look-like-one-you-need-to-be-sending-proposals-when-to-use-a-propos--586523551520797875/))
-- Invoicey.io offers free invoice templates for graphic designers, including Word and PDF options with automatic numbering and VAT calculation. ([invoicey.io](https://invoicey.io/templates/graphic-designer-invoice))
-- Invoicepad.net provides a free PDF generator for graphic designer invoices, allowing users to create clean invoices without sign‑up or watermarks. ([invoicepad.net](https://invoicepad.net/invoice-template/graphic-designer/))
-- Venngage offers a minimalist invoice template that can be customized with branding and turned into engaging design pieces. ([venngage.com](https://venngage.com/templates/invoices/minimalist-clean-simple-graphic-design-invoice-75df84b3-63f5-473a-aff3-06aec30eda81))
-- Getinvoza.com supplies a free graphic design invoice template for services such as logos, branding, revisions, licensing and creative services. ([getinvoza.com](https://getinvoza.com/graphic-designer-invoice-template))
-- Aviy.ai provides a free graphic designer invoice template with line items, payment terms and deposit norms to help creatives get paid faster. ([aviy.ai](https://aviy.ai/blog/graphic-designer-invoice-template))
-**What existing options cost:**
-- The invoice generator on Invoice-Generator.com allows users to create a professional PDF invoice for free. ([invoice-generator.com](https://invoice-generator.com/))
-
-### Score
-
-- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for graphic design and google docs; it needs about 12 hours (you have about 24 a month) and about $30 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 21 existing options but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.
-
-## 2. Late‑Payment Reminder Guide (69.4 out of 100)
-
-- **Who it's for:** freelance designers who have worked with at least one client in the past year
-- **Their problem:** you struggle to follow up on late payments without sounding pushy
+- **Who it's for:** junior web designers
+- **Their problem:** I don't know how to structure proposals and invoices for clients
 - **What you'd make:** a written guide (an e-book or PDF)
-- **Effort:** about 10 hours of work and $20
+- **Effort:** about 10 hours of work and $0
 
 ### What the research found
 
 **People with the problem:**
-- Freelance designers often struggle to follow up on late payments without sounding pushy. ([justanswer.com](https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html))
+- Junior web designers are unsure how to structure proposals and invoices for clients. ([warriorforum.com](https://www.warriorforum.com/website-design/541620-web-designer-proposal-tool-clients.html))
 **Signs people want a solution:**
-- Freelance designers and other business owners are looking for strategies to get paid on time and to handle late payments without sounding pushy. ([tiktok.com](https://www.tiktok.com/discover/how-to-nicely-tell-your-client-to-pay-on-time))
-- Freelance designers look for tools that help them chase late invoices without feeling awkward. ([fairquotehk.pages.dev](https://fairquotehk.pages.dev/tools/freelance-late-payment-email-generator))
+- Junior web designers are looking for a tool to create proposals for clients. ([warriorforum.com](https://www.warriorforum.com/website-design/541620-web-designer-proposal-tool-clients.html))
 **Where these customers gather:**
-- A Spanish community page lists non‑paying clients that designers can use to avoid them. ([domestika.org](https://www.domestika.org/es/forums/939-off-topic/topics/86435-lista-negra-de-estudios-y-agencias-que-no-pagan-a-sus-freelance))
-- Freelance designers use online tools like the one on selfmade-engine.github.io to track invoices and overdue payments. ([selfmade-engine.github.io](https://selfmade-engine.github.io/selfmade-site/p/freelance-designer-unpaid-invoice-tracker/))
-- Freelance designers often use platforms like Upwork, Freelancer, and Fiverr to find work and manage clients. ([freelancer.com](https://www.freelancer.com/), [upwork.com](https://www.upwork.com/hire/graphic-designers/), [upwork.com](https://www.upwork.com/work))
+- Junior web designers gather on Warrior Forum to discuss proposal tools. ([warriorforum.com](https://www.warriorforum.com/website-design/541620-web-designer-proposal-tool-clients.html))
 **Existing options:**
-- There are free email templates that freelancers can use to politely remind clients about late payments, such as those offered by docstoc.io and golancer.io. ([docstoc.io](https://docstoc.io/free-templates/freelancer-polite-payment-reminder), [golancer.io](https://golancer.io/tools/payment-reminder-email))
-- There are several free payment reminder template services for freelancers, such as Slashit.app, InvoiceFly, Docstoc, Template.net, HubSpot, and Invoice Ninja. ([slashit.app](https://slashit.app/templates/payment-reminder-templates-for-freelancers))
-- Saldetto is a payment reminder app that automates follow‑ups for freelancers. ([saldetto.com](https://saldetto.com/blog/best-payment-reminder-app-for-freelancers))
-- Babara.app offers polite payment reminder templates for graphic, brand and web designers. ([babara.app](https://babara.app/templates/designers))
+- There are free proposal templates available on sites like projectmanager.com, template.net, and Pinterest that can be customized for web design projects. ([uk.pinterest.com](https://uk.pinterest.com/ideas/web-design-project-proposal/915134231317/), [projectmanager.com](https://www.projectmanager.com/blog/how-to-write-a-proposal), [template.net](https://www.template.net/proposals))
+- Free invoice generators such as invoice-generator.com and invoicesimple.com let you create professional PDFs with line items and taxes. ([invoice-generator.com](https://invoice-generator.com/), [invoicesimple.com](https://www.invoicesimple.com/invoice-generator))
+- Acctual.com offers a web‑design invoice guide and free template to help designers send invoices quickly. ([acctual.com](https://www.acctual.com/blog))
 **What existing options cost:**
-- Saldetto starts free for a limited number of active invoices and then charges based on volume. ([saldetto.com](https://saldetto.com/blog/best-payment-reminder-app-for-freelancers))
+- All the mentioned proposal and invoice tools are free to use. ([invoice-generator.com](https://invoice-generator.com/), [acctual.com](https://www.acctual.com/blog), [invoicesimple.com](https://www.invoicesimple.com/invoice-generator))
 
 ### Score
 
-- **Evidence that people have this problem: 9 of 30 points.** Found 3 real examples of people describing this problem or looking for help with it, on fairquotehk.pages.dev, justanswer.com and tiktok.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 0 of 3 are about your market (the others count less). For example: “Freelance designers and other business owners are looking for strategies to get paid on time and to handle late payments without sounding pushy” / “Freelance designers often struggle to follow up on late payments without sounding pushy”. Sources: [fairquotehk.pages.dev](https://fairquotehk.pages.dev/tools/freelance-late-payment-email-generator), [justanswer.com](https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html), [tiktok.com](https://www.tiktok.com/discover/how-to-nicely-tell-your-client-to-pay-on-time).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 10 hours (you have about 24 a month) and about $20 (your budget is $150).
-- **Places to reach these customers: 20 of 20 points.** These customers can be found on domestika.org, freelancer.com, selfmade-engine.github.io and upwork.com.
+- **Evidence that people have this problem: 4 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on warriorforum.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 0 of 1 are about your market (the others count less). For example: “Junior web designers are unsure how to structure proposals and invoices for clients”. Sources: [warriorforum.com](https://www.warriorforum.com/website-design/541620-web-designer-proposal-tool-clients.html).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and graphic design; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 7 of 20 points.** These customers can be found on warriorforum.com.
 - **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 5 existing options but no complaints about them. Complaints show where you could do better.
+- **Room next to existing options: 0 of 10 points.** Found 6 existing options but no complaints about them. Complaints show where you could do better.
 
-**Verdict:** Passes every check.
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1); it scores 50.3 out of 100; 60 is needed.
 
-## 3. Payment Terms Cheat Sheet (77.8 out of 100)
+## 2. Late Payment Tracker Tool (57.5 out of 100)
 
-- **Who it's for:** new freelance designers just starting to negotiate contracts
-- **Their problem:** you don’t know what payment terms to ask for or how to phrase them
-- **What you'd make:** a pack of ready-to-use templates
-- **Effort:** about 8 hours of work and $15
+- **Who it's for:** freelance designers managing multiple clients
+- **Their problem:** I can't keep track of overdue invoices and follow‑ups
+- **What you'd make:** a small web tool (like a calculator or planner)
+- **Effort:** about 20 hours of work and $30
 
 ### What the research found
 
 **People with the problem:**
-- Freelance designers in Barcelona say they don’t know how to budget and feel unsure about pricing their work. ([domestika.org](https://www.domestika.org/es/forums/946-cuestiones-laborales/topics/90016-tarifas-estandard-para-disenadores-graficos-freelance))
-- A Spanish freelance designer notes that a client told her she was too cheap, showing uncertainty about setting rates. ([domestika.org](https://www.domestika.org/es/forums/946-cuestiones-laborales/topics/90016-tarifas-estandard-para-disenadores-graficos-freelance))
-- A freelance designer says that contracts are often just a “yes, let’s go” over WhatsApp, implying a lack of clear payment terms. ([alemiguel.com](https://alemiguel.com/articulos/contrato-para-disenador-freelance/))
-- New freelance designers often face confusion and delays because they use vague payment terms like “Pay when you can” or “Net 30” without specifics. ([winvesta.in](https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them))
+- Freelance graphic designers struggle with manual invoicing and overdue payments. ([clacky.ai](https://clacky.ai/blog/case-study-validating-micro-saas-idea))
+- Freelance designers often struggle to get paid and feel frustrated when clients do not respond to invoices. ([justanswer.com](https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html))
 **Signs people want a solution:**
-- Freelancers look for step‑by‑step guidance on how to set clear payment terms that protect their cash flow while staying professional. ([ramp.com](https://ramp.com/blog/payment-terms))
+- Freelancers are looking for tools to automate invoice reminders and track overdue invoices. ([intuitional.io](https://www.intuitional.io/blog/automate-invoice-reminders-for-freelancers))
+- There is a need for a simple web tool that lets freelance designers keep all invoices in one place and see which ones are overdue, so they can chase the right clients first. ([selfmade-engine.github.io](https://selfmade-engine.github.io/selfmade-site/p/freelance-designer-unpaid-invoice-tracker/))
 **Where these customers gather:**
-- Freelance graphic designers gather on platforms like Fiverr, Upwork, Freelancer, and connectfreelance.ae. ([upwork.com](https://www.upwork.com/freelance-jobs/), [upwork.com](https://www.upwork.com/freelance-jobs/graphic-design/))
-- Freelance designers gather on platforms such as Upwork to find clients and negotiate contracts. ([upwork.com](https://www.upwork.com/hire/graphic-designers/))
-- Freelance designers also use Fiverr to showcase services and connect with clients. ([fiverr.com](https://www.fiverr.com/))
+- Freelancers discuss invoicing frustrations on Reddit and LinkedIn. ([clacky.ai](https://clacky.ai/blog/case-study-validating-micro-saas-idea))
 **Existing options:**
-- There are free template packs for designers, developers, plumbers, and consultants that let you add your logo and tweak colours to look professional. ([ownedwork.com](https://ownedwork.com/))
-- A free freelance design contract template is available for graphic designers, branding projects, website design, and creative services that can be copied, customized, and downloaded instantly. ([mangogranola.com](https://mangogranola.com/))
-- Free modern invoice templates with payment terms are offered that are customizable and printable for professionals. ([template.net](https://www.template.net/invoices/modern))
-- Free invoice templates for Microsoft Word are available that include payment terms and agreements for freelance writers. ([smartsheet.com](https://www.smartsheet.com/content/ms-word-invoice-templates))
-- Free invoice generator tools exist for UK freelancers and sole traders. ([ownedwork.com](https://ownedwork.com/))
-- Free modern invoice templates with payment terms and AI invoice builders are offered. ([template.net](https://www.template.net/invoices/modern))
-- There is a template pack called “Professional template” available on ownedwork.com that includes payment terms for freelance designers. ([ownedwork.com](https://ownedwork.com/))
-- There are free invoice templates available on Pinterest for healthcare and legal professionals ([ph.pinterest.com](https://ph.pinterest.com/pin/1139058930796365745/))
-- The website template.systems offers a client agreement template for $30 ([template.systems](https://template.systems/agreement-template.html))
-**What existing options cost:**
-- A client agreement template costs $30.00 ([template.systems](https://template.systems/agreement-template.html))
+- Taskora24 is a web tool that bundles client management, project tracking, time tracking, quotes, invoices and automated reminders for freelancers. ([taskora24.com](https://taskora24.com/))
+- Toggle Time Tracker tracks average days‑to‑payment for each client and shows which clients pay fast and which need tighter terms. ([toggletimetracker.com](https://www.toggletimetracker.com/blog/how-to-get-clients-to-pay-on-time-freelancer))
+- GetItBack is invoice reminder software aimed at freelancers and small agencies, helping them send reminders when clients owe money. ([getitback.online](https://getitback.online/))
 
 ### Score
 
-- **Evidence that people have this problem: 18 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on alemiguel.com, domestika.org, ramp.com and winvesta.in. Full marks need 5. Of these, 2 are people describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 2 of 4 are about your market (the others count less). For example: “Freelance designers in Barcelona say they don’t know how to budget and feel unsure about pricing their work” / “A Spanish freelance designer notes that a client told her she was too cheap, showing uncertainty about setting rates”. Sources: [alemiguel.com](https://alemiguel.com/articulos/contrato-para-disenador-freelance/), [ramp.com](https://ramp.com/blog/payment-terms), [domestika.org](https://www.domestika.org/es/forums/946-cuestiones-laborales/topics/90016-tarifas-estandard-para-disenadores-graficos-freelance).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 8 hours (you have about 24 a month) and about $15 (your budget is $150).
-- **Places to reach these customers: 20 of 20 points.** These customers can be found on fiverr.com and upwork.com.
+- **Evidence that people have this problem: 18 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on clacky.ai, intuitional.io, justanswer.com and selfmade-engine.github.io. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 3 are articles or other pages (these count a little less); 3 of 4 are about your market (the others count less). For example: “Freelance graphic designers struggle with manual invoicing and overdue payments” / “Freelancers are looking for tools to automate invoice reminders and track overdue invoices”. Sources: [clacky.ai](https://clacky.ai/blog/case-study-validating-micro-saas-idea), [selfmade-engine.github.io](https://selfmade-engine.github.io/selfmade-site/p/freelance-designer-unpaid-invoice-tracker/), [intuitional.io](https://www.intuitional.io/blog/automate-invoice-reminders-for-freelancers).
+- **Fit with your skills, budget and time: 23 of 25 points.** You already have what it takes for figma; basic web development can be learned quickly; it needs about 20 hours (you have about 24 a month) and about $30 (your budget is $150).
+- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
+- **Can be built as a first version: 15 of 15 points.** It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 2 of 10 points.** Found 3 existing options but no complaints about them. Complaints show where you could do better.
+
+**Verdict:** Held back because it scores 57.5 out of 100; 60 is needed.
+
+## 3. Polite Reminder Email Templates (71.5 out of 100)
+
+- **Who it's for:** freelance UX designers
+- **Their problem:** I want to remind clients without sounding rude or pushy
+- **What you'd make:** a pack of ready-to-use templates
+- **Effort:** about 4 hours of work and $0
+
+### What the research found
+
+**Signs people want a solution:**
+- People are looking for guidance on writing polite reminder emails. ([saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/))
+- Freelance UX designers look for payment reminder email templates to get paid faster ([getjobber.com](https://www.getjobber.com/academy/overdue-payment-reminder-templates/))
+- There are many resources offering polite reminder email templates for clients. ([flodesk.com](https://flodesk.com/tips/payment-reminder-email-templates), [hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example), [saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/))
+**Where these customers gather:**
+- Freelance UX designers often use Upwork to find clients. ([upwork.com](https://www.upwork.com/hire/ux-designers/))
+- LinkedIn is a common platform for UX designers to connect with clients. ([linkedin.com](https://www.linkedin.com/posts/jan-mraz_implement-these-6-tips-to-grow-your-freelance-activity-7322958874188152833-yiJz))
+- Fiverr is used by UX designers to offer services. ([fiverr.com](https://www.fiverr.com/categories/graphics-design/ux-design))
+- Solidgigs lists specialized platforms for UX designers. ([solidgigs.com](https://solidgigs.com/blog/how-to-become-a-highly-paid-freelance-ux-designer/))
+- WeAreIndy provides payment reminder templates for freelancers. ([weareindy.com](https://weareindy.com/blog/how-to-politely-ask-for-payment))
+- Freelance UX designers in Sydney gather on Saldetto to automate their payment reminders. ([saldetto.com](https://saldetto.com/for/freelance-ux-designers/sydney))
+**Existing options:**
+- There are several free or paid email template packs that offer polite reminder emails for freelancers, such as those on sender.net, landolio.com, hellobonsai.com, pynglo.com, saleshandy.com, and weareindy.com. ([landolio.com](https://landolio.com/blog/polite-payment-reminder-emails), [pynglo.com](https://pynglo.com/blog/polite-late-payment-reminder-email), [weareindy.com](https://weareindy.com/blog/how-to-politely-ask-for-payment))
+
+### Score
+
+- **Evidence that people have this problem: 12 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on flodesk.com, getjobber.com, hellobonsai.com and saleshandy.com. Full marks need 5. Of these, 4 are articles or other pages (these count a little less); 0 of 4 are about your market (the others count less). For example: “People are looking for guidance on writing polite reminder emails” / “Freelance UX designers look for payment reminder email templates to get paid faster”. Sources: [flodesk.com](https://flodesk.com/tips/payment-reminder-email-templates), [getjobber.com](https://www.getjobber.com/academy/overdue-payment-reminder-templates/), [hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for email writing; it needs about 4 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 20 of 20 points.** These customers can be found on fiverr.com, linkedin.com, saldetto.com and solidgigs.com and 2 more.
 - **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
 - **Room next to existing options: 0 of 10 points.** Found 6 existing options but no complaints about them. Complaints show where you could do better.
 
 **Verdict:** Passes every check.
 
-## 4. Quick Negotiation Guide (66.0 out of 100)
+## 4. International Invoice Converter (49.5 out of 100)
 
-- **Who it's for:** freelance designers who are about to sign their first contract
-- **Their problem:** you feel unsure about how to negotiate payment terms with new clients
+- **Who it's for:** freelance designers working with overseas clients
+- **Their problem:** I struggle with currency and tax formatting for international invoices
 - **What you'd make:** a written guide (an e-book or PDF)
-- **Effort:** about 12 hours of work and $20
+- **Effort:** about 6 hours of work and $0
 
 ### What the research found
 
-**People with the problem:**
-- Freelance designers often sign contracts without clear terms, leading to unpaid invoices and disputes. ([linkedin.com](https://www.linkedin.com/posts/simonlowtherdesign_go-freelance-without-the-guesswork-activity-7450406020079673344-tmaT))
+**Signs people want a solution:**
+- Freelancers look for free, easy-to-use invoice generators that support international payments and currency conversion ([wise.com](https://wise.com/us/invoice-generator/))
 **Where these customers gather:**
-- Freelance designers gather and discuss contract issues on the Graphic Design Forum. ([graphicdesignforum.com](https://www.graphicdesignforum.com/t/freelance-designer-dilemma/15243/3))
-- Freelance designers often turn to online marketplaces such as Freelancer, Upwork, and Workana to find clients and discuss contracts. ([freelancer.com](https://www.freelancer.com/))
-- Freelance designers gather on platforms like Upwork, Fiverr, and Freelancer to find and secure work. ([freelancer.in](https://www.freelancer.in/), [hostinger.com](https://www.hostinger.com/tutorials/best-freelance-websites/), [upwork.com](https://www.upwork.com/freelance-jobs/))
-- Freelance designers use LinkedIn to learn about contract negotiation and share best practices. ([linkedin.com](https://www.linkedin.com/posts/alan-brian-dardic_i-manage-1b-in-payment-volume-heres-what-activity-7396460523078381568-6fK4), [linkedin.com](https://www.linkedin.com/posts/gading_5-things-to-put-in-your-design-contract-activity-7222182982537658369-bOXq))
+- Freelancers use platforms like Wise, Remotify, and Xolo to handle invoicing, payments, and compliance for international clients ([remotify.co](https://www.remotify.co/))
 **Existing options:**
-- There are free downloadable freelance contract templates available for designers. ([examples.com](https://www.examples.com/business/freelance-designer-contract-templates.html), [pinterest.com](https://www.pinterest.com/pin/freelance-contracts-what-should-i-include--368310075777921018/), [sample.net](https://www.sample.net/business/contracts/freelance-contract/))
-- Bonsai offers a free online contract creator that helps freelance designers draft and review client contracts. ([hellobonsai.com](https://www.hellobonsai.com/blog/how-to-review-a-contract))
-- Upwork is a marketplace where freelance web designers can find clients and submit proposals. ([upwork.com](https://www.upwork.com/hire/web-designers/))
-- Fiverr provides a platform for designers to offer services and find freelance work. ([fiverr.com](https://www.fiverr.com/))
-- There are existing guides and templates that help freelance designers create contracts and negotiate terms. ([99designs.com](https://99designs.com/blog/tips/guide-freelance-design-contract/))
+- Wise offers a free invoice generator that lets freelancers create and share invoices and receive international payments at no cost. ([wise.com](https://wise.com/us/invoice-generator/))
+- Remotify enables freelancers to invoice international clients and get paid in multiple currencies without setting up a company. ([remotify.co](https://www.remotify.co/))
+- InvoiceCave provides a free currency converter that works for international invoicing and global business. ([invoicecave.com](https://www.invoicecave.com/tools/currency-converter))
+- InvoiceNinja is free invoicing software for freelancers and small businesses, allowing them to send invoices and track time and expenses. ([invoiceninja.com](https://invoiceninja.com/))
+- Paymo offers invoicing software and compares tools for freelancers, highlighting options like Hiveage and Harvest. ([paymoapp.com](https://www.paymoapp.com/blog/invoicing-software/))
 
 ### Score
 
-- **Evidence that people have this problem: 6 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on linkedin.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 1 of 1 is about your market. For example: “Freelance designers often sign contracts without clear terms, leading to unpaid invoices and disputes”. Sources: [linkedin.com](https://www.linkedin.com/posts/simonlowtherdesign_go-freelance-without-the-guesswork-activity-7450406020079673344-tmaT).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 12 hours (you have about 24 a month) and about $20 (your budget is $150).
-- **Places to reach these customers: 20 of 20 points.** These customers can be found on freelancer.com, freelancer.in, graphicdesignforum.com and hostinger.com and 2 more.
+- **Evidence that people have this problem: 3 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on wise.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Freelancers look for free, easy-to-use invoice generators that support international payments and currency conversion”. Sources: [wise.com](https://wise.com/us/invoice-generator/).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for research and writing; it needs about 6 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 7 of 20 points.** These customers can be found on remotify.co.
 - **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 8 existing options but no complaints about them. Complaints show where you could do better.
+- **Room next to existing options: 0 of 10 points.** Found 5 existing options but no complaints about them. Complaints show where you could do better.
 
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1).
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1); it scores 49.5 out of 100; 60 is needed.

@@ -6,37 +6,37 @@
 
 ## In short
 
-Go ahead – the guide meets all quality checks, so you can launch it.
+Go ahead and launch the Rate Negotiation Guide for Freelance Designers – it passed all quality checks.
 
 ## Why
 
-- The product passes all 4 quality checks (after 1 build round(s)).
+- The product passes all 4 quality checks (after 2 build round(s)).
 
 ## What the team found
 
-We checked the guide for clear steps, a usable template, helpful tips, and a checklist. All four quality checks were passed after one build round. The guide is ready for your freelance designer audience. The main reason to move forward is that it meets every quality standard we set. Now you can focus on marketing and collecting user feedback.
+You built a PDF guide that shows designers how to set and raise rates with confidence. The product was tested twice and met every quality check: clear framework, proven scripts, anchoring techniques, and ready‑to‑use email templates. The final version is ready for customers. Since it passed all checks, you can move forward. If you want to improve it further, consider adding a quick reference cheat sheet or more real‑world examples. The next step is to set a price, create a simple landing page, and start collecting email addresses.
 
 ## What you can do next
 
-- Launch the guide on your website and offer it for free to start building a user base.
-- Promote the guide on freelance platforms and design communities to reach your target audience.
-- Collect early feedback from a few designers and use it to make quick improvements.
+- Set a launch price and add a short landing page that explains the guide’s benefits.
+- Create a simple email capture form and offer a free sample page to attract early buyers.
+- Plan a small email sequence to nurture leads and encourage purchases.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Create a short video walkthrough of the guide for YouTube and social media. *It uses the same content but reaches people who prefer visual learning and can drive traffic back to the guide.*
-- **Customer group:** Offer the guide to design agencies as a resource for their in-house designers. *Agencies need clear briefs for multiple projects, so the guide fits their workflow and expands your market.*
-- **Product idea:** Bundle the guide with a set of editable brief templates for popular design tools. *Adding templates increases value for designers who want ready‑to‑use files and can be sold as a premium add‑on.*
-- **Market:** Adapt the guide for copywriters and content creators who also need brief templates. *Copywriters face similar brief challenges, and your existing structure can be reused with minimal changes.*
-- **Product idea:** Turn the guide into an interactive checklist app for mobile devices. *An app makes it easy for designers to use the checklist on the go and can attract a tech‑savvy audience.*
+- **Product idea:** Create a short video series that walks designers through each section of the guide. *It uses the same content but reaches people who prefer visual learning.*
+- **Customer group:** Offer the guide to design agencies looking to train their freelancers. *Agencies need rate‑setting tools for their teams and can buy in bulk.*
+- **Product idea:** Publish a downloadable cheat‑sheet with key scripts and templates. *It tests the same need in a lighter, cheaper format.*
+- **Market:** Adapt the guide for freelance copywriters and writers. *Copywriters face similar rate‑setting challenges and you already have the structure.*
+- **Product idea:** Build an interactive online quiz that helps designers calculate their ideal rate. *It engages users and leads them to the full guide.*
 
 ## Key numbers
 
 - Quality checks passed: 4
 - Quality checks in total: 4
-- Build rounds: 1
+- Build rounds: 2
 
 ## What this is based on
 
@@ -46,4 +46,4 @@ If this version doesn't work out, these grow out of your original idea and skill
 
 You make the final call, using the options on screen (or `venture gate` in the terminal). If you choose differently from the recommendation, your choice and reason are recorded next to it.
 
-Preview the product in `runs/20261117-200601-ad63/product/` before approving the MVP.
+Preview the product in `runs/20261117-205258-110a/product/` before approving the MVP.

@@ -6,39 +6,49 @@ These are drafts for this product, generated from templates and checked by code.
 
 DRAFT: not legal advice
 
-**Licence**
-You may download and use the "Design Brief Guide for Freelance Designers" for your own personal use. You may not sell, share, or redistribute the guide without our permission.
+# Terms of Service
 
-**Refunds**
-If you are not satisfied, see our Refund Policy for details.
+## License
+By purchasing the *Rate Negotiation Guide for Freelance Designers*, you receive a non‑exclusive, non‑transferable license to use the guide for your personal or professional use. You may not sell, redistribute, or modify the guide without written permission.
 
-**Contact**
-If you have any questions, email us at support@example.com.
+## Refunds
+Refunds are governed by the Refund Policy. Please see the Refund Policy for details on eligibility and how to request a refund.
+
+## Contact
+If you have any questions, contact us at support@example.com.
+
+
 
 ## Privacy policy
 
 DRAFT: not legal advice
 
-**What we collect**
-We collect your name, email address, and the payment details that the payment processor handles. We do not store passwords or card numbers.
+# Privacy Policy
 
-**How we use it**
-We use the information to deliver the guide, send you updates, and respond to your questions.
+## What We Collect
+We collect the email address you provide when purchasing the guide. We do not collect or store passwords, credit card numbers, or any other sensitive payment information.
 
-**Contact**
-If you want to update or delete your information, email support@example.com.
+## How We Use the Information
+The email address is used to deliver the digital download and to provide customer support. We may use aggregated, non‑personal data to improve the product.
+
+## Contact
+For privacy questions or concerns, please email privacy@example.com.
+
+
 
 ## Refund policy
 
 DRAFT: not legal advice
 
-**Refund window**
-You can request a refund within 14 days of purchase.
+# Refund Policy
 
-**How to request**
-Send an email to support@example.com with your order number and a brief reason for the refund. We will review your request and respond within a few business days.
+## Refund Window
+You may request a refund within 14 days of purchase.
 
-We do not guarantee any specific results from using the guide.
+## How to Request a Refund
+Send an email to support@example.com with your order number and a brief reason for the refund request. We will review your request and respond within a few business days.
+
+
 
 ## Compliance Linter
 

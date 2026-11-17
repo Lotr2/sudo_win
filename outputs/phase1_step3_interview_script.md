@@ -1,37 +1,32 @@
-# Customer interview script: Design Brief Guide
+# Customer interview script: Rate Negotiation Guide
 
-I’m looking into how freelance designers handle setting expectations with clients. May I ask you about the last time you worked on a project?
+I'm looking into how freelance designers handle rate negotiations. Could I ask you about the last time you had to discuss your rates with a client?
 
 ## Questions (about past behaviour)
 
-1. Can you walk me through the last project you started with a new client?
-2. What steps did you take to explain what the project would involve?
-3. Did you use any documents or emails to outline the scope? If so, what did they include?
-4. What challenges did you face when the client had different ideas about the deliverables?
-5. How did you resolve those misunderstandings?
-6. What was the most time-consuming part of clarifying expectations?
-7. If you had a tool or guide that made this easier, what would it help you with?
+1. Tell me about the last time you had to negotiate your rate with a client.
+2. What steps did you take before you started the negotiation?
+3. How did you decide what rate to ask for?
+4. What did you do if the client pushed back on your rate?
+5. How much time did you spend preparing for or following up on the negotiation?
+6. Did you end up changing your rate? If so, how did that affect the project?
+7. What tools or resources did you use to help you with the negotiation?
+8. If you could go back, what would you do differently?
 
 ## Notes template
 
-# Interview Notes
+Tip: talk to 3-5 people and listen more than you talk.
 
 **Date:**
 
-**Interviewer:**
+**Interviewee:**
 
-**Participant:**
-
-**Problem in their words:**
+**Problem (in their words):**
 
 **What they tried:**
 
-**What it cost (time, money, frustration):**
+**What it cost (time/money):**
 
-**Memorable quotes:**
-
-> 
-
-*Tip: Talk to 3‑5 people and listen more than you talk.*
+**Memorable quote:**
 
 Interviews are run by the founder with real people. Simulated persona interviews, if any, are labelled SIMULATED and count for nothing at any gate.

@@ -1,56 +1,56 @@
-# Phase 2 · Step 1: Lean Canvas (Design Brief Guide)
+# Phase 2 · Step 1: Lean Canvas (Rate Negotiation Guide)
 
 ## Problem
 
-Freelance designers often struggle to set clear expectations with clients, leading to confusion and late payments.
+Freelance designers often don’t know how to ask for higher rates, so they undercharge and feel stuck.
 
-Source: https://webflow.com/blog/10-ways-freelance-designers-can-better-manage-client-expectations, https://www.rasmussen.edu/degrees/design/blog/communicating-with-design-clients/
+Source: https://www.linkedin.com/posts/brianoigara_the-art-of-negotiation-for-freelancers-activity-7306978792143511552-Ve8k, https://www.pinterest.com/pin/how-to-raise-your-freelance-rates-negotiation-tips--528961918730781834/
 
 ## Customer Segments
 
-Freelance graphic designers and other creative professionals who work independently.
+Freelance designers who feel scared to say no or raise rates.
 
 Source: ASSUMPTION
 
 ## Unique Value
 
-A concise guide with a ready‑to‑use design brief template that saves time and reduces misunderstandings.
+A ready‑to‑use guide with proven scripts and example emails that shows designers how to set and raise rates confidently.
 
-Source: https://jenniferbourn.com/expectation-setting-email-template/, https://templatelab.com/design-brief/, https://www.hellobonsai.com/brief-template/design, https://www.themattbio.com/store/notion-design-brief
+Source: https://hustlefin.com/learn/freelance-rate-negotiation-guide/, https://www.pinterest.com/pin/how-to-raise-your-freelance-rates-negotiation-tips--528961918730781834/, https://www.supercareer.co/challenges/money/freelance-rate-negotiation
 
 ## Solution
 
-An easy‑to‑follow guide that includes a design brief template and step‑by‑step instructions.
+Downloadable PDF guide that walks designers through setting rates, handling objections, and using anchoring techniques.
 
-Source: https://templatelab.com/design-brief/, https://www.hellobonsai.com/brief-template/design, https://www.pinterest.com/ideas/freelancer-project-brief-template/939964425691/, https://www.themattbio.com/store/notion-design-brief
+Source: https://hustlefin.com/learn/freelance-rate-negotiation-guide/, https://www.pinterest.com/pin/how-to-raise-your-freelance-rates-negotiation-tips--528961918730781834/
 
 ## Channels
 
-Promote through freelance marketplaces like Upwork and Freelancer, design blogs, and social media groups.
+Pinterest, Upwork, freelance marketplaces, LinkedIn.
 
-Source: https://www.freelancer.com/, https://www.upwork.com/hire/graphic-designers/
+Source: https://www.linkedin.com/posts/brianoigara_the-art-of-negotiation-for-freelancers-activity-7306978792143511552-Ve8k, https://www.pinterest.com/pin/how-to-raise-your-freelance-rates-negotiation-tips--528961918730781834/, https://www.ryrob.com/freelance-jobs/, https://www.upwork.com/freelance-jobs/, https://www.upwork.com/hire/graphic-designers/
 
 ## Revenue
 
-Offer the guide for free, with optional paid add‑ons or consulting.
+Sell the guide for a one‑time fee.
 
 Source: ASSUMPTION
 
 ## Costs
 
-Estimated 8 hours of work, no upfront cost.
+6 hours of work, no money spent.
 
 Source: ASSUMPTION
 
 ## Key Metrics
 
-Downloads, time to complete brief, user feedback.
+Number of guide downloads, conversion rate from free content, repeat customers.
 
 Source: ASSUMPTION
 
 ## Unfair Advantage
 
-First mover in providing a concise, ready‑to‑use brief template for freelance designers.
+First guide that bundles negotiation scripts with real‑world examples.
 
 Source: ASSUMPTION
 
@@ -58,21 +58,21 @@ Source: ASSUMPTION
 
 | Box | Score | Comment |
 |---|---|---|
-| problem | 5 | Evidence shows designers struggle with client expectations. |
+| problem | 5 | Strong evidence shows freelancers struggle with rate negotiation. |
 | customer_segments | 2 | No evidence provided for target segment. |
-| unique_value | 5 | Evidence supports concise brief template value. |
-| solution | 5 | Evidence supports guide and template solution. |
-| channels | 5 | Evidence supports marketplace promotion. |
+| unique_value | 5 | Evidence shows guide includes scripts and example emails. |
+| solution | 5 | Evidence confirms downloadable guide with scripts. |
+| channels | 5 | Evidence shows these channels are used by freelance designers. |
 | revenue | 2 | No evidence for revenue model. |
 | costs | 2 | No evidence for cost estimate. |
 | key_metrics | 2 | No evidence for key metrics. |
-| unfair_advantage | 2 | No evidence for first mover advantage. |
+| unfair_advantage | 2 | No evidence for unfair advantage. |
 
 ### Riskiest assumptions
 
-- revenue (risk 5 of 5; could sink the business if wrong)
-- customer_segments (risk 4 of 5)
-- unfair_advantage (risk 3 of 5)
+- Freelance designers who feel scared to say no or raise rates. (risk 5 of 5; could sink the business if wrong)
+- Sell the guide for a one‑time fee. (risk 5 of 5; could sink the business if wrong)
+- 6 hours of work, no money spent. (risk 3 of 5)
 
 ### Your answers to the reviewer's questions
 

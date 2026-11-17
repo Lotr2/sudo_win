@@ -6,89 +6,89 @@
 
 ## In short
 
-Go ahead with the Payment Terms Cheat Sheet; it has enough evidence and fits your skills and budget.
+Go ahead with the Polite Reminder Email Templates kit – it meets all checks and has solid evidence that people need it.
 
 ## Why
 
-- The best version, "Payment Terms Cheat Sheet", looks promising: the team found 4 real examples of people struggling with this problem on 4 different websites, it scores 77.8 out of 100 (needs 60), and it fits your skills, budget and time.
+- The best version, "Polite Reminder Email Templates", looks promising: the team found 4 real examples of people struggling with this problem on 4 different websites, it scores 71.5 out of 100 (needs 60), and it fits your skills, budget and time.
 
 ## What the team found
 
-The team checked whether people actually have the problem, whether you can build it, where to find customers, and if it can be made quickly. The Payment Terms Cheat Sheet scored 77.8 out of 100, mainly because it has 4 real examples of designers struggling with payment terms and it uses your writing skills and 8 hours of work. It also shows that customers can be reached on Fiverr and Upwork and that the product can be built in about a month. The only area that could be stronger is the lack of complaints about existing options, but that is not a blocker. Overall the version passes every check and is ready for the next stage.
+The team found 4 real examples of designers looking for polite reminder emails, which gives the evidence factor 12 out of 30. The kit fits your skills, budget and time perfectly, scoring full marks on that factor. Places to reach customers score 20 out of 20, and the product can be built quickly, so the total is 71.5 out of 100, above the 60‑point threshold. The only weak point is that the evidence could be stronger, but the current proof is real, not mocked. With these strengths, the version passes every check and is ready for launch.
 
 ## What you can do next
 
-- Ask 5 new freelance designers how they currently negotiate payment terms and note any gaps in their process
-- Search freelancer forums for posts where designers complain about unclear payment terms and add those complaints to your research
-- Create a short survey for designers on Upwork to confirm how many feel unsure about payment terms
+- Ask 5 freelance designers how they currently send payment reminders and note any pain points.
+- Search LinkedIn and Facebook groups for posts about late‑payment emails and collect a few examples.
+- Create a sample reminder template and share it in a small designer community to gauge interest.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Offer a quick “Late‑Payment Reminder Email Pack” that designers can drop into their inboxes *It uses the same writing skill set and targets designers who already have invoices*
-- **Customer group:** Target designers in Latin America who are just starting out *Your research shows similar pain points in other English‑speaking regions*
-- **Product idea:** Build a “Contract Negotiation Checklist” PDF for designers who are about to sign their first contract *It addresses a related need with a smaller scope*
-- **Market:** Apply the same approach to freelance copywriters who also struggle with payment terms *Copywriters share many of the same client‑interaction challenges*
-- **Product idea:** Create a “Pricing Strategy Guide” that helps designers set rates before they ask for payment terms *It tackles the root cause of uncertainty about payment terms*
+- **Customer group:** Offer the same reminder kit to freelance copywriters, who also need to follow up on payments. *Copywriters share similar invoicing habits and face the same email‑reminder challenge.*
+- **Product idea:** Develop a short guide on timing and tone for payment reminders, bundled with a few starter templates. *A guide is cheaper to build and can test the need for polite reminders before a full kit.*
+- **Market:** Target freelance designers in non‑English speaking countries, translating the templates into Spanish or French. *Your design skills can be reused, and the market may have less competition for polite reminder tools.*
+- **Product idea:** Create a simple invoice template pack that includes a polite reminder section. *It leverages your graphic design strengths and addresses the same payment‑follow‑up problem.*
+- **Market:** Reach freelance designers who work with agencies, offering the kit as a team resource. *Agencies often need consistent communication tools for their freelancers.*
 
 ## How each version scored
 
 Each version gets up to 100 points from five things. 60 points, plus enough real evidence and a good fit with you, are needed to go ahead.
 
-### Payment Terms Cheat Sheet: 77.8 out of 100
+### Polite Reminder Email Templates: 71.5 out of 100
 
-*For new freelance designers just starting to negotiate contracts. A pack of ready-to-use templates.*
+*For freelance UX designers. A pack of ready-to-use templates.*
 
-- **Evidence that people have this problem: 18 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on alemiguel.com, domestika.org, ramp.com and winvesta.in. Full marks need 5. Of these, 2 are people describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 2 of 4 are about your market (the others count less). For example: “Freelance designers in Barcelona say they don’t know how to budget and feel unsure about pricing their work” / “A Spanish freelance designer notes that a client told her she was too cheap, showing uncertainty about setting rates”. Sources: [alemiguel.com](https://alemiguel.com/articulos/contrato-para-disenador-freelance/), [ramp.com](https://ramp.com/blog/payment-terms), [domestika.org](https://www.domestika.org/es/forums/946-cuestiones-laborales/topics/90016-tarifas-estandard-para-disenadores-graficos-freelance), [winvesta.in](https://www.winvesta.in/blog/freelancers/5-payment-mistakes-freelance-designers-make-and-how-to-avoid-them).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 8 hours (you have about 24 a month) and about $15 (your budget is $150).
-- **Places to reach these customers: 20 of 20 points.** These customers can be found on fiverr.com and upwork.com.
+- **Evidence that people have this problem: 12 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on flodesk.com, getjobber.com, hellobonsai.com and saleshandy.com. Full marks need 5. Of these, 4 are articles or other pages (these count a little less); 0 of 4 are about your market (the others count less). For example: “People are looking for guidance on writing polite reminder emails” / “Freelance UX designers look for payment reminder email templates to get paid faster”. Sources: [flodesk.com](https://flodesk.com/tips/payment-reminder-email-templates), [getjobber.com](https://www.getjobber.com/academy/overdue-payment-reminder-templates/), [hellobonsai.com](https://www.hellobonsai.com/blog/gentle-reminder-email-example), [saleshandy.com](https://www.saleshandy.com/blog/politely-remind-someone-reply-email/).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for email writing; it needs about 4 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 20 of 20 points.** These customers can be found on fiverr.com, linkedin.com, saldetto.com and solidgigs.com and 2 more.
 - **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
 - **Room next to existing options: 0 of 10 points.** Found 6 existing options but no complaints about them. Complaints show where you could do better.
 
 **Verdict:** Passes every check.
 
-### Late‑Payment Reminder Guide: 69.4 out of 100
+### Late Payment Tracker Tool: 57.5 out of 100
 
-*For freelance designers who have worked with at least one client in the past year. A written guide (an e-book or pdf).*
+*For freelance designers managing multiple clients. A small web tool (like a calculator or planner).*
 
-- **Evidence that people have this problem: 9 of 30 points.** Found 3 real examples of people describing this problem or looking for help with it, on fairquotehk.pages.dev, justanswer.com and tiktok.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 2 are articles or other pages (these count a little less); 0 of 3 are about your market (the others count less). For example: “Freelance designers and other business owners are looking for strategies to get paid on time and to handle late payments without sounding pushy” / “Freelance designers often struggle to follow up on late payments without sounding pushy”. Sources: [fairquotehk.pages.dev](https://fairquotehk.pages.dev/tools/freelance-late-payment-email-generator), [justanswer.com](https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html), [tiktok.com](https://www.tiktok.com/discover/how-to-nicely-tell-your-client-to-pay-on-time).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 10 hours (you have about 24 a month) and about $20 (your budget is $150).
-- **Places to reach these customers: 20 of 20 points.** These customers can be found on domestika.org, freelancer.com, selfmade-engine.github.io and upwork.com.
+- **Evidence that people have this problem: 18 of 30 points.** Found 4 real examples of people describing this problem or looking for help with it, on clacky.ai, intuitional.io, justanswer.com and selfmade-engine.github.io. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 3 are articles or other pages (these count a little less); 3 of 4 are about your market (the others count less). For example: “Freelance graphic designers struggle with manual invoicing and overdue payments” / “Freelancers are looking for tools to automate invoice reminders and track overdue invoices”. Sources: [clacky.ai](https://clacky.ai/blog/case-study-validating-micro-saas-idea), [selfmade-engine.github.io](https://selfmade-engine.github.io/selfmade-site/p/freelance-designer-unpaid-invoice-tracker/), [intuitional.io](https://www.intuitional.io/blog/automate-invoice-reminders-for-freelancers), [justanswer.com](https://www.justanswer.com/business-law/ufh5m-freelance-designer-unpaid-invoices-options.html).
+- **Fit with your skills, budget and time: 23 of 25 points.** You already have what it takes for figma; basic web development can be learned quickly; it needs about 20 hours (you have about 24 a month) and about $30 (your budget is $150).
+- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
+- **Can be built as a first version: 15 of 15 points.** It's a small web tool (like a calculator or planner), which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 2 of 10 points.** Found 3 existing options but no complaints about them. Complaints show where you could do better.
+
+**Verdict:** Held back because it scores 57.5 out of 100; 60 is needed.
+
+### Proposal & Invoice Guide: 50.3 out of 100
+
+*For junior web designers. A written guide (an e-book or pdf).*
+
+- **Evidence that people have this problem: 4 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on warriorforum.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 0 of 1 are about your market (the others count less). For example: “Junior web designers are unsure how to structure proposals and invoices for clients”. Sources: [warriorforum.com](https://www.warriorforum.com/website-design/541620-web-designer-proposal-tool-clients.html).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing and graphic design; it needs about 10 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 7 of 20 points.** These customers can be found on warriorforum.com.
+- **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
+- **Room next to existing options: 0 of 10 points.** Found 6 existing options but no complaints about them. Complaints show where you could do better.
+
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1); it scores 50.3 out of 100; 60 is needed.
+
+### International Invoice Converter: 49.5 out of 100
+
+*For freelance designers working with overseas clients. A written guide (an e-book or pdf).*
+
+- **Evidence that people have this problem: 3 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on wise.com. Full marks need 5. Of these, 1 is an article or other page (these count a little less); 0 of 1 are about your market (the others count less). For example: “Freelancers look for free, easy-to-use invoice generators that support international payments and currency conversion”. Sources: [wise.com](https://wise.com/us/invoice-generator/).
+- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for research and writing; it needs about 6 hours (you have about 24 a month) and about $0 (your budget is $150).
+- **Places to reach these customers: 7 of 20 points.** These customers can be found on remotify.co.
 - **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
 - **Room next to existing options: 0 of 10 points.** Found 5 existing options but no complaints about them. Complaints show where you could do better.
 
-**Verdict:** Passes every check.
-
-### Quick Negotiation Guide: 66.0 out of 100
-
-*For freelance designers who are about to sign their first contract. A written guide (an e-book or pdf).*
-
-- **Evidence that people have this problem: 6 of 30 points.** Found 1 real example of people describing this problem or looking for help with it, on linkedin.com. Full marks need 5. Of these, 1 is a person describing it first-hand or asking for help; 1 of 1 is about your market. For example: “Freelance designers often sign contracts without clear terms, leading to unpaid invoices and disputes”. Sources: [linkedin.com](https://www.linkedin.com/posts/simonlowtherdesign_go-freelance-without-the-guesswork-activity-7450406020079673344-tmaT).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for writing clear client emails; it needs about 12 hours (you have about 24 a month) and about $20 (your budget is $150).
-- **Places to reach these customers: 20 of 20 points.** These customers can be found on freelancer.com, freelancer.in, graphicdesignforum.com and hostinger.com and 2 more.
-- **Can be built as a first version: 15 of 15 points.** It's a written guide (an e-book or PDF), which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 8 existing options but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1).
-
-### Proposal & Invoice Pack: 40.0 out of 100
-
-*For freelance graphic designers in their first year. A pack of ready-to-use templates.*
-
-- **Evidence that people have this problem: 0 of 30 points.** The research didn't find people describing this problem online yet. That doesn't mean nobody has it: it may be discussed in places search can't see (private groups, WhatsApp, in person).
-- **Fit with your skills, budget and time: 25 of 25 points.** You already have what it takes for graphic design and google docs; it needs about 12 hours (you have about 24 a month) and about $30 (your budget is $150).
-- **Places to reach these customers: 0 of 20 points.** No online places where these customers gather were found yet (forums, groups, communities).
-- **Can be built as a first version: 15 of 15 points.** It's a pack of ready-to-use templates, which the team can build, and it fits in about a month of your time.
-- **Room next to existing options: 0 of 10 points.** Found 21 existing options but no complaints about them. Complaints show where you could do better.
-
-**Verdict:** Held back because it needs at least 3 real examples of the problem (has 0); it scores 40 out of 100; 60 is needed.
+**Verdict:** Held back because it needs at least 3 real examples of the problem (has 1); it scores 49.5 out of 100; 60 is needed.
 
 
 ## Key numbers
 
-- Best version of the idea: Payment Terms Cheat Sheet
-- Score (out of 100): 77.8
+- Best version of the idea: Polite Reminder Email Templates
+- Score (out of 100): 71.5
 - Real examples of people with this problem: 4
 - Different websites those examples came from: 4
 - Fits your skills, budget and time: yes

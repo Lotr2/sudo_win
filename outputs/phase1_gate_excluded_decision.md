@@ -6,7 +6,7 @@
 
 ## In short
 
-Stop here – the idea is in a category we can't help with.
+Stop here – the idea is a medical advice product, which we cannot help with.
 
 ## Why
 
@@ -14,23 +14,23 @@ Stop here – the idea is in a category we can't help with.
 
 ## What the team found
 
-We checked the category of the idea. The idea is about giving medical advice for type 2 diabetes, which falls under health advice. The team needs licensed experts to ensure safety and cannot support this. Because of that, we recommend stopping the current idea. This saves you time and money and lets you focus on a different digital product.
+We checked the category of your idea. The team does not support products that give medical or health advice because they can cause harm if the advice is wrong. Your idea specifically says it will give meal plans to people with type 2 diabetes based on blood sugar readings, which is medical advice. Because of that, we must stop. This decision is final and not about the quality of your idea. If you want to keep working on a health‑related product, you would need to involve licensed experts. For now, we recommend exploring a different direction.
 
 ## What you can do next
 
-- Look for a meal planning idea that does not promise medical outcomes, such as a general healthy eating guide for anyone.
-- Create a grocery list generator that turns a weekly meal plan into a shopping list based on user preferences.
-- Build a recipe recommendation engine that suggests dishes based on taste and dietary restrictions, not medical conditions.
+- Pivot the product to give general nutrition tips that are not tied to a medical condition.
+- Focus on meal planning for a broader audience like busy professionals.
+- Build a recipe recommendation engine that uses user preferences but does not claim medical benefits.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Develop a general healthy meal planner that offers daily recipes for anyone looking to eat balanced meals. *It uses your writing and spreadsheet skills and avoids medical claims.*
-- **Product idea:** Create a grocery list generator that turns a weekly meal plan into a shopping list. *It builds on your spreadsheet skills and meets a common need.*
-- **Product idea:** Build a recipe recommendation app that filters recipes by taste preferences and dietary restrictions. *It leverages your writing ability and appeals to a broad audience.*
-- **Product idea:** Launch a cooking tutorial platform that teaches basic cooking techniques. *It uses your writing skills and can be monetized with a subscription.*
-- **Product idea:** Offer a nutrition guide for people with specific dietary needs (e.g., vegetarian, gluten‑free) without medical claims. *It stays within digital products and uses your strengths.*
+- **Product idea:** Create a recipe recommendation app for busy professionals that suggests balanced meals based on taste preferences. *It uses your writing and spreadsheet skills and avoids medical claims.*
+- **Product idea:** Develop a grocery list generator that helps users plan weekly shopping. *It leverages spreadsheets and writing, and is not medical.*
+- **Product idea:** Build a nutrition education e‑book for people looking to improve general health. *It uses writing and can be sold as a digital download without medical advice.*
+- **Product idea:** Launch a meal planning calendar for people with dietary restrictions like gluten‑free. *It is not medical advice and still uses your skills.*
+- **Product idea:** Offer a habit‑tracking app that encourages healthy eating habits. *It uses spreadsheets and is not medical.*
 
 ## What this is based on
 

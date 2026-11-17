@@ -7,7 +7,7 @@ The numbers here are practice data (MOCKED), so they don't count as real validat
 
 ## In short
 
-Stop here. These are practice numbers (MOCKED): they say nothing yet about whether people want this, and real numbers are needed first.
+Stop here because the mock test showed only a 3% conversion rate, far below the 10% target you set.
 
 ## Why
 
@@ -15,31 +15,31 @@ Stop here. These are practice numbers (MOCKED): they say nothing yet about wheth
 
 ## What the team found
 
-We ran a landing page test to see how many visitors would sign up to buy the $15 template pack. The test used a mock dataset and recorded a 3% signup rate, which is only 30% of the 10% target we set. This low rate means we don’t yet know if real freelance designers want to pay $15 for the pack. The review shows the idea has a clear problem, value, solution and good channels, but we lack evidence on the target customers, price willingness, costs, key metrics and competition. Because the mock data is not proof of real demand, the safest next step is to stop or change direction. Continuing would waste time and money without showing that the product actually sells.
+The experiment tested whether freelance UX designers would buy a template pack on a simple landing page. The conversion rate hit 3%, which is only 30% of the 10% target you had agreed on. Because the numbers were mock data, they don’t prove real demand – you need real traffic and sales to know what people want. The review also shows weak evidence on pricing, costs, and key metrics, meaning you don’t yet know if the product can make money or how to measure success. These gaps make it risky to keep investing in this idea without clearer proof of interest.
 
 ## What you can do next
 
-- Reach out to a small group of new freelance designers and ask if they would pay $15 for a template pack.
-- Gather real traffic to the landing page and record actual signup numbers instead of mock data.
-- Research competitors to confirm whether similar template packs exist and how they price them.
+- Ask a handful of freelance UX designers to try a free sample of the template pack and record how many say they’d pay for the full set.
+- Run a small paid ad test on LinkedIn targeting UX freelancers to see if real traffic can reach the 10% conversion goal.
+- Adjust the landing page copy to highlight the time‑saving benefit and test a lower price point to see if that boosts sales.
 
 ## Other directions worth considering
 
 If this version doesn't work out, these grow out of your original idea and skills. They are suggestions to explore, not researched findings (ASSUMPTION) until the team checks them:
 
-- **Product idea:** Offer a free mini‑template guide to freelance designers to gauge interest before selling a full pack. *It tests the same need with less risk and can build an audience.*
-- **Customer group:** Target experienced designers who need advanced templates and might pay a higher price. *They may have more budget and a clearer need for premium content.*
-- **Market:** Create a template bundle for web developers, a related creative field with similar needs. *Your skills apply to a similar audience that may show stronger demand.*
-- **Product idea:** Build a community forum for freelance designers where you can test ideas and collect feedback. *It provides ongoing insight into customer pain points and preferences.*
-- **Product idea:** Develop a subscription service that delivers new templates monthly to keep designers engaged. *Subscriptions can create recurring revenue and deepen customer relationships.*
+- **Customer group:** Offer the same polite reminder templates to freelance copywriters, who also juggle many clients and need quick follow‑ups. *Copywriters share similar workflow challenges, so the product could appeal to a new but related audience.*
+- **Product idea:** Create a single, downloadable email template for polite reminders and sell it as a one‑time download. *A smaller product costs less to build and lets you test demand before committing to a full pack.*
+- **Market:** Expand the idea to project managers in tech teams, offering templates for status‑update emails. *Project managers also need efficient communication tools, and the market may be larger than freelance UX designers.*
+- **Customer group:** Target freelance UI designers in the Middle East, where local communities are active on Facebook groups. *You already have experience reaching freelancers online, and a regional focus could reduce competition.*
+- **Product idea:** Develop a short guide on writing effective follow‑up emails for freelancers, available as a PDF. *A guide is quick to produce, can be used to build an email list, and tests the core need before building templates.*
 
 ## Key numbers
 
 - Goal set in advance: 0.1
 - Result: 0.03
 - Share of the goal reached: 30%
-- What was measured: visitor_signup_rate
-- Risks that could sink the business: Revenue: $15 price point
+- What was measured: conversion rate
+- Risks that could sink the business: Sell the template pack for a one‑time fee, priced based on network feedback.
 
 ## What this is based on
 
