@@ -207,3 +207,40 @@ def test_rejection_needs_a_confirmation_for_the_current_version():
     h = item["content_hash"].removeprefix("sha256:")[:8]
     ob.reject(item["id"], "no", FounderConfirmation(channel="cli", item_ref=item["id"], typed_hash_prefix=h))
     assert ob.get(item["id"])["status"] == "rejected"
+
+
+def test_outbox_reads_are_safe_while_another_thread_writes(tmp_path):
+    """Regression: the web UI reads the outbox while the background step writes to it on the same SQLite
+    connection; unserialized reads saw half-written state (KeyError, 'bad parameter or other API misuse')."""
+    import threading
+    ob = Outbox(tmp_path / "outbox.db")
+    errors, stop = [], threading.Event()
+
+    def writer():
+        try:
+            for i in range(120):
+                it = ob.propose(kind="post", action="publish", title="t", content={"i": i}, phase=5)
+                ob.update_content(it["id"], {"i": i, "v": 2})
+                with pytest.raises(InvalidConfirmation):
+                    ob.approve(it["id"], FounderConfirmation(channel="cli", item_ref=it["id"], typed_hash_prefix="000000"))
+        except Exception as e:  # noqa: BLE001
+            errors.append(f"writer: {e!r}")
+        finally:
+            stop.set()
+
+    def reader():
+        while not stop.is_set():
+            try:
+                ob.items()
+                ob.publish_log()
+            except Exception as e:  # noqa: BLE001
+                errors.append(f"reader: {e!r}")
+                return
+
+    threads = [threading.Thread(target=writer)] + [threading.Thread(target=reader) for _ in range(2)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join(60)
+    assert errors == []
+    assert len(ob.items()) == 120

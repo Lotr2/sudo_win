@@ -73,7 +73,8 @@ class EventStore:
             return ev
 
     def rows(self, sql: str, args: tuple = ()) -> list[dict]:
-        return [dict(r) for r in self.db.execute(sql, args).fetchall()]
+        with self.lock:   # the connection is shared between threads; reads are serialized with writes
+            return [dict(r) for r in self.db.execute(sql, args).fetchall()]
 
     def add_activity(self, kind: str, value: float = 0, text: str = "") -> None:
         with self.lock:

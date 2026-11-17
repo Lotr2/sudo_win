@@ -94,7 +94,9 @@ CREATE TABLE IF NOT EXISTS gate_codes (
 class Outbox:
     def __init__(self, db_path: Path | str = ":memory:"):
         self.db_path = str(db_path)
-        self._lock = threading.Lock()
+        # One connection is shared by the web UI's request threads and the background step thread, so every
+        # read and write goes through this lock (re-entrant: writes read the item back while holding it).
+        self._lock = threading.RLock()
         self._db = sqlite3.connect(self.db_path, check_same_thread=False)
         self._db.row_factory = sqlite3.Row
         self._db.executescript(SCHEMA)
@@ -126,21 +128,28 @@ class Outbox:
         log_action("approval_outbox", f"queue_{kind}", item_id=item_id)
         return self.get(item_id)
 
-    def get(self, item_id: str) -> dict:
-        row = self._db.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
-        if not row:
-            raise KeyError(item_id)
+    @staticmethod
+    def _item(row) -> dict:
         d = dict(row)
         d["content"] = json.loads(d["content"])
         return d
 
+    def get(self, item_id: str) -> dict:
+        with self._lock:
+            row = self._db.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
+        if not row:
+            raise KeyError(item_id)
+        return self._item(row)
+
     def items(self, phase: int | None = None, status: str | None = None) -> list[dict]:
-        q, args = "SELECT id FROM items WHERE 1=1", []
+        q, args = "SELECT * FROM items WHERE 1=1", []
         if phase is not None:
             q += " AND phase=?"; args.append(phase)
         if status:
             q += " AND status=?"; args.append(status)
-        return [self.get(r[0]) for r in self._db.execute(q + " ORDER BY id", args).fetchall()]
+        with self._lock:   # one query, so the list is a consistent snapshot
+            rows = self._db.execute(q + " ORDER BY id", args).fetchall()
+        return [self._item(r) for r in rows]
 
     def update_content(self, item_id: str, content) -> dict:
         """A revised draft gets a new hash, so any earlier approval no longer applies."""
@@ -189,10 +198,11 @@ class Outbox:
                    channel=confirmation.channel)
 
     def valid_approval(self, item_id: str) -> dict | None:
-        item = self.get(item_id)
-        row = self._db.execute(
-            "SELECT * FROM approvals WHERE item_id=? AND item_hash=? ORDER BY timestamp DESC LIMIT 1",
-            (item_id, item["content_hash"])).fetchone()
+        with self._lock:
+            item = self.get(item_id)
+            row = self._db.execute(
+                "SELECT * FROM approvals WHERE item_id=? AND item_hash=? ORDER BY timestamp DESC LIMIT 1",
+                (item_id, item["content_hash"])).fetchone()
         return dict(row) if row else None
 
     def publish(self, item_id: str, adapter: str = "MOCKED") -> dict:
@@ -219,7 +229,8 @@ class Outbox:
         return self.get(item_id)
 
     def publish_log(self) -> list[dict]:
-        return [dict(r) for r in self._db.execute("SELECT * FROM publish_log ORDER BY id").fetchall()]
+        with self._lock:
+            return [dict(r) for r in self._db.execute("SELECT * FROM publish_log ORDER BY id").fetchall()]
 
     # ---- gate decisions ----
     def record_gate_decision(self, *, gate: int, attempt: int, decision: str, recommended: str,
@@ -244,7 +255,8 @@ class Outbox:
         return row
 
     def gate_decision(self, gate: int, attempt: int) -> dict | None:
-        row = self._db.execute("SELECT * FROM gate_decisions WHERE gate=? AND attempt=?", (gate, attempt)).fetchone()
+        with self._lock:
+            row = self._db.execute("SELECT * FROM gate_decisions WHERE gate=? AND attempt=?", (gate, attempt)).fetchone()
         return dict(row) if row else None
 
 

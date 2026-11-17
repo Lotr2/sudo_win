@@ -172,14 +172,18 @@ def create_app(settings: Settings, runtime_factory: Callable[..., Runtime] | Non
     @app.get("/api/runs/{run_id}")
     def status(run_id: str):
         h = handle(run_id)
+        # Read `busy` before and after the status: if a step was running at any point while the status was
+        # read, the pending value may be stale or missing, so report busy and let the client poll again.
+        busy_before = h.busy
         st = h.rt.status()
+        busy = busy_before or h.busy
         p = st["pending"]
         if p and p["kind"] == "approval":
             for it in p["items"]:
                 it["status"] = h.rt.ctx.outbox.get(it["id"])["status"]
         docs = [{"file": o, "label": labels.doc_label(o), "phase": int(o[5]) if o[:5] == "phase" and o[5:6].isdigit() else 0}
                 for o in st["outputs"]]
-        return st | {"busy": h.busy, "error": h.error, "documents": docs,
+        return st | {"busy": busy, "error": h.error, "documents": docs,
                      "conversation": h.rt.ctx.store.conversation()[-80:]}
 
     @app.get("/api/runs/{run_id}/outputs/{name}")
