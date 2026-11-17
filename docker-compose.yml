@@ -1,0 +1,52 @@
+# One-command setup: `docker compose up`
+#   ollama  serves the open-weight model locally (no paid API, no key)
+#   model   pulls gpt-oss:20b once (about 13 GB), then exits
+#   app     the six-phase pipeline; open it with `docker compose exec app python workflow.py`
+# The repo is mounted into the app, so outputs/ and decision_log.json land in the repo.
+
+services:
+  ollama:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  model:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:latest}
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["ollama", "pull", "${LLM_MODEL:-gpt-oss:20b}"]
+    restart: "no"
+
+  app:
+    build: .
+    depends_on:
+      model:
+        condition: service_completed_successfully
+    environment:
+      LLM_BASE_URL: http://ollama:11434/v1
+      LLM_MODEL: ${LLM_MODEL:-gpt-oss:20b}
+      HOST: 0.0.0.0
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8002}
+    env_file:
+      - path: .env
+        required: false
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./:/app
+    ports:
+      - "8000:8000"   # Phase 2 waitlist landing page
+      - "8001:8001"   # Phase 3 MVP preview
+      - "8002:8002"   # Phase 5 store (MOCKED payments)
+    stdin_open: true
+    tty: true
+
+volumes:
+  ollama:

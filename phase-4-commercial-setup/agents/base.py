@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
+PROMPTS_DIR = Path(__file__).resolve().parents[2] / "prompts"  # repo-root prompts/, one file per agent
 
 
 def load_prompt(name: str) -> str:

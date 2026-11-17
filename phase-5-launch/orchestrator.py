@@ -245,7 +245,7 @@ class LaunchPipeline:
         db = connect(self.store_dir / "store.db")
         secret = load_secret(self.store_dir / "webhook_secret")
         return Store(db, MockPaymentProvider(db, secret), secret, delivery.load_rule(self.store_dir / "delivery_rule.json"),
-                     self.facts(h), self.store_dir, self.product_dir(h), self.policy_files(h), f"http://{host}:{port}")
+                     self.facts(h), self.store_dir, self.product_dir(h), self.policy_files(h), os.environ.get("PUBLIC_URL") or f"http://{host}:{port}")
 
     def review_refunds(self) -> int:
         st = self.store()
