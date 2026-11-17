@@ -18,12 +18,17 @@ Rules:
 - Stage checks (default, "to the end"): takes "go" when recommended; takes "repeat" once per stage when
   recommended; otherwise continues with "go" as a logged override, with the reason in the note, so the demo
   shows every stage. Unconfirmed decision-critical guesses are confirmed first, as the app requires.
-- Practice numbers (always labelled MOCKED): the demand test reports exactly its locked target; the review
-  period reports 400 visitors, 14 orders, 1 refund and two support questions.
+- Stage checks (`--follow-from N`): the default rules before stage N, the team's recommendation from N on
+  (used for the demand-test STOP run, so a Stage 2 STOP is followed, not overridden).
+- Practice numbers (always labelled MOCKED): the demand test reports exactly its locked target, or the number
+  given with `--demand-result`; the review period reports 400 visitors, 14 orders, 1 refund and two support
+  questions.
 
 Usage:
     python scripts/simulate_founder.py briefs/plausible_client_kit.md          # all six stages
     python scripts/simulate_founder.py briefs/weak_meal_coach.md --follow      # follows the STOP
+    python scripts/simulate_founder.py briefs/plausible_client_kit.md --demand-result 12 --follow-from 2
+                                                    # practice demand test far below its target: Stage 2 STOP
     venture export RUN_ID; venture export WEAK_RUN_ID --tag weak --append      # commit the demo run
 """
 
@@ -74,9 +79,9 @@ def say(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-def decide(rt, p: dict, follow: bool, repeats: dict) -> None:
+def decide(rt, p: dict, follow: bool, repeats: dict, follow_from: int | None = None) -> None:
     rec, gate = p["recommended"], p["gate"]
-    if follow:
+    if follow or (follow_from is not None and gate >= follow_from):
         choice = rec
     elif rec == "go":
         choice = "go"
@@ -99,7 +104,7 @@ def decide(rt, p: dict, follow: bool, repeats: dict) -> None:
     rt.decide_gate(choice, confirm_gate(p), variant_id=variant, note=note)
 
 
-def fill_form(rt, p: dict) -> None:
+def fill_form(rt, p: dict, demand_result: float | None = None) -> None:
     locked = rt.dossier.locked_targets or {}
     values = {}
     for f in p["fields"]:
@@ -107,7 +112,7 @@ def fill_form(rt, p: dict) -> None:
         if f["type"] == "bool":
             values[name] = True                      # practice numbers: MOCKED
         elif name == "result":
-            values[name] = float(locked.get("target") or 30)
+            values[name] = float(demand_result if demand_result is not None else (locked.get("target") or 30))
         elif name == "tickets" or f["type"] == "text":
             values[name] = TICKETS
         else:
@@ -116,7 +121,8 @@ def fill_form(rt, p: dict) -> None:
     rt.submit_input(values)
 
 
-def run(brief_path: str, follow: bool, max_steps: int = 400) -> Runtime:
+def run(brief_path: str, follow: bool, max_steps: int = 400, follow_from: int | None = None,
+        demand_result: float | None = None) -> Runtime:
     settings = load_settings(dict(os.environ))
     rt = Runtime.new(settings, Path(brief_path).read_text(), data_mode="practice")   # a script's numbers are MOCKED
     say(f"Run {rt.run_id} started ({settings.run_mode} mode) from {brief_path}")
@@ -151,9 +157,9 @@ def run(brief_path: str, follow: bool, max_steps: int = 400) -> Runtime:
                     say(f"Approved: {it['title']}")
                     rt.approve(it["id"], confirm_item(rt, it["id"]))
         elif k == "gate":
-            decide(rt, p, follow, repeats)
+            decide(rt, p, follow, repeats, follow_from)
         elif k == "mocked_input":
-            fill_form(rt, p)
+            fill_form(rt, p, demand_result)
         else:
             raise RuntimeError(f"unknown pause: {k}")
         p = rt.pending()
@@ -169,8 +175,10 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("brief")
     ap.add_argument("--follow", action="store_true", help="take every recommendation, including stop")
+    ap.add_argument("--follow-from", type=int, help="take the team's recommendation from this stage check on")
+    ap.add_argument("--demand-result", type=float, help="practice (MOCKED) demand-test result to enter")
     args = ap.parse_args()
-    run(args.brief, args.follow)
+    run(args.brief, args.follow, follow_from=args.follow_from, demand_result=args.demand_result)
     return 0
 
 
